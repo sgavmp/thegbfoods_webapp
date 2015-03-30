@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head th:include="base :: head">
+</head>
+<body>
+	<header th:include="base :: header"> </header>
+	<main class="container">
+
+	<div class="row">
+		<div class="col s8 offset-s2">
+			<div class="card-panel no-padding">
+				<ul class="collection">
+					<a th:each="feed : ${feeds}" th:href="@{'/feed/' + ${feed.codeName}}" href="#!" class="collection-item" th:text="${feed.name}">Sitio 1<span class="badge">10</span></a>
+				</ul>
+			</div>
+		</div>
+	</div>
+
+
+	</main>
+	<footer th:include="base :: footer"> </footer>
+</body>
+</html>

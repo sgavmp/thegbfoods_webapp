@@ -1,0 +1,40 @@
+spring:
+  application:
+    name: veterinaria
+  profiles:
+    active: production
+  
+---
+
+spring:
+  profiles: production
+  datasource:
+    jndi-name: java:comp/env/jdbc/Veterinaria
+    driverClassName: com.mysql.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect. org.hibernate.dialect.MySQL5Dialect
+    database-platform: org.hibernate.dialect.MySQLDialect
+
+name: production
+
+---
+
+spring:
+  profiles: local
+  
+  jpa:
+    hibernate:
+      ddl-auto: update
+  thymeleaf:
+    cache: false
+  datasource:
+    url: jdbc:mysql://localhost:3306/veterinaria
+    username: local
+    driverClassName: com.mysql.jdbc.Driver
+    continueOnError: true
+
+name: local
