@@ -1,4 +1,4 @@
-package com.ucm.ilsa.veterinaria.controller;
+package com.ucm.ilsa.veterinaria.controller.impl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,19 +11,15 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.ucm.ilsa.veterinaria.controller.BaseController;
 import com.ucm.ilsa.veterinaria.domain.Feed;
 import com.ucm.ilsa.veterinaria.domain.News;
 import com.ucm.ilsa.veterinaria.service.FeedService;
 
 @Controller
-public class FeedController {
-	
-	private FeedService serviceFeed;
-	
+public class FeedController extends BaseController {
 	@Autowired
-	public FeedController(FeedService service) {
-		this.serviceFeed = service;
-	}
+	private FeedService serviceFeed;
 	
 	
 	@ModelAttribute("feeds")
