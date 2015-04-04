@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head th:include="base :: head">
 </head>
 <body>
@@ -10,7 +10,7 @@
 		<div class="col s8 offset-s2">
 			<div class="card-panel no-padding">
 				<ul class="collection">
-					<a th:each="feed : ${feeds}" th:href="@{'/feed/' + ${feed.codeName}}" href="#!" class="collection-item" th:text="${feed.name}">Sitio 1<span class="badge">10</span></a>
+					<a th:each="feed : ${feeds}" th:href="@{/feeds/get/{codeName}(codeName=${feed.codeName})}" href="#!" class="collection-item" th:text="${feed.name}">Sitio 1<span class="badge">10</span></a>
 				</ul>
 			</div>
 		</div>
