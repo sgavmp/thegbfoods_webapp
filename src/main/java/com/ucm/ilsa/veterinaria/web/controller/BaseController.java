@@ -1,4 +1,4 @@
-package com.ucm.ilsa.veterinaria.controller;
+package com.ucm.ilsa.veterinaria.web.controller;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,13 +13,18 @@ public abstract class BaseController {
 	
 	private List<String> info;
 	private List<String> error;
+	//Indica al template el menu que tiene que activar
+	protected String menu="";
+	
+	@ModelAttribute("menu")
+	public String getMenuActive() {
+		return menu;
+	}
 	
 	@ModelAttribute("info")
 	public List<String> getInfoMessage() {
 		List<String> copy = Lists.newArrayList(info);
 		info.clear();
-		copy.add("Prueba");
-		copy.add("Prueba");
 		return copy;
 	}
 	
@@ -27,14 +32,20 @@ public abstract class BaseController {
 	public List<String> getErrorMessage() {
 		List<String> copy = Lists.newArrayList(error);
 		error.clear();
-		copy.add("Prueba");
-		copy.add("Prueba");
 		return copy;
 	}
 	
 	public BaseController() {
 		this.info = new ArrayList<String>();
 		this.error = new ArrayList<String>();
+	}
+	
+	protected void putInfoMessage(String message) {
+		this.info.add(message);
+	}
+	
+	protected void putErrorMessage(String message) {
+		this.error.add(message);
 	}
 
 }

@@ -6,7 +6,9 @@ import com.ucm.ilsa.veterinaria.domain.Feed;
 import com.ucm.ilsa.veterinaria.domain.News;
 
 public interface FeedService {
-	public List<News> createOrUpdate(Feed feed);
+	public Feed createFeed(Feed feed);
+	public List<News> scrapFeed(Feed feed);
 	public List<Feed> getAllFeed();
 	public Feed getFeedByCodeName(String codeName);
+	public boolean removeFeed(Feed feed);
 }
