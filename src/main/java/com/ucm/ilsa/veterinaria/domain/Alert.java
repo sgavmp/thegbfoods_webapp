@@ -4,21 +4,24 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Type;
 import org.springframework.data.annotation.CreatedDate;
 
 @Entity
 public class Alert {
 	@Id
-	@GeneratedValue(generator = "uuid")
-	@GenericGenerator(name = "uuid", strategy = "uuid2")
-	private String id;
+	@GeneratedValue(strategy=GenerationType.AUTO)
+	private Long id;
 	@ManyToOne
 	@JoinColumn(name="siteCodeName")
 	private Feed site;
@@ -30,7 +33,10 @@ public class Alert {
 	@Lob
 	private String infoAlert;
 	private String typeAlert;
+	@Enumerated(EnumType.ORDINAL)
 	private AlertLevel level;
+	@Column(name="isCheck")
+	private boolean check;
 
 	public Alert() {
 	
@@ -85,4 +91,20 @@ public class Alert {
 		this.level = level;
 	}
 
+	public boolean isCheck() {
+		return check;
+	}
+
+	public void setCheck(boolean check) {
+		this.check = check;
+	}
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+	
 }

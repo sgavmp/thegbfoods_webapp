@@ -1,4 +1,4 @@
-package com.ucm.ilsa.veterinaria.controller;
+package com.ucm.ilsa.veterinaria.web.controller.impl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,24 +6,29 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.ucm.ilsa.veterinaria.domain.Feed;
+import com.ucm.ilsa.veterinaria.domain.FeedForm;
 import com.ucm.ilsa.veterinaria.domain.News;
 import com.ucm.ilsa.veterinaria.service.FeedService;
+import com.ucm.ilsa.veterinaria.web.controller.BaseController;
 
 @Controller
-public class FeedController {
+@RequestMapping("/feeds")
+public class FeedController extends BaseController {
 	
-	private FeedService serviceFeed;
+	public FeedController() {
+		this.menu="feeds";
+	}
 	
 	@Autowired
-	public FeedController(FeedService service) {
-		this.serviceFeed = service;
-	}
+	private FeedService serviceFeed;
 	
 	
 	@ModelAttribute("feeds")
@@ -31,23 +36,15 @@ public class FeedController {
 		return serviceFeed.getAllFeed();
 	}
 
-	@RequestMapping("/feeds")
+	@RequestMapping("**")
 	public String getAllAlerts() {
 		return "feeds";
 	}
 	
-	@RequestMapping("/feed/{codeName}/actualizar")
-	public String updateNewsByFeed(Model model, @PathVariable ("codeName") Feed feed) {
-		List<News> newsListAdd = serviceFeed.createOrUpdate(feed);
-		model.addAttribute(feed);
-		model.addAttribute(newsListAdd);
-		return "newsFeed";
-	}
-	
-	@RequestMapping("/feed/{codeName}")
+	@RequestMapping("/get/{codeName}")
 	public String getAllNewsByFeed(Model model, @PathVariable ("codeName") Feed feed) {
 		model.addAttribute(feed);
-		return "newsFeed";
+		return "oneFeed";
 	}
 	
 }

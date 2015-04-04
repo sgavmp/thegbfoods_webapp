@@ -17,6 +17,7 @@
 					<div class="card-content">
 						<a th:text="${alert.title}" th:href="${alert.link}" href="http://www.google.es" class="card-title">Card Title</a>
 						<p th:text="${alert.infoAlert}">Descripción</p>
+						<p><a th:href="@{'alerts/' + ${alert.id} + '/check'}" href="#">Check</a></p>
 					</div>
 				</div>
 			</div>

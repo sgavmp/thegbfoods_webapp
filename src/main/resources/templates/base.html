@@ -36,11 +36,27 @@
 	</header>
 
 	<main class="container"></main>
-
-	<!--  Scripts-->
-	<script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
-	<script src="/js/materialize.js"></script>
-	<script src="/js/init.js"></script>
-
+	
+	<footer>
+		<div id="toast-container"></div>
+		<!--  Scripts-->
+		<script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+		<script src="/js/materialize.js"></script>
+		<script src="/js/init.js"></script>
+		<script th:inline="javascript">
+		/*<![CDATA[*/
+			$(document).ready(function(){
+			var mesInfo = /*[[${info}]]*/ []; 
+			var mesError = /*[[${error}]]*/ []; 
+	        for (var i = 0; i < mesInfo.length; i++) { 
+	         toast(mesInfo[i], 10000,'light-green');
+	        } 
+	        for (var i = 0; i < mesError.length; i++) { 
+	         toast(mesError[i], 10000,'red');
+	        } 
+			  });
+	  	/*]]>*/
+		</script>
+	</footer>
 </body>
 </html>
