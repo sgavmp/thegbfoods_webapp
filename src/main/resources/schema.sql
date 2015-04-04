@@ -15,5 +15,5 @@ CREATE TABLE IF NOT EXISTS persistent_logins (
     username character varying(64) NOT NULL,
     series character varying(64) NOT NULL,
     token character varying(64) NOT NULL,
-    last_used timestamp without time zone NOT NULL
+    last_used timestamp NOT NULL
 );
