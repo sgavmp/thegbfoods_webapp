@@ -1,60 +1,85 @@
 package com.ucm.ilsa.veterinaria.domain;
 
+import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import javax.persistence.CascadeType;
+import javax.persistence.CollectionTable;
+import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import javax.persistence.Version;
 
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+
 @Entity
-public class Feed {
+public class Feed extends BaseEntity {
 	
 	@Id
 	private String codeName;
 	private String name;
 	private String url;
-	@CreatedDate
-	private Date createDate;
-	@LastModifiedDate
-	private Date updateDate;
 	@ElementCollection
-	private List<String> atributes;
+	private List<PairValues> selectorHtml;
 	@ElementCollection
-	private Map<String,String> selectorHtml,selectorMeta;
-	private Integer limitNews = 15; //Por defecto 15
+	private List<PairValues> selectorMeta;
 	private String dateFormat;
 	private Locale languaje;
 	private boolean withRSS = false; //Por defecto no
 	private String lastNewsLink;
-	@OneToMany(mappedBy="site" )
+	@OneToMany(mappedBy="site", cascade=CascadeType.ALL,orphanRemoval=true)
 	private List<Alert> listOfAlerts;
 	
 	//Solo sitios sin RSS
 	private String urlNews;
-	private String pageLink;
-	private String newsSelector;
-	private Integer newsPerPage;
-	@ElementCollection
-	private Map<String,String> selectorPagination;
+	private String newsLink;
 	
 	//Solo sitios RSS
 	private boolean useSelector = false;
 	private String urlRSS;
 	
 	public Feed() {
-		this.selectorHtml = new HashMap<String, String>();
-		this.selectorPagination = new HashMap<String, String>();
-		this.selectorMeta = new HashMap<String, String>();
+		this.selectorHtml = new ArrayList<PairValues>();
+		this.selectorMeta = new ArrayList<PairValues>();
 	}
 	
+	public Feed(FeedForm feed) {
+		this.name=feed.getName();
+		this.codeName=feed.getCodeName();
+		this.dateFormat=feed.getDateFormat();
+		this.languaje=feed.getLanguaje();
+		this.selectorHtml=feed.getSelectorHtml();
+		this.selectorMeta=feed.getSelectorMeta();
+		if (this.selectorHtml.size()>0 || this.selectorMeta.size()>0) {
+			this.useSelector=true;
+		}
+		this.url=feed.getUrl();
+		if (!feed.getUrlNews().isEmpty()) {
+			this.urlNews=feed.getUrlNews();
+			this.newsLink=feed.getNewsLink();
+			this.withRSS=false;
+		} else {
+			this.urlRSS=feed.getUrlRSS();
+			this.withRSS=true;
+		}
+		this.useSelector=feed.isUseSelector();
+		this.listOfAlerts= new ArrayList<Alert>();
+	}
+
 	public String getName() {
 		return name;
 	}
@@ -79,44 +104,19 @@ public class Feed {
 	public void setUrlNews(String urlNews) {
 		this.urlNews = urlNews;
 	}
-	public Date getCreateDate() {
-		return createDate;
-	}
-	public void setCreateDate(Date createDate) {
-		this.createDate = createDate;
-	}
-	public Date getUpdateDate() {
-		return updateDate;
-	}
-	public void setUpdateDate(Date updateDate) {
-		this.updateDate = updateDate;
-	}
-	public Map<String, String> getSelectorHtml() {
+
+	public List<PairValues> getSelectorHtml() {
 		return selectorHtml;
 	}
-	public void setSelectorHtml(Map<String, String> selectorHtml) {
+	public void setSelectorHtml(List<PairValues> selectorHtml) {
 		this.selectorHtml = selectorHtml;
 	}
-	public Map<String, String> getSelectorPagination() {
-		return selectorPagination;
-	}
-	public void setSelectorPagination(Map<String, String> selectorPagination) {
-		this.selectorPagination = selectorPagination;
-	}
 
-	public List<String> getAtributes() {
-		return atributes;
-	}
-
-	public void setAtributes(List<String> atributes) {
-		this.atributes = atributes;
-	}
-
-	public Map<String, String> getSelectorMeta() {
+	public List<PairValues> getSelectorMeta() {
 		return selectorMeta;
 	}
 
-	public void setSelectorMeta(Map<String, String> selectorMeta) {
+	public void setSelectorMeta(List<PairValues> selectorMeta) {
 		this.selectorMeta = selectorMeta;
 	}
 
@@ -144,38 +144,6 @@ public class Feed {
 		this.languaje = languaje;
 	}
 
-	public Integer getLimitNews() {
-		return limitNews;
-	}
-
-	public void setLimitNews(Integer limitNews) {
-		this.limitNews = limitNews;
-	}
-
-	public Integer getNewsPerPage() {
-		return newsPerPage;
-	}
-
-	public void setNewsPerPage(Integer newsPerPage) {
-		this.newsPerPage = newsPerPage;
-	}
-
-	public String getNewsSelector() {
-		return newsSelector;
-	}
-
-	public void setNewsSelector(String newsSelector) {
-		this.newsSelector = newsSelector;
-	}
-
-	public String getPageLink() {
-		return pageLink;
-	}
-
-	public void setPageLink(String pageLink) {
-		this.pageLink = pageLink;
-	}
-
 	public String getCodeName() {
 		return codeName;
 	}
@@ -198,6 +166,32 @@ public class Feed {
 
 	public void setLastNewsLink(String lastNewsLink) {
 		this.lastNewsLink = lastNewsLink;
+	}
+	
+	public String getNewsLink() {
+		return newsLink;
+	}
+
+	public void setNewsLink(String newsLink) {
+		this.newsLink = newsLink;
+	}
+
+	public List<Alert> getListOfAlerts() {
+		return listOfAlerts;
+	}
+
+	public void changeValues(FeedForm feed) {
+		this.name=feed.getName();
+		this.codeName=feed.getCodeName();
+		this.dateFormat=feed.getDateFormat();
+		this.languaje=feed.getLanguaje();
+		this.selectorHtml=feed.getSelectorHtml();
+		this.selectorMeta=feed.getSelectorMeta();
+		this.url=feed.getUrl();
+		this.urlNews=feed.getUrlNews();
+		this.urlRSS=feed.getUrlRSS();
+		this.useSelector=feed.isUseSelector();
+		this.withRSS=feed.isWithRSS();
 	}
 	
 }

@@ -14,6 +14,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
 import org.springframework.security.web.authentication.rememberme.PersistentTokenBasedRememberMeServices;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
 @EnableWebMvcSecurity
@@ -38,13 +39,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         .and()
             .logout()
         	.deleteCookies("JSESSIONID")
+        	.logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
         	.logoutSuccessUrl("/")
             .permitAll()
         //Configuramos los permisos de cada ruta
         .and()
             .authorizeRequests()
-            .antMatchers("/", "/home").permitAll()
-            .anyRequest().authenticated()
+            .antMatchers("/admin","/admin/**").hasRole("ADMIN")//Panel de administracion
+            .antMatchers("/static/**","/webjars/**").permitAll()//Recursos estaticos
+            .antMatchers("/**").permitAll()//El resto esta abierto
         //Activamos csrf para controlar la procedencia de los formularios
         .and()
         	.csrf();
