@@ -1,4 +1,4 @@
-package com.ucm.ilsa.veterinaria.tratamiento.impl;
+package com.ucm.ilsa.veterinaria.business.tratamiento.impl;
 
 import java.util.Date;
 import java.util.List;
@@ -10,13 +10,13 @@ import org.springframework.stereotype.Component;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
+import com.ucm.ilsa.veterinaria.business.event.alerta.TodoAlertEvent;
+import com.ucm.ilsa.veterinaria.business.event.config.EventBusFactoryBean;
+import com.ucm.ilsa.veterinaria.business.event.tratamiento.FeedUpdateEvent;
+import com.ucm.ilsa.veterinaria.business.recuperacion.impl.FeedScrapingImpl;
+import com.ucm.ilsa.veterinaria.business.tratamiento.IntfTratamiento;
 import com.ucm.ilsa.veterinaria.domain.News;
-import com.ucm.ilsa.veterinaria.event.alerta.TodoAlertEvent;
-import com.ucm.ilsa.veterinaria.event.config.EventBusFactoryBean;
-import com.ucm.ilsa.veterinaria.event.tratamiento.FeedUpdateEvent;
-import com.ucm.ilsa.veterinaria.recuperacion.impl.FeedScrapingImpl;
 import com.ucm.ilsa.veterinaria.repository.FeedRepository;
-import com.ucm.ilsa.veterinaria.tratamiento.IntfTratamiento;
 
 @Component
 public class TodoTratamiento implements IntfTratamiento<FeedUpdateEvent> {

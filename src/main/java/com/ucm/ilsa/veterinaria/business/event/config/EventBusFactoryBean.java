@@ -1,4 +1,4 @@
-package com.ucm.ilsa.veterinaria.event.config;
+package com.ucm.ilsa.veterinaria.business.event.config;
 
 import java.util.List;
 import java.util.concurrent.Executor;
@@ -11,8 +11,8 @@ import org.springframework.stereotype.Component;
 
 import com.google.common.eventbus.AsyncEventBus;
 import com.google.common.eventbus.EventBus;
-import com.ucm.ilsa.veterinaria.event.IntfEventListener;
-import com.ucm.ilsa.veterinaria.tratamiento.IntfTratamiento;
+import com.ucm.ilsa.veterinaria.business.event.IntfEventListener;
+import com.ucm.ilsa.veterinaria.business.tratamiento.IntfTratamiento;
 
 @Component
 public class EventBusFactoryBean implements FactoryBean<EventBus> {

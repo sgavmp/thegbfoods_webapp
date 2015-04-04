@@ -1,4 +1,4 @@
-package com.ucm.ilsa.veterinaria.recuperacion.helper;
+package com.ucm.ilsa.veterinaria.business.recuperacion.helper;
 
 import java.io.IOException;
 import java.text.ParseException;
@@ -13,10 +13,11 @@ import org.springframework.stereotype.Component;
 
 import com.rometools.rome.feed.synd.SyndContent;
 import com.rometools.rome.feed.synd.SyndEntry;
+import com.ucm.ilsa.veterinaria.business.recuperacion.impl.FeedScrapingImpl;
 import com.ucm.ilsa.veterinaria.domain.Feed;
 import com.ucm.ilsa.veterinaria.domain.News;
+import com.ucm.ilsa.veterinaria.domain.PairValues;
 import com.ucm.ilsa.veterinaria.domain.builder.NewsBuilder;
-import com.ucm.ilsa.veterinaria.recuperacion.impl.FeedScrapingImpl;
 
 @Component
 public class FeedScrapingAsync {
@@ -47,25 +48,17 @@ public class FeedScrapingAsync {
 								+ news.getLink());
 				return null;
 			}
-			for (String attribute : feed.getSelectorHtml().keySet()) {
+			for (PairValues attribute : feed.getSelectorHtml()) {
 				try {
-					temp.setValueOf(
-							attribute,
-							doc.select(
-									feed.getSelectorHtml().get(
-											attribute)).text());
+					temp.setValueOf(attribute.getKey(),	doc.select(attribute.getValue()).text());
 				} catch (ParseException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
-			for (String attribute : feed.getSelectorMeta().keySet()) {
+			for (PairValues attribute : feed.getSelectorMeta()) {
 				try {
-					temp.setValueOf(
-							attribute,
-							doc.select(
-									feed.getSelectorMeta().get(
-											attribute)).attr("content"));
+					temp.setValueOf(attribute.getKey(),	doc.select(attribute.getValue()).attr("content"));
 				} catch (ParseException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

@@ -1,4 +1,4 @@
-package com.ucm.ilsa.veterinaria.alerta.imp;
+package com.ucm.ilsa.veterinaria.business.alerta.imp;
 
 import java.util.List;
 
@@ -8,13 +8,13 @@ import org.springframework.stereotype.Component;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-import com.ucm.ilsa.veterinaria.alerta.IntfAlerta;
+import com.ucm.ilsa.veterinaria.business.alerta.IntfAlerta;
+import com.ucm.ilsa.veterinaria.business.event.alerta.TodoAlertEvent;
+import com.ucm.ilsa.veterinaria.business.tratamiento.impl.TodoTratamiento;
 import com.ucm.ilsa.veterinaria.domain.Alert;
 import com.ucm.ilsa.veterinaria.domain.AlertLevel;
 import com.ucm.ilsa.veterinaria.domain.News;
-import com.ucm.ilsa.veterinaria.event.alerta.TodoAlertEvent;
 import com.ucm.ilsa.veterinaria.repository.AlertRepository;
-import com.ucm.ilsa.veterinaria.tratamiento.impl.TodoTratamiento;
 
 @Component
 public class TodoAlerta implements IntfAlerta<TodoAlertEvent> {

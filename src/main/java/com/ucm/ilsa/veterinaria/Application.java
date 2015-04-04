@@ -21,7 +21,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import com.google.common.eventbus.EventBus;
-import com.ucm.ilsa.veterinaria.tratamiento.IntfTratamiento;
+import com.ucm.ilsa.veterinaria.business.tratamiento.IntfTratamiento;
 
 @SpringBootApplication
 @ComponentScan("com.ucm.ilsa.veterinaria")

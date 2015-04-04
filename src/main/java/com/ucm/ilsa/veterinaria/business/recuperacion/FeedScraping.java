@@ -1,4 +1,4 @@
-package com.ucm.ilsa.veterinaria.recuperacion;
+package com.ucm.ilsa.veterinaria.business.recuperacion;
 
 import java.util.List;
 import java.util.concurrent.Future;

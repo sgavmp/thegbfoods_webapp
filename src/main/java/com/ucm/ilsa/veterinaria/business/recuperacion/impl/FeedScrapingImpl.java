@@ -1,4 +1,4 @@
-package com.ucm.ilsa.veterinaria.recuperacion.impl;
+package com.ucm.ilsa.veterinaria.business.recuperacion.impl;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -39,13 +39,14 @@ import com.rometools.rome.feed.synd.SyndFeed;
 import com.rometools.rome.io.FeedException;
 import com.rometools.rome.io.SyndFeedInput;
 import com.rometools.rome.io.XmlReader;
+import com.ucm.ilsa.veterinaria.business.event.config.EventBusFactoryBean;
+import com.ucm.ilsa.veterinaria.business.event.tratamiento.FeedUpdateEvent;
+import com.ucm.ilsa.veterinaria.business.recuperacion.FeedScraping;
+import com.ucm.ilsa.veterinaria.business.recuperacion.helper.FeedScrapingAsync;
 import com.ucm.ilsa.veterinaria.domain.Feed;
 import com.ucm.ilsa.veterinaria.domain.News;
+import com.ucm.ilsa.veterinaria.domain.PairValues;
 import com.ucm.ilsa.veterinaria.domain.builder.NewsBuilder;
-import com.ucm.ilsa.veterinaria.event.config.EventBusFactoryBean;
-import com.ucm.ilsa.veterinaria.event.tratamiento.FeedUpdateEvent;
-import com.ucm.ilsa.veterinaria.recuperacion.FeedScraping;
-import com.ucm.ilsa.veterinaria.recuperacion.helper.FeedScrapingAsync;
 import com.ucm.ilsa.veterinaria.repository.FeedRepository;
 
 @Repository
@@ -116,7 +117,6 @@ public class FeedScrapingImpl implements FeedScraping {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			Integer limit = feed.getLimitNews();
 			List<Future<News>> listaTareas = new ArrayList<Future<News>>();
 			boolean isFirst = true;
 			String linkLastNews = "";
@@ -135,9 +135,6 @@ public class FeedScrapingImpl implements FeedScraping {
 					}
 				}
 				listaTareas.add(asyncService.asyncGetNewsWithRSS(feed,news));
-				limit--;
-				if (limit == 0)
-					break;
 			}
 			feed.setLastNewsLink(linkLastNews);
 			repositoryFeed.save(feed);
@@ -161,20 +158,14 @@ public class FeedScrapingImpl implements FeedScraping {
 	private List<News> scrapingWithOutRSS(Feed feed) {
 		List<News> listNews = new ArrayList<News>();
 		if (feed.getUrlNews() != null) {
-			Integer numPage = (feed.getLimitNews() / feed.getNewsPerPage());
-			numPage = numPage == 0 ? 1 : numPage;
-			Integer numNews = feed.getLimitNews();
-			String nextPage = feed.getPageLink();
-			for (int i = 1; i <= numPage; i++) {
 				Document doc = null;
 				try {
-					doc = Jsoup.connect(nextPage + i).get();
+					doc = Jsoup.connect(feed.getUrlNews()).get();
 				} catch (IOException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
-				Elements newsLinks = doc.select(feed.getSelectorPagination()
-						.get("newsLink"));
+				Elements newsLinks = doc.select(feed.getNewsLink());
 				boolean isFirst = true;
 				String linkLastNews = "";
 				for (Element link : newsLinks) {
@@ -204,38 +195,24 @@ public class FeedScrapingImpl implements FeedScraping {
 					}
 					NewsBuilder temp = new NewsBuilder(feed);
 					temp.setUrl(linkNews);
-					for (String attribute : feed.getSelectorHtml().keySet()) {
+					for (PairValues attribute : feed.getSelectorHtml()) {
 						try {
-							temp.setValueOf(
-									attribute,
-									newsPage.select(
-											feed.getSelectorHtml().get(
-													attribute)).text());
+							temp.setValueOf(attribute.getKey(),	newsPage.select(attribute.getValue()).text());
 						} catch (ParseException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
 					}
-					for (String attribute : feed.getSelectorMeta().keySet()) {
+					for (PairValues attribute : feed.getSelectorMeta()) {
 						try {
-							temp.setValueOf(
-									attribute,
-									newsPage.select(
-											feed.getSelectorMeta().get(
-													attribute)).attr("content"));
+							temp.setValueOf(attribute.getKey(),	newsPage.select(attribute.getValue()).attr("content"));
 						} catch (ParseException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
 					}
 					listNews.add(temp.build());
-					numNews--;
-					if (numNews == 0)
-						break;
 				}
-				if (numNews == 0)
-					break;
-			}
 		}
 		return listNews;
 	}

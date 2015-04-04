@@ -1,19 +1,19 @@
-package com.ucm.ilsa.veterinaria.event.alerta;
+package com.ucm.ilsa.veterinaria.business.event.tratamiento;
 
 import java.util.Date;
 import java.util.List;
 
+import com.ucm.ilsa.veterinaria.business.event.Event;
 import com.ucm.ilsa.veterinaria.domain.Feed;
 import com.ucm.ilsa.veterinaria.domain.News;
-import com.ucm.ilsa.veterinaria.event.Event;
 
-public class TodoAlertEvent extends Event {
+public class FeedUpdateEvent extends Event {
 	
 	private Feed feed;
-	private List<News> news;
+	private List<News> listNews;
 	private Date date;
 	
-	public TodoAlertEvent() {
+	public FeedUpdateEvent() {
 	
 	}
 
@@ -25,14 +25,6 @@ public class TodoAlertEvent extends Event {
 		this.feed = feed;
 	}
 
-	public List<News> getNews() {
-		return news;
-	}
-
-	public void setNews(List<News> news) {
-		this.news = news;
-	}
-
 	public Date getDate() {
 		return date;
 	}
@@ -41,4 +33,12 @@ public class TodoAlertEvent extends Event {
 		this.date = date;
 	}
 
+	public List<News> getListNews() {
+		return listNews;
+	}
+
+	public void setListNews(List<News> listNews) {
+		this.listNews = listNews;
+	}
+	
 }
