@@ -76,7 +76,7 @@ public class FeedScrapingImpl implements FeedScraping {
 			newsList = scrapingWithOutRSS(feed);
 		}
 		if (!newsList.isEmpty()) {
-			// Ordenamos por fecha de publicación
+			// Ordenamos por fecha de publicacion
 			Collections.sort(newsList, News.Comparators.PUBDATE);
 		}
 		//Informamos a todos los tratamientos de la actualizacion
@@ -128,6 +128,7 @@ public class FeedScrapingImpl implements FeedScraping {
 					// sistema) devolvemos la lista (puede estar vacia)
 					if (!feed.getLastNewsLink().isEmpty()
 							&& feed.getLastNewsLink().equals(news.getLink())) {
+						linkLastNews=feed.getLastNewsLink();
 						break;
 					} else if (isFirst) {
 						linkLastNews = news.getLink();

@@ -44,7 +44,7 @@ public class FeedScrapingAsync {
 				doc = Jsoup.connect(news.getLink()).get();
 			} catch (IOException e) {
 				System.out
-						.println("Error al acceder a la dirección URL: "
+						.println("Error al acceder a la direccion URL: "
 								+ news.getLink());
 				return null;
 			}

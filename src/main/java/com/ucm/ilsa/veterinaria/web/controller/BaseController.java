@@ -11,8 +11,8 @@ import com.ucm.ilsa.veterinaria.domain.Alert;
 
 public abstract class BaseController {
 	
-	private List<String> info;
-	private List<String> error;
+	private static List<String> info = new ArrayList<String>();
+	private static List<String> error = new ArrayList<String>();
 	//Indica al template el menu que tiene que activar
 	protected String menu="";
 	
@@ -40,12 +40,12 @@ public abstract class BaseController {
 		this.error = new ArrayList<String>();
 	}
 	
-	protected void putInfoMessage(String message) {
-		this.info.add(message);
+	public static void putInfoMessage(String message) {
+		info.add(message);
 	}
 	
-	protected void putErrorMessage(String message) {
-		this.error.add(message);
+	public static void putErrorMessage(String message) {
+		error.add(message);
 	}
 
 }
