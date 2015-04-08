@@ -42,41 +42,8 @@ public class FeedServiceImpl implements FeedService {
 	
 	@Autowired
 	public FeedServiceImpl(FeedRepository repositoryFeed, FeedScraping scrapingFeed) {
-		//Feed 1
-		Feed site1 = new Feed();
-//		site1.setUrl("http://www.efsa.europa.eu/");
-//		site1.setUrlRSS("http://www.efsa.europa.eu/en/press/rss");
-//		site1.setLastNewsLink("http://www.efsa.europa.eu/en/press/news/150309.htm?utm_source=feed&utm_medium=rss&utm_campaign=prwns");
-//		site1.setName("EFSA");
-//		site1.setWithRSS(true);
-//		site1.setCodeName("efsa");
-//		site1.setDateFormat("dd MMMM yyyy");
-//		site1.setLanguaje(Locale.ENGLISH);
-//		site1.getSelectorMeta().add(new PairValues("description", "meta[property=og:description]"));
-//		site1.getSelectorHtml().add(new PairValues("pubDate", "span.dates"));
-//		site1.getSelectorHtml().add(new PairValues("content", "div.chapo p, div.newspr-detail > p"));
-//		site1.setUseSelector(true);
-//		//Feed 2
-//		Feed site2 = new Feed();
-//		site2.setUrl("http://www.ecdc.europa.eu");
-//		site2.setDateFormat("dd MMMM yyyy");
-//		site2.setLanguaje(Locale.ENGLISH);
-//		site2.setName("ECDC");
-//		site2.setCodeName("ecdc");
-//		site2.setUrlNews("http://www.ecdc.europa.eu/en/press/news/Pages/News.aspx");
-//		site2.setNewsLink("div.ECDCNewsContent div.ECDCNewsTitle a, div.ECDCNewsContentNoImage div.ECDCNewsTitle a");
-//		site2.getSelectorHtml().add(new PairValues("title", "h1"));
-//		site2.getSelectorHtml().add(new PairValues("pubDate", "div.date"));
-//		site2.getSelectorHtml().add(new PairValues("content", "div.content"));
-//		this.test = new ArrayList<Feed>();
-//		test.add(site1);
-//		test.add(site2);
 		this.repositoryFeed = repositoryFeed;
 		this.scrapingFeed = scrapingFeed;
-//		this.repositoryFeed.save(test);
-		site1=this.repositoryFeed.findOne("efsa");
-		site1.setName("efs43");
-		this.repositoryFeed.save(site1);
 	}
 
 	@Override

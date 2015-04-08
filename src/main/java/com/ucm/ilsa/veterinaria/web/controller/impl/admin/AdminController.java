@@ -64,7 +64,7 @@ public class AdminController extends BaseController {
 		return "redirect:/admin/feeds/get/"+feedP.getCodeName()+"/edit";
 	}
 	
-	@RequestMapping(value="/feeds/get/{code	Name}/edit", method=RequestMethod.GET)
+	@RequestMapping(value="/feeds/get/{codeName}/edit", method=RequestMethod.GET)
 	public String formEditFeed(Model model, @PathVariable ("codeName") Feed feedP) {
 		model.addAttribute("feed", new FeedForm(feedP));
 		return "feedForm";
