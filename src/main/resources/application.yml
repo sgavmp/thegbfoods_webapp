@@ -9,7 +9,7 @@ spring:
 spring:
   profiles: production
   datasource:
-    jndi-name: java:comp/env/jdbc/Veterinaria
+    jndi-name: java:comp/env/jdbc/veterinaria
     driverClassName: com.mysql.jdbc.Driver
   jpa:
     hibernate:
