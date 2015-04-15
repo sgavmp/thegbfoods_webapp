@@ -13,6 +13,7 @@ import com.google.common.collect.Lists;
 import com.ucm.ilsa.veterinaria.domain.Alert;
 import com.ucm.ilsa.veterinaria.domain.Feed;
 import com.ucm.ilsa.veterinaria.repository.AlertRepository;
+import com.ucm.ilsa.veterinaria.service.impl.AlertServiceImpl;
 import com.ucm.ilsa.veterinaria.web.controller.BaseController;
 
 @Controller
@@ -23,23 +24,25 @@ public class AlertController extends BaseController {
 		this.menu = "alerts";
 	}
 	
-	//TODO cambiar por un servicio
 	@Autowired
-	private AlertRepository repository;
+	private AlertServiceImpl service;
 	
-	@ModelAttribute("alerts")
-	public List<Alert> getAllFeeds() {
-		return repository.readAllByCheckIsFalseOrderByDatePubDesc();
+	@ModelAttribute("alertsUncheck")
+	public List<Alert> getAllAlertsUnchecked() {
+		return service.getAllAlertUnchecked();
+	}
+	
+	@ModelAttribute("alertsCheck")
+	public List<Alert> getAllAlertsChecked() {
+		return service.getAllAlertChecked();
 	}
 	
 	@RequestMapping("/get/{idAlert}/check")
 	public String checkAlert(Model model, @PathVariable ("idAlert") Alert alert) {
-		alert.setCheck(true);
-		repository.save(alert);
+		service.checkAlert(alert);
 		putInfoMessage("Alerta revisada");
 		return "redirect:/alerts";
 	}
-	
 
 	@RequestMapping("**")
 	public String getAllAlerts() {

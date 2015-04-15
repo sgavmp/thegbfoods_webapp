@@ -4,33 +4,116 @@
 </head>
 <body>
 	<header th:include="base :: header"> </header>
-	<main class="container">
+	<section class="container" th:fragment="alerts">
 		<!--  Cuando no hay alertas -->
-		<div th:if="${#lists.isEmpty(alerts)}" class="watermark">
+		<div th:if="${#lists.isEmpty(alertsUncheck) and #lists.isEmpty(alertsCheck)}" class="watermark">
 			<h5>No hay alertas.</h5>
 		</div>
 		<!--  Cuando hay alertas -->
-		<h1 th:if="${alerts}!=null">Listado de alertas</h1>
-		<div th:if="${alerts}!=null" th:each="alert : ${alerts}" class="row">
+		<div th:if="${!#lists.isEmpty(alertsUncheck) or !#lists.isEmpty(alertsCheck)}" class="row">
 			<div class="col s12">
-				<div class="card blue-grey darken-1">
-					<div class="card-content white-text">
-						<span th:inline="text" class="card-title">[[${alert.title}]] <a th:href="@{/alerts/get/{id}/check(id=${alert.id})}" href="#"><i class="mdi-navigation-check right tooltipped" data-position="bottom" data-delay="50" data-tooltip="Marcar como revisada"></i></a><a href="#"><i class="mdi-content-add activator right tooltipped" data-position="bottom" data-delay="50" data-tooltip="Ver resumen"></i></a></span>
-						<p>Sitio: <span th:text="${alert.site.name}">Nombre del sitio</span></p>
-						<p>Enlace: <span><a th:text="${alert.link}" th:href="${alert.link}" href="http://www.google.es">Enlace</a></span></p>
-						<p>Fecha de publicación: <span th:text="${alert.datePub}">Fecha de publicacion</span></p>
+				<ul class="tabs transparent">
+					<li class="tab col s3"><a class="active" href="#uncheck">Alertas
+							sin resolver</a></li>
+					<li class="tab col s3"><a href="#check">Alertas resultas</a></li>
+				</ul>
+			</div>
+			<!-- Pestaña alertas activas -->
+			<div id="uncheck" class="row">
+				<div th:if="${#lists.isEmpty(alertsUncheck)}" class="watermark">
+					<h5>No hay alertas sin resolver.</h5>
+				</div>
+				<div class="col s12" th:each="alert : ${alertsUncheck}">
+					<div class="card blue-grey darken-1">
+						<div class="card-content white-text">
+							<span th:inline="text" class="card-title">[[${alert.title}]]
+								<a sec:authorize="isAuthenticated()" th:href="@{/alerts/get/{id}/check(id=${alert.id})}" href="#"><i
+									class="mdi-navigation-check right tooltipped"
+									data-position="bottom" data-delay="50"
+									data-tooltip="Marcar como revisada"></i></a><a href="#"><i
+									class="mdi-content-add activator right tooltipped"
+									data-position="bottom" data-delay="50"
+									data-tooltip="Ver resumen"></i></a>
+							</span>
+							<p>
+								Sitio: <span th:text="${alert.site.name}">Nombre del
+									sitio</span>
+							</p>
+							<p>
+								Enlace: <span><a th:href="${alert.link}"
+									href="http://www.google.es">Ver sitio <i
+										class="mdi-content-link tooltipped" data-position="bottom"
+										data-delay="50" th:attr="data-tooltip=${alert.link}"
+										data-tooltip="URL del enlace"></i></a></span>
+							</p>
+							<p>
+								Fecha de publicaci&oacute;n: <span th:text="${alert.datePub}">Fecha
+									de publicacion</span>
+							</p>
+						</div>
+						<div class="card-action">
+							<a
+								th:href="@{/feeds/get/{codeName}(codeName=${alert.site.codeName})}"
+								href="#">Ver mas alertas del mismo sitio</a>
+						</div>
+						<div class="card-reveal">
+							<span th:inline="text" class="card-title grey-text text-darken-4">[[${alert.title}]]
+								<i class="mdi-navigation-close right"></i>
+							</span>
+							<p th:text="${alert.infoAlert}">Descripción</p>
+						</div>
 					</div>
-					<div class="card-action">
-		              <a th:href="@{/feeds/get/{codeName}(codeName=${alert.site.codeName})}" href="#">Ver mas alertas del mismo sitio</a>
-		            </div>
-					<div class="card-reveal">
-          				<span th:inline="text" class="card-title grey-text text-darken-4">[[${alert.title}]] <i class="mdi-navigation-close right"></i></span>
-          				<p th:text="${alert.infoAlert}">Descripción</p>
-        			</div>
+				</div>
+			</div>
+			<!-- Pestaña alertas resueltas -->
+			<div id="check" class="row">
+				<div th:if="${#lists.isEmpty(alertsCheck)}" class="watermark">
+					<h5>No hay alertas resueltas.</h5>
+				</div>
+				<div class="col s12" th:each="alert : ${alertsCheck}">
+					<div class="card blue-grey darken-1">
+						<div class="card-content white-text">
+							<span th:inline="text" class="card-title">[[${alert.title}]]
+								<a sec:authorize="isAuthenticated()" th:href="@{/alerts/get/{id}/delete(id=${alert.id})}" href="#"><i
+									class="mdi-action-delete right tooltipped"
+									data-position="bottom" data-delay="50"
+									data-tooltip="Borrar alerta"></i></a><a href="#"><i
+									class="mdi-content-add activator right tooltipped"
+									data-position="bottom" data-delay="50"
+									data-tooltip="Ver resumen"></i></a>
+							</span>
+							<p>
+								Sitio: <span th:text="${alert.site.name}">Nombre del
+									sitio</span>
+							</p>
+							<p>
+								Enlace: <span><a th:href="${alert.link}"
+									href="http://www.google.es">Ver sitio <i
+										class="mdi-content-link tooltipped" data-position="bottom"
+										data-delay="50" th:attr="data-tooltip=${alert.link}"
+										data-tooltip="URL del enlace"></i></a></span>
+							</p>
+							<p>
+								Fecha de publicaci&oacute;n: <span th:text="${alert.datePub}">Fecha
+									de publicacion</span>
+							</p>
+						</div>
+						<div class="card-action">
+							<a
+								th:href="@{/feeds/get/{codeName}(codeName=${alert.site.codeName})}"
+								href="#">Ver mas alertas del mismo sitio</a>
+						</div>
+						<div class="card-reveal">
+							<span th:inline="text" class="card-title grey-text text-darken-4">[[${alert.title}]]
+								<i class="mdi-navigation-close right"></i>
+							</span>
+							<p th:text="${alert.infoAlert}">Descripción</p>
+						</div>
+					</div>
 				</div>
 			</div>
 		</div>
-	</main>
+	</section>
 	<footer th:include="base :: footer"> </footer>
 </body>
 </html>

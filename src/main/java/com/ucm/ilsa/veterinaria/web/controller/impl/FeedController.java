@@ -17,6 +17,7 @@ import com.ucm.ilsa.veterinaria.domain.Feed;
 import com.ucm.ilsa.veterinaria.domain.FeedForm;
 import com.ucm.ilsa.veterinaria.domain.News;
 import com.ucm.ilsa.veterinaria.service.FeedService;
+import com.ucm.ilsa.veterinaria.service.impl.AlertServiceImpl;
 import com.ucm.ilsa.veterinaria.web.controller.BaseController;
 
 @Controller
@@ -29,6 +30,8 @@ public class FeedController extends BaseController {
 	
 	@Autowired
 	private FeedService serviceFeed;
+	@Autowired
+	private AlertServiceImpl serviceAlert;
 	
 	
 	@ModelAttribute("feeds")
@@ -44,6 +47,8 @@ public class FeedController extends BaseController {
 	@RequestMapping("/get/{codeName}")
 	public String getAllNewsByFeed(Model model, @PathVariable ("codeName") Feed feed) {
 		model.addAttribute(feed);
+		model.addAttribute("alertsCheck", serviceAlert.getAllAlertCheckedByFeed(feed));
+		model.addAttribute("alertsUncheck", serviceAlert.getAllAlertUncheckedByFeed(feed));
 		return "oneFeed";
 	}
 	

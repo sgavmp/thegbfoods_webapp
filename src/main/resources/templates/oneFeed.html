@@ -4,33 +4,34 @@
 </head>
 <body>
 	<header th:include="base :: header"> </header>
-	<main class="container">
-
-	<div class="row">
-		<div class="col s12">
-			<div class="card blue-grey darken-1">
-				<div class="card-content white-text">
-					<span sec:authorize="!hasRole('ROLE_ADMIN')" th:inline="text" class="card-title">[[${feed.name}]]</span>
-					<span sec:authorize="hasRole('ROLE_ADMIN')" th:inline="text" class="card-title">[[${feed.name}]]<a th:href="@{/admin/feeds/get/{codeName}/remove(codeName=${feed.codeName})}" href="#"><i class="mdi-action-delete right tooltipped" data-position="bottom" data-delay="50" data-tooltip="Borrar"></i></a><a th:href="@{/admin/feeds/get/{codeName}/edit(codeName=${feed.codeName})}" href="#"><i class="mdi-editor-mode-edit right tooltipped" data-position="bottom" data-delay="50" data-tooltip="Editar"></i></a></span>
-					<p>Mas información sobre el sitio</p>
-				</div>
-				<div class="card-action">
-					<a th:href="@{/admin/feeds/get/{codeName}/update(codeName=${feed.codeName})}" href="#">Actualizar</a>
+	<section class="container">
+		<div class="row">
+			<div class="col s12">
+				<div class="card blue-grey darken-1">
+					<div class="card-content white-text">
+						<span sec:authorize="!hasRole('ROLE_ADMIN')" th:inline="text"
+							class="card-title">[[${feed.name}]]</span> <span
+							sec:authorize="hasRole('ROLE_ADMIN')" th:inline="text"
+							class="card-title">[[${feed.name}]]<a
+							th:href="@{/admin/feeds/get/{codeName}/remove(codeName=${feed.codeName})}"
+							href="#"><i class="mdi-action-delete right tooltipped"
+								data-position="bottom" data-delay="50" data-tooltip="Borrar"></i></a><a
+							th:href="@{/admin/feeds/get/{codeName}/edit(codeName=${feed.codeName})}"
+							href="#"><i class="mdi-editor-mode-edit right tooltipped"
+								data-position="bottom" data-delay="50" data-tooltip="Editar"></i></a></span>
+						<p>Mas informaci&oacute;n sobre el sitio</p>
+					</div>
+					<div class="card-action">
+						<a
+							th:href="@{/admin/feeds/get/{codeName}/update(codeName=${feed.codeName})}"
+							href="#">Actualizar</a>
+					</div>
 				</div>
 			</div>
 		</div>
-	</div>
-	<h1 th:if="${newsList}!=null">Listado de noticias almacenadas</h1>
-	<div th:if="${newsList}!=null" th:each="news : ${newsList}" class="row">
-		<div class="col s12">
-			<div class="card">
-				<div class="card-content">
-					<span th:text="${news.title}" class="card-title">Card Title</span>
-					<p th:text="${news.description}">Descripción</p>
-				</div>
-			</div>
-		</div>
-	</div>
+		<section th:include="alerts :: alerts">
+		</section>
+		<!--  
 	<h1 th:if="${newsListAdd}!=null">Nuevas noticias añadidas</h1>
 	<div th:if="${newsListAdd}!=null" th:each="news : ${newsListAdd}" class="row">
 		<div class="col s12">
@@ -42,9 +43,9 @@
 			</div>
 		</div>
 	</div>
+	-->
 
-
-	</main>
+	</section>
 	<footer th:include="base :: footer"> </footer>
 </body>
 </html>
