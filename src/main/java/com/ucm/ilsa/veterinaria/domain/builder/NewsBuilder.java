@@ -19,6 +19,9 @@ public class NewsBuilder {
 		this.news.setSite(feed.getCodeName());
 		this.dateFormat = feed.getDateFormat();
 		this.locale = feed.getLanguaje();
+		if (this.locale==null) {
+			this.locale= new Locale("es", "ES");
+		}
 	}
 	
 	public News build() {

@@ -19,11 +19,14 @@ public class SchedulerService {
 	private TaskScheduler   scheduler;
 	private FeedService serviceFeed;
 	private Map<String,ScheduledFuture<?>> tasks = Maps.newLinkedHashMap();
+	private static final int HOUR_MILIS = 3600000;
+
 	
 	@Autowired
 	public SchedulerService(FeedService service, TaskScheduler scheduler) {
 		this.scheduler = scheduler;
 		this.serviceFeed = service;
+		service.setSchedulerService(this);
 		init();
 	}
 	
@@ -31,7 +34,7 @@ public class SchedulerService {
 		List<Feed> listFeeds = serviceFeed.getAllFeed();
 		for (Feed feed : listFeeds) {
 			TaskContainer task = new TaskContainer(feed,serviceFeed);
-			ScheduledFuture<?> futureTask = scheduler.scheduleWithFixedDelay(task, 600000);
+			ScheduledFuture<?> futureTask = scheduler.scheduleWithFixedDelay(task, HOUR_MILIS * 6);
 			tasks.put(feed.getCodeName(), futureTask);
 		}
 	}
@@ -46,7 +49,13 @@ public class SchedulerService {
 		ScheduledFuture<?> futureTask = tasks.get(feed.getCodeName());
 		futureTask.cancel(true);
 		TaskContainer task = new TaskContainer(feed,serviceFeed);
-		futureTask = scheduler.scheduleWithFixedDelay(task, 600000);
+		futureTask = scheduler.scheduleWithFixedDelay(task, HOUR_MILIS * 6);
+		tasks.put(feed.getCodeName(),futureTask);
+	}
+	
+	public void addFeedTask(Feed feed) {
+		TaskContainer task = new TaskContainer(feed,serviceFeed);
+		ScheduledFuture<?> futureTask = scheduler.scheduleWithFixedDelay(task, HOUR_MILIS * 6);
 		tasks.put(feed.getCodeName(),futureTask);
 	}
 	

@@ -31,20 +31,18 @@ import com.ucm.ilsa.veterinaria.domain.News;
 import com.ucm.ilsa.veterinaria.domain.PairValues;
 import com.ucm.ilsa.veterinaria.domain.builder.NewsBuilder;
 import com.ucm.ilsa.veterinaria.repository.FeedRepository;
+import com.ucm.ilsa.veterinaria.scheduler.SchedulerService;
 import com.ucm.ilsa.veterinaria.service.FeedService;
 
 @Service
 public class FeedServiceImpl implements FeedService {
 	
-	private FeedRepository repositoryFeed;
-	private FeedScraping scrapingFeed;
-	private List<Feed> test;
-	
 	@Autowired
-	public FeedServiceImpl(FeedRepository repositoryFeed, FeedScraping scrapingFeed) {
-		this.repositoryFeed = repositoryFeed;
-		this.scrapingFeed = scrapingFeed;
-	}
+	private FeedRepository repositoryFeed;
+	@Autowired
+	private FeedScraping scrapingFeed;
+	
+	private SchedulerService schedulerService;
 
 	@Override
 	public List<News> scrapFeed(Feed feed) {
@@ -64,15 +62,31 @@ public class FeedServiceImpl implements FeedService {
 	@Override
 	public Feed createFeed(Feed feed) {
 		feed = repositoryFeed.save(feed);
-		scrapFeed(feed);
+		schedulerService.addFeedTask(feed);
 		return feed;
 	}
 
 	@Override
 	public boolean removeFeed(Feed feed) {
+		schedulerService.removeFeedTask(feed);
 		this.repositoryFeed.delete(feed);
 		return !this.repositoryFeed.exists(feed.getCodeName());
 	}
+
+	@Override
+	public Feed updateFeed(Feed feed) {
+		Feed feedU = repositoryFeed.save(feed);
+		schedulerService.updateFeedTask(feed);
+		return feedU;
+	}
+
+	public SchedulerService getSchedulerService() {
+		return schedulerService;
+	}
+
+	public void setSchedulerService(SchedulerService schedulerService) {
+		this.schedulerService = schedulerService;
+	}	
 	
 	
 

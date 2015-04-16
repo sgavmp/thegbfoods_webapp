@@ -103,6 +103,9 @@ public class FeedScrapingImpl implements FeedScraping {
 							lastNews = news.getLink();
 							isFirst = false;
 						}
+					} else if(isFirst) {
+						lastNews = news.getLink();
+						isFirst = false;
 					}
 					listaTareas.add(asyncService
 							.asyncGetNewsWithRSS(feed, news));

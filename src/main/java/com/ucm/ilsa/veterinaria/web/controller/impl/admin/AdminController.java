@@ -76,6 +76,7 @@ public class AdminController extends BaseController {
 	        return "newsFeed";
 	    }
 		feedP.changeValues(feed);
+		serviceFeed.updateFeed(feedP);
 		model.addAttribute(new FeedForm(feedP));
 		return "feedForm";
 	}

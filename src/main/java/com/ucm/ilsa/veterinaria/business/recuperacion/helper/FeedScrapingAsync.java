@@ -40,9 +40,8 @@ public class FeedScrapingAsync {
 			}
 			if (!content.equals(""))
 				temp.setContent(content);
-			if (feed.isUseSelector()) {
-				Document doc = null;
-				doc = Jsoup.connect(news.getLink()).get();
+			if (feed.getSelectorHtml().size()>0 || feed.getSelectorMeta().size()>0) {
+				Document doc = Jsoup.connect(news.getLink()).get();
 				for (PairValues attribute : feed.getSelectorHtml()) {
 					temp.setValueOf(attribute.getKey(),
 							doc.select(attribute.getValue()).text());
