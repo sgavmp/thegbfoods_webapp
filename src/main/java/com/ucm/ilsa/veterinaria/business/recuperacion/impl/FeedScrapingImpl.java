@@ -4,36 +4,22 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executor;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-
-import javax.inject.Inject;
 
 import org.apache.log4j.Logger;
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.task.TaskExecutor;
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Repository;
 
-import com.google.common.eventbus.EventBus;
-import com.rometools.rome.feed.synd.SyndContent;
 import com.rometools.rome.feed.synd.SyndEntry;
 import com.rometools.rome.feed.synd.SyndFeed;
 import com.rometools.rome.io.FeedException;
@@ -45,20 +31,19 @@ import com.ucm.ilsa.veterinaria.business.recuperacion.FeedScraping;
 import com.ucm.ilsa.veterinaria.business.recuperacion.helper.FeedScrapingAsync;
 import com.ucm.ilsa.veterinaria.domain.Feed;
 import com.ucm.ilsa.veterinaria.domain.News;
-import com.ucm.ilsa.veterinaria.domain.PairValues;
-import com.ucm.ilsa.veterinaria.domain.builder.NewsBuilder;
 import com.ucm.ilsa.veterinaria.repository.FeedRepository;
 
 @Repository
 public class FeedScrapingImpl implements FeedScraping {
-	
-	private final static Logger LOGGER = Logger.getLogger(FeedScrapingImpl.class);
+
+	private final static Logger LOGGER = Logger
+			.getLogger(FeedScrapingImpl.class);
 
 	private FeedRepository repositoryFeed;
-	
+
 	@Autowired
 	private ThreadPoolTaskExecutor executorService;
-	
+
 	@Autowired
 	private FeedScrapingAsync asyncService;
 
@@ -79,96 +64,90 @@ public class FeedScrapingImpl implements FeedScraping {
 			// Ordenamos por fecha de publicacion
 			Collections.sort(newsList, News.Comparators.PUBDATE);
 		}
-		//Informamos a todos los tratamientos de la actualizacion
-		FeedUpdateEvent event = new FeedUpdateEvent();
-		event.setFeed(feed);
-		//event.setNumNews(newsList.size());
-		event.setDate(new Date(System.currentTimeMillis()));
-		event.setListNews(newsList);
-		EventBusFactoryBean.getInstance().post(event);
-		
+		// Solo se informa si se han obtenido nuevas noticias
+		if (newsList.size() > 0) {
+			// Informamos a todos los tratamientos de la actualizacion
+			FeedUpdateEvent event = new FeedUpdateEvent();
+			event.setFeed(feed);
+			event.setDate(new Date(System.currentTimeMillis()));
+			event.setListNews(newsList);
+			EventBusFactoryBean.getInstance().post(event);
+		}
 		return newsList;
 	}
 
 	private List<News> scrapingWhitRSS(Feed feed) {
-		List<News> listNews = new ArrayList<News>();
-		// open a connection to the rss feed
-		if (feed.getUrlRSS() != null) {
-			URL url = null;
-			try {
-				url = new URL(feed.getUrlRSS());
-			} catch (MalformedURLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			URLConnection conn = null;
-			try {
-				conn = url.openConnection();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-
-			SyndFeedInput input = new SyndFeedInput();
-			SyndFeed newsList = null;
-			try {
-				newsList = input.build(new XmlReader(conn.getInputStream()));
-			} catch (IllegalArgumentException | FeedException | IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			List<Future<News>> listaTareas = new ArrayList<Future<News>>();
-			boolean isFirst = true;
-			String linkLastNews = "";
-			for (SyndEntry news : newsList.getEntries()) {
-				// Vamos comprobando el link de la entrada con el enlace de la
-				// ultima noticia almacenada del feed
-				if (feed.getLastNewsLink() != null) {
-					// En caso de coincidencia (es decir que ya esta en el
-					// sistema) devolvemos la lista (puede estar vacia)
-					if (!feed.getLastNewsLink().isEmpty()
-							&& feed.getLastNewsLink().equals(news.getLink())) {
-						linkLastNews=feed.getLastNewsLink();
-						break;
-					} else if (isFirst) {
-						linkLastNews = news.getLink();
-						isFirst = false;
+		try {
+			List<News> listNews = new ArrayList<News>();
+			// open a connection to the rss feed
+			if (feed.getUrlRSS() != null) {
+				URL url = new URL(feed.getUrlRSS());
+				URLConnection conn = url.openConnection();
+				SyndFeedInput input = new SyndFeedInput();
+				SyndFeed newsList = input.build(new XmlReader(conn
+						.getInputStream()));
+				List<Future<News>> listaTareas = new ArrayList<Future<News>>();
+				boolean isFirst = true;
+				String lastNews = null;
+				for (SyndEntry news : newsList.getEntries()) {
+					// Vamos comprobando el link de la entrada con el enlace de
+					// la ultima noticia almacenada del feed
+					if (feed.getLastNewsLink() != null) {
+						// En caso de coincidencia (es decir que ya esta en el
+						// sistema) devolvemos la lista (puede estar vacia)
+						if (!feed.getLastNewsLink().isEmpty()
+								&& feed.getLastNewsLink()
+										.equals(news.getLink())) {
+							break;
+						} else if (isFirst) {
+							lastNews = news.getLink();
+							isFirst = false;
+						}
 					}
+					listaTareas.add(asyncService
+							.asyncGetNewsWithRSS(feed, news));
 				}
-				listaTareas.add(asyncService.asyncGetNewsWithRSS(feed,news));
-			}
-			feed.setLastNewsLink(linkLastNews);
-			repositoryFeed.save(feed);
-			for (Future<News> result : listaTareas) {
-				try {
-					if (result!=null) {
+				if (lastNews != null) {
+					feed.setLastNewsLink(lastNews);
+					repositoryFeed.save(feed);
+				}
+				for (Future<News> result : listaTareas) {
+					if (result != null) {
 						News temp = result.get();
-						if (temp!=null) 
+						if (temp != null)
 							listNews.add(temp);
 					}
-				} catch (InterruptedException | ExecutionException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
 				}
 			}
+			return listNews;
+		} catch (MalformedURLException e) {
+			LOGGER.error("Error al generar a la URL. Mas Info-> "
+					+ e.getMessage());
+			return null;
+		} catch (IOException e) {
+			LOGGER.error("No se ha podido acceder a la URL. Mas Info-> "
+					+ e.getMessage());
+			return null;
+		} catch (IllegalArgumentException | FeedException e) {
+			LOGGER.error("Error al obtener la informacion RSS. Mas Info-> "
+					+ e.getMessage());
+			return null;
+		} catch (InterruptedException | ExecutionException e) {
+			LOGGER.error("Error al acceder al resultado asincrono. Mas Info-> "
+					+ e.getMessage());
+			return null;
 		}
-		return listNews;
 	}
-	
 
 	private List<News> scrapingWithOutRSS(Feed feed) {
-		List<News> listNews = new ArrayList<News>();
-		if (feed.getUrlNews() != null) {
-				Document doc = null;
-				try {
-					doc = Jsoup.connect(feed.getUrlNews()).get();
-				} catch (IOException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
+		try {
+			List<News> listNews = new ArrayList<News>();
+			List<Future<News>> listaTareas = new ArrayList<Future<News>>();
+			if (feed.getUrlNews() != null) {
+				Document doc = Jsoup.connect(feed.getUrlNews()).get();
 				Elements newsLinks = doc.select(feed.getNewsLink());
 				boolean isFirst = true;
-				String linkLastNews = "";
+				String linkLastNews = null;
 				for (Element link : newsLinks) {
 					// Enlace de la noticia
 					String linkNews = link.absUrl("href");
@@ -179,43 +158,37 @@ public class FeedScrapingImpl implements FeedScraping {
 						// sistema) devolvemos la lista (puede estar vacia)
 						if (!feed.getLastNewsLink().isEmpty()
 								&& feed.getLastNewsLink().equals(linkNews)) {
-							feed.setLastNewsLink(linkLastNews);
-							repositoryFeed.save(feed);
-							return listNews;
+							break;
 						} else if (isFirst) {
 							linkLastNews = linkNews;
 							isFirst = false;
 						}
 					}
-					Document newsPage = null;
-					try {
-						newsPage = Jsoup.connect(linkNews).get();
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-					NewsBuilder temp = new NewsBuilder(feed);
-					temp.setUrl(linkNews);
-					for (PairValues attribute : feed.getSelectorHtml()) {
-						try {
-							temp.setValueOf(attribute.getKey(),	newsPage.select(attribute.getValue()).text());
-						} catch (ParseException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-					}
-					for (PairValues attribute : feed.getSelectorMeta()) {
-						try {
-							temp.setValueOf(attribute.getKey(),	newsPage.select(attribute.getValue()).attr("content"));
-						} catch (ParseException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-					}
-					listNews.add(temp.build());
+					listaTareas.add(asyncService.asyncGetNewsWithOutRSS(feed,
+							linkNews));
 				}
+				if (linkLastNews != null) {
+					feed.setLastNewsLink(linkLastNews);
+					repositoryFeed.save(feed);
+				}
+				for (Future<News> result : listaTareas) {
+					if (result != null) {
+						News temp = result.get();
+						if (temp != null)
+							listNews.add(temp);
+					}
+				}
+			}
+			return listNews;
+		} catch (IOException e) {
+			LOGGER.error("No se ha podido acceder a la URL. Mas Info-> "
+					+ e.getMessage());
+			return null;
+		} catch (InterruptedException | ExecutionException e) {
+			LOGGER.error("Error al acceder al resultado asincrono. Mas Info-> "
+					+ e.getMessage());
+			return null;
 		}
-		return listNews;
 	}
 
 }

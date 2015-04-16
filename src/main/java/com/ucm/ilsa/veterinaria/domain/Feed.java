@@ -13,6 +13,7 @@ import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
@@ -33,9 +34,9 @@ public class Feed extends BaseEntity {
 	private String codeName;
 	private String name;
 	private String url;
-	@ElementCollection
+	@ElementCollection(fetch=FetchType.EAGER)
 	private List<PairValues> selectorHtml;
-	@ElementCollection
+	@ElementCollection(fetch=FetchType.EAGER)
 	private List<PairValues> selectorMeta;
 	private String dateFormat;
 	private Locale languaje;

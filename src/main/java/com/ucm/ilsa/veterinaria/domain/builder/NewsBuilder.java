@@ -55,7 +55,7 @@ public class NewsBuilder {
 		return this;
 	}
 	
-	public NewsBuilder setValueOf(String attribute, String value) throws ParseException {
+	public NewsBuilder setValueOf(String attribute, String value) {
 		switch (attribute) {
 		case "title":
 			this.news.setTitle(value);

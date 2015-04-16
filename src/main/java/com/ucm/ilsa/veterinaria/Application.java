@@ -1,6 +1,5 @@
 package com.ucm.ilsa.veterinaria;
 
-import java.util.List;
 import java.util.concurrent.Executor;
 
 import org.springframework.aop.interceptor.AsyncUncaughtExceptionHandler;
@@ -8,20 +7,17 @@ import org.springframework.aop.interceptor.SimpleAsyncUncaughtExceptionHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.web.SpringBootServletInitializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.core.env.Environment;
-import org.springframework.oxm.castor.CastorMarshaller;
+import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.annotation.AsyncConfigurer;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
-
-import com.google.common.eventbus.EventBus;
-import com.ucm.ilsa.veterinaria.business.tratamiento.IntfTratamiento;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 
 @SpringBootApplication
 @ComponentScan("com.ucm.ilsa.veterinaria")
@@ -46,9 +42,18 @@ public class Application extends SpringBootServletInitializer implements AsyncCo
         ThreadPoolTaskExecutor taskExecutor = new ThreadPoolTaskExecutor();
         taskExecutor.setMaxPoolSize(4);
         taskExecutor.setCorePoolSize(4);
-        taskExecutor.setThreadNamePrefix("ILSAxecutor-");
+        taskExecutor.setThreadNamePrefix("ILSA-Async-");
         taskExecutor.initialize();
         return taskExecutor;
+    }
+    
+    @Bean
+    public TaskScheduler getSchedulerExecutor() {
+    	ThreadPoolTaskScheduler taskScheduler = new ThreadPoolTaskScheduler();
+    	taskScheduler.setPoolSize(4);
+    	taskScheduler.setThreadNamePrefix("ILSA-Scheduler-");
+        taskScheduler.initialize();
+        return taskScheduler;
     }
 	
 	@Override
