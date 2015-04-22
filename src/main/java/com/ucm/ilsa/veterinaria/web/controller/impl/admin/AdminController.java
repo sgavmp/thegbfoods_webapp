@@ -20,7 +20,9 @@ import com.ucm.ilsa.veterinaria.domain.Feed;
 import com.ucm.ilsa.veterinaria.domain.FeedForm;
 import com.ucm.ilsa.veterinaria.domain.News;
 import com.ucm.ilsa.veterinaria.domain.PairValues;
+import com.ucm.ilsa.veterinaria.domain.PlaceAlert;
 import com.ucm.ilsa.veterinaria.service.FeedService;
+import com.ucm.ilsa.veterinaria.service.impl.PlaceAlertService;
 import com.ucm.ilsa.veterinaria.web.controller.BaseController;
 
 @Controller
@@ -31,6 +33,9 @@ public class AdminController extends BaseController {
 	@Autowired
 	private FeedService serviceFeed;
 	
+	@Autowired
+	private PlaceAlertService serviceLocation;
+	
 	
 	public AdminController() {
 		this.menu = "admin";
@@ -39,6 +44,47 @@ public class AdminController extends BaseController {
 	@RequestMapping("**")
 	public String menuWeb(){
 		return PREFIX.concat("main");
+	}
+	
+	@RequestMapping("/locations")
+	public String getAllLocations(Model model) {
+		model.addAttribute("location", new PlaceAlert());
+		model.addAttribute("allLocations", serviceLocation.getAllLocations());
+		return "locations";
+	}
+	
+	@RequestMapping(value="/locations/create", method=RequestMethod.POST)
+	public String createLocation(Model model, @Valid PlaceAlert location,BindingResult result) {
+        if (result.hasErrors()) {
+            return "locations";
+        }
+		serviceLocation.createLocation(location);
+		putInfoMessage("Se ha a&ntilde;adido correctamente la localizaci$oacute;n");
+		return "redirect:/admin/locations";
+	}
+	
+	@RequestMapping(value = "/locations/get/{id}/edit", method=RequestMethod.GET)
+	public String getFormUpdateLocation(Model model, @PathVariable ("id") PlaceAlert location) {
+		model.addAttribute("location",location);
+		model.addAttribute("allLocations", serviceLocation.getAllLocations());
+		return "locations";
+	}
+	
+	@RequestMapping(value="/locations/get/{id}/edit", method=RequestMethod.POST)
+	public String updateLocation(Model model, @Valid PlaceAlert location, @PathVariable ("id") PlaceAlert before,BindingResult result) {
+        if (result.hasErrors() & location.getId().equals(before.getId())) {
+        	putErrorMessage("Hay un error en el formulario");
+            return "locations";
+        }
+		serviceLocation.createLocation(location);
+		putInfoMessage("Se ha a&ntilde;adido correctamente la localizaci&oacute;n");
+		return "redirect:/admin/locations";
+	}
+	
+	@RequestMapping(value = "/locations/get/{id}/remove", method=RequestMethod.GET)
+	public String updateNewsByFeed(Model model, @PathVariable ("id") PlaceAlert location) {
+		serviceLocation.removeLocation(location);
+		return "redirect:/admin/locations";
 	}
 	
 	@RequestMapping("/feeds/get/{codeName}/update")

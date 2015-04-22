@@ -18,6 +18,7 @@
 		<!-- Dropdown Structure -->
 		<ul id="dropdown1" class="dropdown-content">
 		  <li><a th:href="@{/admin/feeds/create}" href="#">Crar sitio</a></li>
+		  <li><a th:href="@{/admin/locations}" href="#">Localizaciones</a></li>
 		</ul>
 		<nav class="light-blue lighten-1" role="navigation">
 			<div class="container">
@@ -55,10 +56,10 @@
 			var mesInfo = /*[[${info}]]*/ []; 
 			var mesError = /*[[${error}]]*/ []; 
 	        for (var i = 0; i < mesInfo.length; i++) { 
-	         toast(mesInfo[i], 10000,'light-green');
+	         Materialize.toast(mesInfo[i], 10000,'light-green');
 	        } 
 	        for (var i = 0; i < mesError.length; i++) { 
-	         toast(mesError[i], 10000,'red');
+	         Materialize.toast(mesError[i], 10000,'red');
 	        } 
 			  });
 	  	/*]]>*/

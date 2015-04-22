@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:include="base :: head">
+</head>
+<body>
+	<header th:include="base :: header"> </header>
+	<main class="container">
+	<div id="modal"></div>
+	<div class="row">
+		<ul class="collapsible col s10 offset-s1" data-collapsible="accordion">
+			<li>
+				<div th:class="${location.id!=null}? 'collapsible-header active' : 'collapsible-header'" class="collapsible-header">A&ntilde;adir nuevo lugar<i class="mdi-hardware-keyboard-arrow-down right"></i></div>
+				<div class="collapsible-body">
+				<div class="col s10 offset-s1">
+					<form action="#" th:action="@{/admin/locations/create}"
+						val:validate="${location}" th:object="${location}" method="post">
+
+						<input
+							type="hidden" th:name="${_csrf.parameterName}"
+							th:value="${_csrf.token}" />
+
+
+						<div class="row">
+							<div class="input-field col s12">
+								<input type="hidden" th:field="*{id}" />
+							</div>
+						</div>
+						<div class="row">
+							<div class="input-field col s12">
+								<input type="text" th:field="*{name}" /> <label for="name">Nombre
+									del lugar</label>
+							</div>
+						</div>
+						<div class="row">
+							<div class="input-field col s12">
+								<input type="text" th:field="*{latitude}" /> <label for="name">Latitud
+									del lugaro</label>
+							</div>
+						</div>
+						<div class="row">
+							<div class="input-field col s12">
+								<input type="text" th:field="*{longitude}" /> <label for="name">Longitud
+									del lugar</label>
+							</div>
+						</div>
+						<div class="row">
+							<div class="input-field col s12">
+								<input type="text" th:field="*{distance}" /> <label for="name">Distancia
+									de alerta</label>
+							</div>
+						</div>
+						<p><button class="btn" type="submit">Enviar</button></p>
+					</form>
+					</div>
+				</div>
+			</li>
+		</ul>
+	</div>
+	<div class="row">
+		<div class="col s10 offset-s1">
+			<table class="hoverable">
+				<thead>
+					<tr>
+						<td>Nombre</td>
+						<td>Latitud</td>
+						<td>Longitud</td>
+						<td>Distancia (km)</td>
+						<td>Editar</td>
+						<td>Borrar</td>
+					</tr>
+				</thead>
+				<tbody>
+					<tr th:each="loc : ${allLocations}">
+						<td th:text="${loc.name}">Pescados manolo</td>
+						<td th:text="${loc.latitude}">4.5234</td>
+						<td th:text="${loc.longitude}">-2.5653</td>
+						<td th:text="${loc.distance}">100km</td>
+						<td><a href="#" th:href="@{/admin/locations/get/{id}/edit(id=${loc.id})}"><i class="mdi-editor-mode-edit"></i></a></td>
+						<td><a href="#" th:href="@{/admin/locations/get/{id}/remove(id=${loc.id})}"><i class="mdi-action-delete"></i></a></td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+	</main>
+	<footer th:include="base :: footer"> </footer>
+</body>
+</html>
