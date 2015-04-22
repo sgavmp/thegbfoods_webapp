@@ -1,5 +1,6 @@
 package com.ucm.ilsa.veterinaria.web.controller.impl.admin;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.validation.Valid;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.ucm.ilsa.veterinaria.domain.Feed;
 import com.ucm.ilsa.veterinaria.domain.FeedForm;
@@ -107,6 +109,27 @@ public class AdminController extends BaseController {
 		feed.getSelectorMeta().remove(index.intValue());
 		//model.addAttribute(feed);
 		return "feedForm";
+	}
+	
+	@RequestMapping(value={"/feeds/get/{codeName}/edit","/feeds/create"}, method=RequestMethod.POST, params={"addPage"})
+	public String addPageNews(Model model, @ModelAttribute(value="feed") FeedForm feed) {
+		feed.getUrlPages().add(new String());
+		//model.addAttribute(feed);
+		return "feedForm";
+	}
+	
+	@RequestMapping(value={"/feeds/get/{codeName}/edit","/feeds/create"}, method=RequestMethod.POST, params={"removePage"})
+	public String removePageNews(Model model, @ModelAttribute(value="feed") FeedForm feed, @RequestParam("removePage")Integer index) {
+		feed.getUrlPages().remove(index.intValue());
+		//model.addAttribute(feed);
+		return "feedForm";
+	}
+	
+	@RequestMapping(value={"/feeds/get/{codeName}/edit","/feeds/create"}, method=RequestMethod.POST, params={"testFeed"})
+	public @ResponseBody News testFeed(Model model, @ModelAttribute(value="feed") FeedForm feed) {
+		News news = serviceFeed.testFeed(feed);
+		//model.addAttribute(feed);
+		return news;
 	}
 
 	@RequestMapping("/feeds/get/{codeName}/remove")

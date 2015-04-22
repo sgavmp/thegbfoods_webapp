@@ -6,6 +6,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -27,6 +28,7 @@ import com.rometools.rome.io.SyndFeedInput;
 import com.rometools.rome.io.XmlReader;
 import com.ucm.ilsa.veterinaria.business.recuperacion.FeedScraping;
 import com.ucm.ilsa.veterinaria.domain.Feed;
+import com.ucm.ilsa.veterinaria.domain.FeedForm;
 import com.ucm.ilsa.veterinaria.domain.News;
 import com.ucm.ilsa.veterinaria.domain.PairValues;
 import com.ucm.ilsa.veterinaria.domain.builder.NewsBuilder;
@@ -47,6 +49,11 @@ public class FeedServiceImpl implements FeedService {
 	@Override
 	public List<News> scrapFeed(Feed feed) {
 		return scrapingFeed.scrapNews(feed);
+	}
+	
+	public News testFeed(FeedForm feed) {
+		News news = scrapingFeed.scrapOneNews(feed);
+		return news;
 	}
 
 	@Override

@@ -84,10 +84,6 @@ public class News {
 		this.pubDate = pubDate;
 	}
 	
-	public String getFileName() {
-		return this.site + "/" + title.replaceAll("[^A-Za-z0-9]+", "").substring(0, 32) + ".xml";
-	}
-	
 	public static class Comparators {
 
         public static Comparator<News> PUBDATE = new Comparator<News>() {

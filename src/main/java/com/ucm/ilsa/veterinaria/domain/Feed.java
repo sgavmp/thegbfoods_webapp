@@ -13,7 +13,10 @@ import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
@@ -21,6 +24,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Version;
 
+import org.hibernate.annotations.GenericGenerator;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
@@ -31,27 +35,30 @@ import com.google.common.collect.Maps;
 public class Feed extends BaseEntity {
 	
 	@Id
+	@GeneratedValue(generator="system-uuid")
+	@GenericGenerator(name="system-uuid", strategy = "uuid")
 	private String codeName;
 	private String name;
-	private String url;
+	private String urlSite;
 	@ElementCollection(fetch=FetchType.EAGER)
 	private List<PairValues> selectorHtml;
 	@ElementCollection(fetch=FetchType.EAGER)
 	private List<PairValues> selectorMeta;
 	private String dateFormat;
-	private Locale languaje;
-	private boolean withRSS = false; //Por defecto no
+	@Enumerated(EnumType.STRING)
+	private Language languaje;
 	private String lastNewsLink;
 	@OneToMany(mappedBy="site", cascade=CascadeType.ALL,orphanRemoval=true)
 	private List<Alert> listOfAlerts;
+	private String urlNews;
+	private boolean isRSS = true;
 	
 	//Solo sitios sin RSS
-	private String urlNews;
+	@ElementCollection(fetch=FetchType.EAGER)
+	private List<String> urlPages;
 	private String newsLink;
 	
-	//Solo sitios RSS
-	private boolean useSelector = false;
-	private String urlRSS;
+	
 	
 	public Feed() {
 		this.selectorHtml = new ArrayList<PairValues>();
@@ -60,55 +67,59 @@ public class Feed extends BaseEntity {
 	
 	public Feed(FeedForm feed) {
 		this.name=feed.getName();
-		this.codeName=feed.getCodeName();
 		this.dateFormat=feed.getDateFormat();
 		this.languaje=feed.getLanguaje();
 		this.selectorHtml=feed.getSelectorHtml();
 		this.selectorMeta=feed.getSelectorMeta();
-		if (this.selectorHtml.size()>0 || this.selectorMeta.size()>0) {
-			this.useSelector=true;
-		}
-		this.url=feed.getUrl();
-		if (!feed.getUrlNews().isEmpty()) {
-			this.urlNews=feed.getUrlNews();
-			this.newsLink=feed.getNewsLink();
-			this.withRSS=false;
-		} else {
-			this.urlRSS=feed.getUrlRSS();
-			this.withRSS=true;
-		}
-		this.useSelector=feed.isUseSelector();
+		this.isRSS = feed.isRSS();
+		this.urlSite=feed.getUrl();
+		this.urlNews=feed.getUrlNews();
+		this.urlPages=feed.getUrlPages();
 		this.listOfAlerts= new ArrayList<Alert>();
+		this.newsLink=feed.getNewsLink();
+	}	
+
+	public void changeValues(FeedForm feed) {
+		this.name=feed.getName();
+		this.dateFormat=feed.getDateFormat();
+		this.languaje=feed.getLanguaje();
+		this.selectorHtml=feed.getSelectorHtml();
+		this.selectorMeta=feed.getSelectorMeta();
+		this.urlSite=feed.getUrl();
+		this.urlNews=feed.getUrlNews();
+		this.urlPages=feed.getUrlPages();
+		this.isRSS = feed.isRSS();
+		this.newsLink=feed.getNewsLink();
+	}
+
+	public String getCodeName() {
+		return codeName;
+	}
+
+	public void setCodeName(String codeName) {
+		this.codeName = codeName;
 	}
 
 	public String getName() {
 		return name;
 	}
+
 	public void setName(String name) {
 		this.name = name;
 	}
-	public String getUrl() {
-		return url;
+
+	public String getUrlSite() {
+		return urlSite;
 	}
-	public void setUrl(String url) {
-		this.url = url;
-	}
-	public String getUrlRSS() {
-		return urlRSS;
-	}
-	public void setUrlRSS(String urlRSS) {
-		this.urlRSS = urlRSS;
-	}
-	public String getUrlNews() {
-		return urlNews;
-	}
-	public void setUrlNews(String urlNews) {
-		this.urlNews = urlNews;
+
+	public void setUrlSite(String urlSite) {
+		this.urlSite = urlSite;
 	}
 
 	public List<PairValues> getSelectorHtml() {
 		return selectorHtml;
 	}
+
 	public void setSelectorHtml(List<PairValues> selectorHtml) {
 		this.selectorHtml = selectorHtml;
 	}
@@ -121,14 +132,6 @@ public class Feed extends BaseEntity {
 		this.selectorMeta = selectorMeta;
 	}
 
-	public boolean isUseSelector() {
-		return useSelector;
-	}
-
-	public void setUseSelector(boolean useSelector) {
-		this.useSelector = useSelector;
-	}
-
 	public String getDateFormat() {
 		return dateFormat;
 	}
@@ -137,28 +140,12 @@ public class Feed extends BaseEntity {
 		this.dateFormat = dateFormat;
 	}
 
-	public Locale getLanguaje() {
+	public Language getLanguaje() {
 		return languaje;
 	}
 
-	public void setLanguaje(Locale languaje) {
+	public void setLanguaje(Language languaje) {
 		this.languaje = languaje;
-	}
-
-	public String getCodeName() {
-		return codeName;
-	}
-
-	public void setCodeName(String codeName) {
-		this.codeName = codeName;
-	}
-
-	public boolean isWithRSS() {
-		return withRSS;
-	}
-
-	public void setWithRSS(boolean withRSS) {
-		this.withRSS = withRSS;
 	}
 
 	public String getLastNewsLink() {
@@ -168,7 +155,39 @@ public class Feed extends BaseEntity {
 	public void setLastNewsLink(String lastNewsLink) {
 		this.lastNewsLink = lastNewsLink;
 	}
-	
+
+	public List<Alert> getListOfAlerts() {
+		return listOfAlerts;
+	}
+
+	public void setListOfAlerts(List<Alert> listOfAlerts) {
+		this.listOfAlerts = listOfAlerts;
+	}
+
+	public String getUrlNews() {
+		return urlNews;
+	}
+
+	public void setUrlNews(String urlNews) {
+		this.urlNews = urlNews;
+	}
+
+	public boolean isRSS() {
+		return isRSS;
+	}
+
+	public void setRSS(boolean isRSS) {
+		this.isRSS = isRSS;
+	}
+
+	public List<String> getUrlPages() {
+		return urlPages;
+	}
+
+	public void setUrlPages(List<String> urlPages) {
+		this.urlPages = urlPages;
+	}
+
 	public String getNewsLink() {
 		return newsLink;
 	}
@@ -176,23 +195,6 @@ public class Feed extends BaseEntity {
 	public void setNewsLink(String newsLink) {
 		this.newsLink = newsLink;
 	}
-
-	public List<Alert> getListOfAlerts() {
-		return listOfAlerts;
-	}
-
-	public void changeValues(FeedForm feed) {
-		this.name=feed.getName();
-		this.codeName=feed.getCodeName();
-		this.dateFormat=feed.getDateFormat();
-		this.languaje=feed.getLanguaje();
-		this.selectorHtml=feed.getSelectorHtml();
-		this.selectorMeta=feed.getSelectorMeta();
-		this.url=feed.getUrl();
-		this.urlNews=feed.getUrlNews();
-		this.urlRSS=feed.getUrlRSS();
-		this.useSelector=feed.isUseSelector();
-		this.withRSS=feed.isWithRSS();
-	}
+	
 	
 }

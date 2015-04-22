@@ -6,38 +6,40 @@ import java.util.Date;
 import java.util.Locale;
 
 import com.ucm.ilsa.veterinaria.domain.Feed;
+import com.ucm.ilsa.veterinaria.domain.Language;
 import com.ucm.ilsa.veterinaria.domain.News;
 
 public class NewsBuilder {
-	
+
 	private News news;
 	private String dateFormat;
 	private Locale locale;
-	
-	public NewsBuilder (Feed feed) {
+
+	public NewsBuilder(Feed feed) {
 		this.news = new News();
 		this.news.setSite(feed.getCodeName());
 		this.dateFormat = feed.getDateFormat();
-		this.locale = feed.getLanguaje();
-		if (this.locale==null) {
-			this.locale= new Locale("es", "ES");
+		if (feed.getLanguaje().equals(Language.SPANISH)) {
+			this.locale = new Locale("es", "ES");
+		} else {
+			this.locale = Locale.ENGLISH;
 		}
 	}
-	
+
 	public News build() {
 		return this.news;
 	}
-	
+
 	public NewsBuilder setTitle(String title) {
 		this.news.setTitle(title);
 		return this;
 	}
-	
+
 	public NewsBuilder setDescription(String description) {
 		this.news.setDescription(description);
 		return this;
 	}
-	
+
 	public NewsBuilder setContent(String content) {
 		this.news.setContent(content);
 		return this;
@@ -47,17 +49,18 @@ public class NewsBuilder {
 		this.news.setPubDate(date);
 		return this;
 	}
-	
+
 	public NewsBuilder setUrl(String url) {
 		this.news.setUrl(url);
 		return this;
 	}
-	
+
 	public NewsBuilder setPubDate(String date) throws ParseException {
-		this.news.setPubDate(new SimpleDateFormat(dateFormat,this.locale).parse(date));
+		this.news.setPubDate(new SimpleDateFormat(dateFormat, this.locale)
+				.parse(date));
 		return this;
 	}
-	
+
 	public NewsBuilder setValueOf(String attribute, String value) {
 		switch (attribute) {
 		case "title":
@@ -74,7 +77,8 @@ public class NewsBuilder {
 			break;
 		case "pubDate":
 			try {
-			this.news.setPubDate(new SimpleDateFormat(dateFormat,this.locale).parse(value));
+				this.news.setPubDate(new SimpleDateFormat(dateFormat,
+						this.locale).parse(value));
 			} catch (ParseException ex) {
 				this.news.setPubDate(new Date(System.currentTimeMillis()));
 			}

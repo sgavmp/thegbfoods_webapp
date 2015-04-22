@@ -21,47 +21,37 @@ import com.google.common.collect.Maps;
 
 public class FeedForm {
 	@NotBlank
-	//@Pattern(regexp = "^[a-zA-Z ]+$")
 	private String name;
-	@NotEmpty
-	@Pattern(regexp = "^[a-z]{3,10}$",message="Codigo de 3 a 10 letras en minusculas sin espacios.")
-	private String codeName;
 	@URL
 	@NotEmpty
-	private String url;
+	private String url;//Url del sitio
 	private List<PairValues> selectorHtml,selectorMeta;
 	private String dateFormat;
-	private Locale languaje;
-	private boolean withRSS; //Por defecto no
+	//Por defecto Spanish
+	private Language languaje = Language.SPANISH;
+	private boolean isRSS = true;
 	
-	//Solo sitios sin RSS
 	@URL
-	private String urlNews;
+	private String urlNews;//Url de la pagina de noticias o de rss
+	
+	private List<String> urlPages;
 	private String newsLink;
-	
-	//Solo sitios RSS
-	private boolean useSelector = false;
-	@URL
-	private String urlRSS;
 	
 	public FeedForm() {
 		this.selectorHtml = new ArrayList<PairValues>();
 		this.selectorMeta = new ArrayList<PairValues>();
+		this.urlPages = new ArrayList<String>();
 	}
 	
 	public FeedForm(Feed feed) {
 		this.name=feed.getName();
-		this.codeName = feed.getCodeName();
 		this.dateFormat=feed.getDateFormat();
 		this.languaje=feed.getLanguaje();
-		this.newsLink=feed.getNewsLink();
 		this.selectorHtml=feed.getSelectorHtml();
 		this.selectorMeta=feed.getSelectorMeta();
-		this.url=feed.getUrl();
+		this.url=feed.getUrlSite();
 		this.urlNews=feed.getUrlNews();
-		this.urlRSS=feed.getUrlRSS();
-		this.useSelector=feed.isUseSelector();
-		this.withRSS=feed.isWithRSS();
+		this.newsLink = feed.getNewsLink();
 	}
 
 	public String getName() {
@@ -104,20 +94,20 @@ public class FeedForm {
 		this.dateFormat = dateFormat;
 	}
 
-	public Locale getLanguaje() {
+	public Language getLanguaje() {
 		return languaje;
 	}
 
-	public void setLanguaje(Locale languaje) {
+	public void setLanguaje(Language languaje) {
 		this.languaje = languaje;
 	}
 
-	public boolean isWithRSS() {
-		return withRSS;
+	public boolean isRSS() {
+		return isRSS;
 	}
 
-	public void setWithRSS(boolean withRSS) {
-		this.withRSS = withRSS;
+	public void setRSS(boolean isRSS) {
+		this.isRSS = isRSS;
 	}
 
 	public String getUrlNews() {
@@ -128,36 +118,20 @@ public class FeedForm {
 		this.urlNews = urlNews;
 	}
 
+	public List<String> getUrlPages() {
+		return urlPages;
+	}
+
+	public void setUrlPages(List<String> urlPages) {
+		this.urlPages = urlPages;
+	}
+
 	public String getNewsLink() {
 		return newsLink;
 	}
 
 	public void setNewsLink(String newsLink) {
 		this.newsLink = newsLink;
-	}
-
-	public boolean isUseSelector() {
-		return useSelector;
-	}
-
-	public void setUseSelector(boolean useSelector) {
-		this.useSelector = useSelector;
-	}
-
-	public String getUrlRSS() {
-		return urlRSS;
-	}
-
-	public void setUrlRSS(String urlRSS) {
-		this.urlRSS = urlRSS;
-	}
-
-	public String getCodeName() {
-		return codeName;
-	}
-
-	public void setCodeName(String codeName) {
-		this.codeName = codeName;
 	}
 
 }

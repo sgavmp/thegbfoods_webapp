@@ -25,6 +25,7 @@ sourceCompatibility = 1.7
 targetCompatibility = 1.7
 
 repositories {
+	mavenLocal()
     mavenCentral()
 }
 
@@ -49,6 +50,7 @@ dependencies {
     compile('org.webjars:webjars-locator:0.21')
     compile('org.webjars:materializecss:0.96.0')
     compile('org.webjars:jquery:2.1.3')
+    compile('me.vamsoft:clavin-mod:0.1.0')
     testCompile("org.springframework.boot:spring-boot-starter-test") 
     providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
 }
