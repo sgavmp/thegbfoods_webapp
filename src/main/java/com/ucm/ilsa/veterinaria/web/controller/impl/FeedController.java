@@ -47,8 +47,8 @@ public class FeedController extends BaseController {
 	@RequestMapping("/get/{codeName}")
 	public String getAllNewsByFeed(Model model, @PathVariable ("codeName") Feed feed) {
 		model.addAttribute(feed);
-		model.addAttribute("alertsCheck", serviceAlert.getAllAlertCheckedByFeed(feed));
-		model.addAttribute("alertsUncheck", serviceAlert.getAllAlertUncheckedByFeed(feed));
+		model.addAttribute("alertsCheck", serviceAlert.getAllAlertsCheckedOrderByFeedByDate(feed));
+		model.addAttribute("alertsUncheck", serviceAlert.getAllAlertsUncheckedByFeedOrderByDate(feed));
 		return "oneFeed";
 	}
 	

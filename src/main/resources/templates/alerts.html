@@ -6,11 +6,15 @@
 	<header th:include="base :: header"> </header>
 	<section class="container" th:fragment="alerts">
 		<!--  Cuando no hay alertas -->
-		<div th:if="${#lists.isEmpty(alertsUncheck) and #lists.isEmpty(alertsCheck)}" class="watermark">
-			<h5>No hay alertas.</h5>
+		<div
+			th:if="${#maps.isEmpty(alertsUncheck) and #maps.isEmpty(alertsCheck)}"
+			class="watermark">
+			<h1>No hay alertas</h1>
 		</div>
 		<!--  Cuando hay alertas -->
-		<div th:if="${!#lists.isEmpty(alertsUncheck) or !#lists.isEmpty(alertsCheck)}" class="row">
+		<div
+			th:if="${!#maps.isEmpty(alertsUncheck) or !#maps.isEmpty(alertsCheck)}"
+			class="row">
 			<div class="col s12">
 				<ul class="tabs transparent">
 					<li class="tab col s3"><a class="active" href="#uncheck">Alertas
@@ -20,96 +24,86 @@
 			</div>
 			<!-- Pestaña alertas activas -->
 			<div id="uncheck" class="row">
-				<div th:if="${#lists.isEmpty(alertsUncheck)}" class="watermark">
-					<h5>No hay alertas sin resolver.</h5>
+				<div th:if="${#maps.isEmpty(alertsUncheck)}"
+					class="collection-header watermark">
+					<h1>No hay alertas sin resolver</h1>
 				</div>
-				<div class="col s12" th:each="alert : ${alertsUncheck}">
-					<div class="card blue-grey darken-1">
-						<div class="card-content white-text">
-							<span th:inline="text" class="card-title">[[${alert.title}]]
-								<a sec:authorize="isAuthenticated()" th:href="@{/alerts/get/{id}/check(id=${alert.id})}" href="#"><i
-									class="mdi-navigation-check right tooltipped"
+				<div th:each="day : ${alertsUncheck}" class="col s12">
+					<span
+						th:if="${#dates.format(hoy, 'dd/MM/yyyy')==#dates.format(day.key, 'dd/MM/yyyy')}">Hoy</span>
+					<span
+						th:if="${#dates.format(ayer, 'dd/MM/yyyy')==#dates.format(day.key, 'dd/MM/yyyy')}">Ayer</span>
+					<span
+						th:unless="${#dates.format(hoy, 'dd/MM/yyyy')==#dates.format(day.key, 'dd/MM/yyyy') or #dates.format(ayer, 'dd/MM/yyyy')==#dates.format(day.key, 'dd/MM/yyyy')}"
+						th:text="${#dates.format(day.key, 'dd/MM/yyyy')}">Ayer</span>
+					<ul class="collapsible popout" data-collapsible="accordion">
+						<!-- Comienzo de la alerta -->
+						<li th:each="alert : ${day.value}">
+							<div th:inline="text" class="collapsible-header">
+								<i th:if="${alert.level.toString()=='yellow'}"
+									class="square yellow">&nbsp;</i> <i
+									th:if="${alert.level.toString()=='orange'}"
+									class="square orange">&nbsp;</i> <i
+									th:if="${alert.level.toString()=='red'}" class="square red">&nbsp;</i>
+								[[${alert.title}]] <a sec:authorize="isAuthenticated()"
+									th:href="@{/alerts/get/{id}/check(id=${alert.id})}" href="#"><i
+									class="mdi-navigation-check tooltipped right"
 									data-position="bottom" data-delay="50"
-									data-tooltip="Marcar como revisada"></i></a><a href="#"><i
-									class="mdi-content-add activator right tooltipped"
-									data-position="bottom" data-delay="50"
-									data-tooltip="Ver resumen"></i></a>
-							</span>
-							<p>
-								Sitio: <span th:text="${alert.site.name}">Nombre del
-									sitio</span>
-							</p>
-							<p>
-								Enlace: <span><a th:href="${alert.link}"
-									href="http://www.google.es">Ver sitio <i
+									data-tooltip="Marcar como revisada"></i></a>
+							</div>
+							<div class="collapsible-body">
+								<p th:inline="text">
+									<a th:href="${alert.link}"
+										href="http://www.google.es">[[${alert.site.name}]] <i
 										class="mdi-content-link tooltipped" data-position="bottom"
 										data-delay="50" th:attr="data-tooltip=${alert.link}"
-										data-tooltip="URL del enlace"></i></a></span>
-							</p>
-							<p>
-								Fecha de publicaci&oacute;n: <span th:text="${alert.datePub}">Fecha
-									de publicacion</span>
-							</p>
-						</div>
-						<div class="card-action">
-							<a
-								th:href="@{/feeds/get/{codeName}(codeName=${alert.site.codeName})}"
-								href="#">Ver mas alertas del mismo sitio</a>
-						</div>
-						<div class="card-reveal">
-							<span th:inline="text" class="card-title grey-text text-darken-4">[[${alert.title}]]
-								<i class="mdi-navigation-close right"></i>
-							</span>
-							<p th:text="${alert.infoAlert}">Descripción</p>
-						</div>
-					</div>
+										data-tooltip="URL del enlace"></i></a><br/>
+									[[${alert.infoAlert}]] 
+								</p>
+							</div>
+						</li>
+						<!-- Fin de la alerta -->
+					</ul>
 				</div>
 			</div>
 			<!-- Pestaña alertas resueltas -->
 			<div id="check" class="row">
-				<div th:if="${#lists.isEmpty(alertsCheck)}" class="watermark">
-					<h5>No hay alertas resueltas.</h5>
+				<div th:if="${#maps.isEmpty(alertsCheck)}" class="collection-header watermark">
+					<h1>No hay alertas resueltas</h1>
 				</div>
-				<div class="col s12" th:each="alert : ${alertsCheck}">
-					<div class="card blue-grey darken-1">
-						<div class="card-content white-text">
-							<span th:inline="text" class="card-title">[[${alert.title}]]
-								<a sec:authorize="isAuthenticated()" th:href="@{/alerts/get/{id}/delete(id=${alert.id})}" href="#"><i
-									class="mdi-action-delete right tooltipped"
-									data-position="bottom" data-delay="50"
-									data-tooltip="Borrar alerta"></i></a><a href="#"><i
-									class="mdi-content-add activator right tooltipped"
-									data-position="bottom" data-delay="50"
-									data-tooltip="Ver resumen"></i></a>
-							</span>
-							<p>
-								Sitio: <span th:text="${alert.site.name}">Nombre del
-									sitio</span>
-							</p>
-							<p>
-								Enlace: <span><a th:href="${alert.link}"
-									href="http://www.google.es">Ver sitio <i
+				<div th:each="day : ${alertsCheck}" class="col s12">
+					<span
+						th:if="${#dates.format(hoy, 'dd/MM/yyyy')==#dates.format(day.key, 'dd/MM/yyyy')}">Hoy</span>
+					<span
+						th:if="${#dates.format(ayer, 'dd/MM/yyyy')==#dates.format(day.key, 'dd/MM/yyyy')}">Ayer</span>
+					<span
+						th:unless="${#dates.format(hoy, 'dd/MM/yyyy')==#dates.format(day.key, 'dd/MM/yyyy') or #dates.format(ayer, 'dd/MM/yyyy')==#dates.format(day.key, 'dd/MM/yyyy')}"
+						th:text="${#dates.format(day.key, 'dd/MM/yyyy')}">Ayer</span>
+					<ul class="collapsible popout" data-collapsible="accordion">
+						<!-- Comienzo de la alerta -->
+						<li th:each="alert : ${day.value}">
+							<div th:inline="text" class="collapsible-header">
+								<i th:if="${alert.level.toString()=='yellow'}"
+									class="square yellow">&nbsp;</i> <i
+									th:if="${alert.level.toString()=='orange'}"
+									class="square orange">&nbsp;</i> <i
+									th:if="${alert.level.toString()=='red'}" class="square red">&nbsp;</i>
+								[[${alert.title}]] <a sec:authorize="isAuthenticated()"
+									th:href="@{/alerts/get/{id}/check(id=${alert.id})}" href="#"></a>
+							</div>
+							<div class="collapsible-body">
+								<p th:inline="text">
+									<a th:href="${alert.link}"
+										href="http://www.google.es">[[${alert.site.name}]] <i
 										class="mdi-content-link tooltipped" data-position="bottom"
 										data-delay="50" th:attr="data-tooltip=${alert.link}"
-										data-tooltip="URL del enlace"></i></a></span>
-							</p>
-							<p>
-								Fecha de publicaci&oacute;n: <span th:text="${alert.datePub}">Fecha
-									de publicacion</span>
-							</p>
-						</div>
-						<div class="card-action">
-							<a
-								th:href="@{/feeds/get/{codeName}(codeName=${alert.site.codeName})}"
-								href="#">Ver mas alertas del mismo sitio</a>
-						</div>
-						<div class="card-reveal">
-							<span th:inline="text" class="card-title grey-text text-darken-4">[[${alert.title}]]
-								<i class="mdi-navigation-close right"></i>
-							</span>
-							<p th:text="${alert.infoAlert}">Descripción</p>
-						</div>
-					</div>
+										data-tooltip="URL del enlace"></i></a><br/>
+									[[${alert.infoAlert}]] 
+								</p>
+							</div>
+						</li>
+						<!-- Fin de la alerta -->
+					</ul>
 				</div>
 			</div>
 		</div>

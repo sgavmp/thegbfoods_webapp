@@ -1,6 +1,11 @@
 package com.ucm.ilsa.veterinaria.web.controller.impl;
 
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -8,6 +13,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+
+import sun.util.resources.CalendarData;
 
 import com.google.common.collect.Lists;
 import com.ucm.ilsa.veterinaria.domain.Alert;
@@ -28,13 +35,13 @@ public class AlertController extends BaseController {
 	private AlertServiceImpl service;
 	
 	@ModelAttribute("alertsUncheck")
-	public List<Alert> getAllAlertsUnchecked() {
-		return service.getAllAlertUnchecked();
+	public Map<Date,List<Alert>> getAllAlertsUnchecked() {
+		return service.getAllAlertsUncheckedOrderByDate();
 	}
 	
 	@ModelAttribute("alertsCheck")
-	public List<Alert> getAllAlertsChecked() {
-		return service.getAllAlertChecked();
+	public Map<Date,List<Alert>> getAllAlertsChecked() {
+		return service.getAllAlertsCheckedOrderByDate();
 	}
 	
 	@RequestMapping("/get/{idAlert}/check")

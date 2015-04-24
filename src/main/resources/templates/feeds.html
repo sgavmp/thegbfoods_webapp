@@ -5,12 +5,17 @@
 <body>
 	<header th:include="base :: header"> </header>
 	<main class="container">
-
-	<div class="row">
+	<div th:if="${#lists.isEmpty(feeds)}" class="watermark">
+		<h1>No hay sitios</h1>
+	</div>
+	<div th:unless="${#lists.isEmpty(feeds)}" class="row">
 		<div class="col s8 offset-s2">
 			<div class="card-panel no-padding">
 				<ul class="collection">
-					<a th:each="feed : ${feeds}" th:href="@{/feeds/get/{codeName}(codeName=${feed.codeName})}" href="#!" class="collection-item" th:text="${feed.name}">Sitio 1<span class="badge">10</span></a>
+					<a th:each="feed : ${feeds}"
+						th:href="@{/feeds/get/{codeName}(codeName=${feed.codeName})}"
+						href="#!" class="collection-item" th:inline="text">[[${feed.name}]]<span th:if="${#lists.size(feed.listOfAlerts)>0}" class="new badge">[[${#lists.size(feed.listOfAlerts)}]]</span>
+					</a>
 				</ul>
 			</div>
 		</div>

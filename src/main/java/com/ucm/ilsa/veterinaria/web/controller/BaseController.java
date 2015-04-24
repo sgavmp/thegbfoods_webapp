@@ -1,6 +1,7 @@
 package com.ucm.ilsa.veterinaria.web.controller;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.stereotype.Controller;
@@ -15,6 +16,18 @@ public abstract class BaseController {
 	private static List<String> error = new ArrayList<String>();
 	//Indica al template el menu que tiene que activar
 	protected String menu="";
+	
+	
+	@ModelAttribute("hoy")
+	public Date getHoy() {
+		return new Date();
+	}
+	
+	@ModelAttribute("ayer")
+	public Date getAyer() {
+		Date ayer = new Date(new Date().getTime() - 24 * 3600 * 1000l );
+		return ayer;
+	}
 	
 	@ModelAttribute("menu")
 	public String getMenuActive() {
