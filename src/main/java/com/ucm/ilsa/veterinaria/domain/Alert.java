@@ -31,8 +31,6 @@ public class Alert extends BaseEntity {
 	private String title;
 	private String link;
 	private Date datePub;
-	@CreatedDate
-	private Date dateTratamiento;
 	@Lob
 	private String infoAlert;
 	private String typeAlert;
@@ -68,12 +66,6 @@ public class Alert extends BaseEntity {
 	}
 	public void setDatePub(Date datePub) {
 		this.datePub = datePub;
-	}
-	public Date getDateTratamiento() {
-		return dateTratamiento;
-	}
-	public void setDateTratamiento(Date dateTratamiento) {
-		this.dateTratamiento = dateTratamiento;
 	}
 	public String getInfoAlert() {
 		return infoAlert;
