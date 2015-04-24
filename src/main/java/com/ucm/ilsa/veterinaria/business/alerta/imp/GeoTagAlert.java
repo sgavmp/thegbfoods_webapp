@@ -39,7 +39,7 @@ public class GeoTagAlert implements IntfAlerta<GeoTagAlertEvent> {
 				stringLocations = stringLocations.concat(loc.toString());
 			}
 			alert.setInfoAlert(stringLocations);
-			alert.setLevel(AlertLevel.green);
+			alert.setLevel(AlertLevel.yellow);
 			alert.setTypeAlert("geotag");
 			try {
 				repository.save(alert);

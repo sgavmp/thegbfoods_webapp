@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -64,16 +65,17 @@ public class FeedScrapingImpl implements FeedScraping {
 		if (!newsList.isEmpty()) {
 			// Ordenamos por fecha de publicacion
 			Collections.sort(newsList, News.Comparators.PUBDATE);
-		}
-		// Solo se informa si se han obtenido nuevas noticias
-		if (newsList.size() > 0) {
 			// Informamos a todos los tratamientos de la actualizacion
 			FeedUpdateEvent event = new FeedUpdateEvent();
 			event.setFeed(feed);
 			event.setDate(new Date(System.currentTimeMillis()));
 			event.setListNews(newsList);
 			EventBusFactoryBean.getInstance().post(event);
+		} else {
+			feed.setUpdateDate( new Timestamp(System.currentTimeMillis()));
+			repositoryFeed.save(feed);
 		}
+		
 		return newsList;
 	}
 	

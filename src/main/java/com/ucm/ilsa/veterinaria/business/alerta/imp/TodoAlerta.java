@@ -35,7 +35,7 @@ public class TodoAlerta implements IntfAlerta<TodoAlertEvent> {
 			alert.setTitle(news.getTitle());
 			alert.setLink(news.getUrl());
 			alert.setInfoAlert("Esta alerta funciona a modo de ejemplo. Descripcion" + news.getDescription());
-			alert.setLevel(AlertLevel.green);
+			alert.setLevel(AlertLevel.yellow);
 			alert.setTypeAlert("allNews");
 			try {
 				repository.save(alert);
