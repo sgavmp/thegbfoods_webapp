@@ -39,6 +39,7 @@ public class GeoTagAlert implements IntfAlerta<GeoTagAlertEvent> {
 		List<PlaceAlert> lugares = placeAlertService.getAllLocations();
 		LOGGER.info("Ejemplo de comprobacion de alerta para el sitio: "
 				+ event.getFeed().getName());
+		Integer num = 1;
 		// Una alerta por noticia
 		for (News news : event.getLocations().keySet()) {
 			String stringLocations = "La noticia puede hablar de municipios cerca de los siguientes lugares:";
@@ -68,11 +69,12 @@ public class GeoTagAlert implements IntfAlerta<GeoTagAlertEvent> {
 				} catch (DataIntegrityViolationException ex) {
 					LOGGER.error("Se ha producico un error al guardar la alerta. Ya existe que coinciden en tipo y enlace.");
 				}
+				num++;
 			}
 		}
 		BaseController
-				.putInfoMessage("Se han comprobado las alertas. Alertas detectadas: "
-						+ event.getLocations().size());
+				.putInfoMessage("Se han comprobado las alertas de cercania. Alertas detectadas: "
+						+ num);
 	}
 
 }

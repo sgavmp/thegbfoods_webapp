@@ -25,6 +25,7 @@ public class TodoAlerta implements IntfAlerta<TodoAlertEvent> {
 	@Override
 	@Subscribe public void responseToEvent(TodoAlertEvent event) {
 		LOGGER.info("Ejemplo de comprobacion de alerta para el sitio: " + event.getFeed().getName());
+		Integer num = 1;
 		//Una alerta por noticia
 		for (News news : event.getNews()) {
 			Alert alert = new Alert();
@@ -40,9 +41,10 @@ public class TodoAlerta implements IntfAlerta<TodoAlertEvent> {
 			} catch (DataIntegrityViolationException ex) {
 				LOGGER.error("Se ha producico un error al guardar la alerta. Ya existe que coinciden en tipo y enlace.");
 			}
+			num++;
 			break;//Solo guardamos una alerta de prueba por cada recuperacion para no saturar
 		}
-		BaseController.putInfoMessage("Se han comprobado las alertas. Alertas detectadas: " + event.getNews().size());
+		BaseController.putInfoMessage("Se han comprobado las alertas de prueba. Alertas detectadas: " + num);
 	}
 
 }
