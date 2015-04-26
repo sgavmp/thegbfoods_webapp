@@ -20,6 +20,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderColumn;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Version;
@@ -41,8 +42,12 @@ public class Feed extends BaseEntity {
 	private String name;
 	private String urlSite;
 	@ElementCollection(fetch = FetchType.EAGER)
+	@CollectionTable(name = "feed_selector_hmtl", joinColumns = @JoinColumn(name = "SITE_ID"))
+	@OrderColumn
 	private List<PairValues> selectorHtml;
 	@ElementCollection(fetch = FetchType.EAGER)
+	@CollectionTable(name = "feed_selector_meta", joinColumns = @JoinColumn(name = "SITE_ID"))
+	@OrderColumn
 	private List<PairValues> selectorMeta;
 	private String dateFormat;
 	@Enumerated(EnumType.STRING)
@@ -59,6 +64,8 @@ public class Feed extends BaseEntity {
 
 	// Solo sitios sin RSS
 	@ElementCollection(fetch = FetchType.EAGER)
+	@CollectionTable(name = "feed_url_pages", joinColumns = @JoinColumn(name = "SITE_ID"))
+	@OrderColumn
 	private List<String> urlPages;
 	private String newsLink;
 
