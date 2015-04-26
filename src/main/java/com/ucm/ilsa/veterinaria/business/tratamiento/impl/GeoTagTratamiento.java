@@ -35,8 +35,6 @@ public class GeoTagTratamiento implements IntfTratamiento<FeedUpdateEvent> {
 	@Override
 	@Subscribe public void responseToEvent(FeedUpdateEvent event) {
 		LOGGER.info("Ejemplo de tratamiento para el sitio: " + event.getFeed().getName());
-		//Creamos el evento cons los datos necesario
-		//En un tratamiento real habra que obtener datos de cada noticia para que las alertas los comprueben
 		GeoTagAlertEvent evento = new GeoTagAlertEvent();
 		evento.setFeed(event.getFeed());
 		Map<News, List<ResolvedLocation>> map = new HashMap<>();
@@ -52,7 +50,9 @@ public class GeoTagTratamiento implements IntfTratamiento<FeedUpdateEvent> {
 		evento.setLocations(map);
 		evento.setDate(new Date(System.currentTimeMillis()));
 		//Enviamos el evento al bus para que las alertas interesadas los comprueben
-		EventBusFactoryBean.getInstance().post(evento);
+		if (map.size() > 0) {// Se envia el evento si se ha encontrado alguna coincidencia
+			EventBusFactoryBean.getInstance().post(evento);
+		}
 	}
 
 }

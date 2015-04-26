@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
 <head th:include="base :: head">
 </head>
 <body>
@@ -32,13 +33,13 @@
 		<section th:include="alerts :: alerts">
 		</section>
 		<!--  
-	<h1 th:if="${newsListAdd}!=null">Nuevas noticias añadidas</h1>
+	<h1 th:if="${newsListAdd}!=null">Nuevas noticias aÃ±adidas</h1>
 	<div th:if="${newsListAdd}!=null" th:each="news : ${newsListAdd}" class="row">
 		<div class="col s12">
 			<div class="card">
 				<div class="card-content">
 					<span th:text="${news.title}" class="card-title">Card Title</span>
-					<p th:text="${news.description}">Descripción</p>
+					<p th:text="${news.description}">DescripciÃ³n</p>
 				</div>
 			</div>
 		</div>

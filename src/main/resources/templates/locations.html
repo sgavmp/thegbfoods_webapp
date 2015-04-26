@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<html lang="es" xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
 <head th:include="base :: head">
 </head>
 <body>
 	<header th:include="base :: header"> </header>
-	<main class="container">
+	<section class="container">
 	<div id="modal"></div>
 	<div class="row">
 		<ul class="collapsible col s10 offset-s1" data-collapsible="accordion">
@@ -82,7 +83,7 @@
 			</table>
 		</div>
 	</div>
-	</main>
+	</section>
 	<footer th:include="base :: footer"> </footer>
 </body>
 </html>

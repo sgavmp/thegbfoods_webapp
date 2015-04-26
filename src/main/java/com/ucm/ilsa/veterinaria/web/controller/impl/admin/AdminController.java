@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.ucm.ilsa.veterinaria.domain.Feed;
 import com.ucm.ilsa.veterinaria.domain.FeedForm;
+import com.ucm.ilsa.veterinaria.domain.Fiabilidad;
 import com.ucm.ilsa.veterinaria.domain.News;
 import com.ucm.ilsa.veterinaria.domain.PairValues;
 import com.ucm.ilsa.veterinaria.domain.PlaceAlert;
@@ -39,6 +40,11 @@ public class AdminController extends BaseController {
 	
 	public AdminController() {
 		this.menu = "admin";
+	}
+	
+	@ModelAttribute("enumFiabilidad")
+	public Fiabilidad[] getValuesOfFiabilidad() {
+		return Fiabilidad.values();
 	}
 	
 	@RequestMapping("**")

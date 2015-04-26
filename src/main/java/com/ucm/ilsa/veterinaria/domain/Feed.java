@@ -33,63 +33,67 @@ import com.google.common.collect.Maps;
 
 @Entity
 public class Feed extends BaseEntity {
-	
+
 	@Id
-	@GeneratedValue(generator="system-uuid")
-	@GenericGenerator(name="system-uuid", strategy = "uuid")
+	@GeneratedValue(generator = "system-uuid")
+	@GenericGenerator(name = "system-uuid", strategy = "uuid")
 	private String codeName;
 	private String name;
 	private String urlSite;
-	@ElementCollection(fetch=FetchType.EAGER)
+	@ElementCollection(fetch = FetchType.EAGER)
 	private List<PairValues> selectorHtml;
-	@ElementCollection(fetch=FetchType.EAGER)
+	@ElementCollection(fetch = FetchType.EAGER)
 	private List<PairValues> selectorMeta;
 	private String dateFormat;
 	@Enumerated(EnumType.STRING)
 	private Language languaje;
 	private String lastNewsLink;
-	@OneToMany(mappedBy="site", cascade=CascadeType.ALL,orphanRemoval=true)
+	@OneToMany(mappedBy = "site", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Alert> listOfAlerts;
 	private String urlNews;
 	private boolean isRSS = true;
-	
-	//Solo sitios sin RSS
-	@ElementCollection(fetch=FetchType.EAGER)
+	@Enumerated(EnumType.ORDINAL)
+	private Fiabilidad fiabilidad = Fiabilidad.Baja;
+	private Integer numNewNews;
+	private Timestamp ultimaRecuperacion;
+
+	// Solo sitios sin RSS
+	@ElementCollection(fetch = FetchType.EAGER)
 	private List<String> urlPages;
 	private String newsLink;
-	
-	
-	
+
 	public Feed() {
 		this.selectorHtml = new ArrayList<PairValues>();
 		this.selectorMeta = new ArrayList<PairValues>();
 	}
-	
+
 	public Feed(FeedForm feed) {
-		this.name=feed.getName();
-		this.dateFormat=feed.getDateFormat();
-		this.languaje=feed.getLanguaje();
-		this.selectorHtml=feed.getSelectorHtml();
-		this.selectorMeta=feed.getSelectorMeta();
+		this.name = feed.getName();
+		this.dateFormat = feed.getDateFormat();
+		this.languaje = feed.getLanguaje();
+		this.selectorHtml = feed.getSelectorHtml();
+		this.selectorMeta = feed.getSelectorMeta();
 		this.isRSS = feed.isRSS();
-		this.urlSite=feed.getUrl();
-		this.urlNews=feed.getUrlNews();
-		this.urlPages=feed.getUrlPages();
-		this.listOfAlerts= new ArrayList<Alert>();
-		this.newsLink=feed.getNewsLink();
-	}	
+		this.urlSite = feed.getUrl();
+		this.urlNews = feed.getUrlNews();
+		this.urlPages = feed.getUrlPages();
+		this.listOfAlerts = new ArrayList<Alert>();
+		this.newsLink = feed.getNewsLink();
+		this.fiabilidad = feed.getFiabilidad();
+	}
 
 	public void changeValues(FeedForm feed) {
-		this.name=feed.getName();
-		this.dateFormat=feed.getDateFormat();
-		this.languaje=feed.getLanguaje();
-		this.selectorHtml=feed.getSelectorHtml();
-		this.selectorMeta=feed.getSelectorMeta();
-		this.urlSite=feed.getUrl();
-		this.urlNews=feed.getUrlNews();
-		this.urlPages=feed.getUrlPages();
+		this.name = feed.getName();
+		this.dateFormat = feed.getDateFormat();
+		this.languaje = feed.getLanguaje();
+		this.selectorHtml = feed.getSelectorHtml();
+		this.selectorMeta = feed.getSelectorMeta();
+		this.urlSite = feed.getUrl();
+		this.urlNews = feed.getUrlNews();
+		this.urlPages = feed.getUrlPages();
 		this.isRSS = feed.isRSS();
-		this.newsLink=feed.getNewsLink();
+		this.newsLink = feed.getNewsLink();
+		this.fiabilidad = feed.getFiabilidad();
 	}
 
 	public String getCodeName() {
@@ -195,6 +199,29 @@ public class Feed extends BaseEntity {
 	public void setNewsLink(String newsLink) {
 		this.newsLink = newsLink;
 	}
-	
-	
+
+	public Fiabilidad getFiabilidad() {
+		return fiabilidad;
+	}
+
+	public void setFiabilidad(Fiabilidad fiabilidad) {
+		this.fiabilidad = fiabilidad;
+	}
+
+	public Integer getNumNewNews() {
+		return numNewNews;
+	}
+
+	public void setNumNewNews(Integer numNewNews) {
+		this.numNewNews = numNewNews;
+	}
+
+	public Timestamp getUltimaRecuperacion() {
+		return ultimaRecuperacion;
+	}
+
+	public void setUltimaRecuperacion(Timestamp ultimaRecuperacion) {
+		this.ultimaRecuperacion = ultimaRecuperacion;
+	}
+
 }

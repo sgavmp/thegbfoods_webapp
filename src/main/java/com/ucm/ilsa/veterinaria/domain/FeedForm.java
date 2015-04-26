@@ -1,23 +1,11 @@
 package com.ucm.ilsa.veterinaria.domain;
 
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-
-import javax.persistence.ElementCollection;
-import javax.validation.constraints.Pattern;
 
 import org.hibernate.validator.constraints.NotBlank;
 import org.hibernate.validator.constraints.NotEmpty;
 import org.hibernate.validator.constraints.URL;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
-
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 
 public class FeedForm {
 	@NotBlank
@@ -30,6 +18,7 @@ public class FeedForm {
 	//Por defecto Spanish
 	private Language languaje = Language.SPANISH;
 	private boolean isRSS = true;
+	private Fiabilidad fiabilidad = Fiabilidad.Baja;
 	
 	@URL
 	private String urlNews;//Url de la pagina de noticias o de rss
@@ -52,6 +41,7 @@ public class FeedForm {
 		this.url=feed.getUrlSite();
 		this.urlNews=feed.getUrlNews();
 		this.newsLink = feed.getNewsLink();
+		this.fiabilidad = feed.getFiabilidad();
 	}
 
 	public String getName() {
@@ -134,4 +124,13 @@ public class FeedForm {
 		this.newsLink = newsLink;
 	}
 
+	public Fiabilidad getFiabilidad() {
+		return fiabilidad;
+	}
+
+	public void setFiabilidad(Fiabilidad fiabilidad) {
+		this.fiabilidad = fiabilidad;
+	}
+	
+	
 }

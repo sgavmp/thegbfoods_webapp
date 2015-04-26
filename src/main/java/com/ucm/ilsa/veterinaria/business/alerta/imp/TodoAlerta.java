@@ -6,12 +6,10 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Component;
 
 import com.google.common.eventbus.Subscribe;
-import com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException;
 import com.ucm.ilsa.veterinaria.business.alerta.IntfAlerta;
 import com.ucm.ilsa.veterinaria.business.event.alerta.TodoAlertEvent;
 import com.ucm.ilsa.veterinaria.business.tratamiento.impl.TodoTratamiento;
 import com.ucm.ilsa.veterinaria.domain.Alert;
-import com.ucm.ilsa.veterinaria.domain.AlertLevel;
 import com.ucm.ilsa.veterinaria.domain.News;
 import com.ucm.ilsa.veterinaria.repository.AlertRepository;
 import com.ucm.ilsa.veterinaria.web.controller.BaseController;
@@ -35,13 +33,14 @@ public class TodoAlerta implements IntfAlerta<TodoAlertEvent> {
 			alert.setTitle(news.getTitle());
 			alert.setLink(news.getUrl());
 			alert.setInfoAlert("Esta alerta funciona a modo de ejemplo. Descripcion" + news.getDescription());
-			alert.setLevel(AlertLevel.yellow);
+			alert.setAlertLevelFromFiabilidad(event.getFeed().getFiabilidad());
 			alert.setTypeAlert("allNews");
 			try {
 				repository.save(alert);
 			} catch (DataIntegrityViolationException ex) {
 				LOGGER.error("Se ha producico un error al guardar la alerta. Ya existe que coinciden en tipo y enlace.");
 			}
+			break;//Solo guardamos una alerta de prueba por cada recuperacion para no saturar
 		}
 		BaseController.putInfoMessage("Se han comprobado las alertas. Alertas detectadas: " + event.getNews().size());
 	}

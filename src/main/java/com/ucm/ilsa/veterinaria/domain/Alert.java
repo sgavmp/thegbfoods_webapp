@@ -102,4 +102,17 @@ public class Alert extends BaseEntity {
 		this.id = id;
 	}
 	
+	public void setAlertLevelFromFiabilidad(Fiabilidad fiabilidad) {
+		switch(fiabilidad) {
+		case Baja:
+				this.level=AlertLevel.yellow;
+				break;
+		case Media:
+				this.level=AlertLevel.orange;
+				break;
+		case Alta:
+				this.level=AlertLevel.red;
+				break;
+		}
+	}
 }

@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<html lang="es" xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
 <head th:include="base :: head">
 </head>
 <body>
 	<header th:include="base :: header"> </header>
-	<main class="container">
+	<section class="container">
 	<div id="modal"></div>
 	<div class="row">
 		<div class="col s10 offset-s1">
@@ -27,6 +28,16 @@
 							<div class="input-field col s12">
 								<input type="text" th:field="*{name}" /> <label for="name">Nombre
 									del sitio</label>
+							</div>
+						</div>
+						<div class="row">
+							<div class="input-field col s12 m6 l4">
+								<select th:field="*{fiabilidad}">
+									<option value="" disabled="disabled" selected="selected">Fiabilidad del Sitio</option>
+									<option th:each="type : ${enumFiabilidad}" th:value="${type}"
+										th:text="${type}">Wireframe</option>
+								</select>
+								<label>Fiabilidad del Sitio</label>
 							</div>
 						</div>
 						<div class="row">
@@ -145,13 +156,14 @@
 			</div>
 		</div>
 	</div>
-	</main>
+	</section>
 	<footer th:include="base :: footer"> </footer>
 	<script th:inline="javascript">
 		/*<![CDATA[*/
 		$(document)
 				.ready(
 						function() {
+							$('select').material_select();
 							if (!$("#rss").is(":checked")) {
 								$(".rss").hide();
 								$(".html").show();
@@ -183,17 +195,28 @@
 																		.serialize()
 																		+ "&testFeed=",
 																function(data) {
-																	var response = jQuery.parseJSON(JSON.stringify(data));
-																	var date = new Date(response.pubDate);
+																	var response = jQuery
+																			.parseJSON(JSON
+																					.stringify(data));
+																	var date = new Date(
+																			response.pubDate);
 																	$("#modal")
 																			.html(
 																					'<div id="modal1" class="modal">'
 																							+ '<div class="modal-content">'
 																							+ '<h4>Noticia obtenida del sitio</h4>'
-																							+ '<p>Titulo de la noticia:'+ response.title +'</p>'
-																							+ '<p>Contenido de la noticia:'+ response.content +'</p>'
-																							+ '<p>Url de la noticia:'+ response.url +'</p>'
-																							+ '<p>Fecha de publicacion de la noticia:'+ date +'</p>'
+																							+ '<p>Titulo de la noticia:'
+																							+ response.title
+																							+ '</p>'
+																							+ '<p>Contenido de la noticia:'
+																							+ response.content
+																							+ '</p>'
+																							+ '<p>Url de la noticia:'
+																							+ response.url
+																							+ '</p>'
+																							+ '<p>Fecha de publicacion de la noticia:'
+																							+ date
+																							+ '</p>'
 																							+ '</div>'
 																							+ '<div class="modal-footer">'
 																							+ '<a href="#!" class=" modal-action modal-close waves-effect waves-green btn-flat">Agree</a>'

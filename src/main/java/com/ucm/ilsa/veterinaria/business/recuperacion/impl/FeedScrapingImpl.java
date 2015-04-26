@@ -62,6 +62,9 @@ public class FeedScrapingImpl implements FeedScraping {
 		} else {
 			newsList = scrapingWithOutRSS(feed);
 		}
+		feed.setUltimaRecuperacion(new Timestamp(System.currentTimeMillis()));
+		feed.setNumNewNews(newsList.size());
+		repositoryFeed.save(feed);
 		if (!newsList.isEmpty()) {
 			// Ordenamos por fecha de publicacion
 			Collections.sort(newsList, News.Comparators.PUBDATE);
@@ -71,11 +74,7 @@ public class FeedScrapingImpl implements FeedScraping {
 			event.setDate(new Date(System.currentTimeMillis()));
 			event.setListNews(newsList);
 			EventBusFactoryBean.getInstance().post(event);
-		} else {
-			feed.setUpdateDate( new Timestamp(System.currentTimeMillis()));
-			repositoryFeed.save(feed);
 		}
-		
 		return newsList;
 	}
 	

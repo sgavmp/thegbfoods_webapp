@@ -1,12 +1,11 @@
 package com.ucm.ilsa.veterinaria.domain;
 
-public enum Language {
+public enum Fiabilidad {
+	Baja(0),Media(1),Alta(2);
 	
-	SPANISH(0) ,ENGLISH(1);
-
 	private int value;
 
-    private Language(int value) {
+    private Fiabilidad(int value) {
             this.value = value;
     }
 
