@@ -47,7 +47,7 @@ public class Feed extends BaseEntity {
 	private String dateFormat;
 	@Enumerated(EnumType.STRING)
 	private Language languaje;
-	private String lastNewsLink;
+	private String lastNewsLink = "";
 	@OneToMany(mappedBy = "site", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Alert> listOfAlerts;
 	private String urlNews;
@@ -73,7 +73,7 @@ public class Feed extends BaseEntity {
 		this.languaje = feed.getLanguaje();
 		this.selectorHtml = feed.getSelectorHtml();
 		this.selectorMeta = feed.getSelectorMeta();
-		this.isRSS = feed.isRSS();
+		this.isRSS = feed.getIsRSS();
 		this.urlSite = feed.getUrl();
 		this.urlNews = feed.getUrlNews();
 		this.urlPages = feed.getUrlPages();
@@ -91,7 +91,7 @@ public class Feed extends BaseEntity {
 		this.urlSite = feed.getUrl();
 		this.urlNews = feed.getUrlNews();
 		this.urlPages = feed.getUrlPages();
-		this.isRSS = feed.isRSS();
+		this.isRSS = feed.getIsRSS();
 		this.newsLink = feed.getNewsLink();
 		this.fiabilidad = feed.getFiabilidad();
 	}

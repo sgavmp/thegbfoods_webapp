@@ -38,10 +38,12 @@ public class FeedForm {
 		this.languaje=feed.getLanguaje();
 		this.selectorHtml=feed.getSelectorHtml();
 		this.selectorMeta=feed.getSelectorMeta();
+		this.urlPages=feed.getUrlPages();
 		this.url=feed.getUrlSite();
 		this.urlNews=feed.getUrlNews();
 		this.newsLink = feed.getNewsLink();
 		this.fiabilidad = feed.getFiabilidad();
+		this.isRSS = feed.isRSS();
 	}
 
 	public String getName() {
@@ -92,11 +94,11 @@ public class FeedForm {
 		this.languaje = languaje;
 	}
 
-	public boolean isRSS() {
+	public boolean getIsRSS() {
 		return isRSS;
 	}
 
-	public void setRSS(boolean isRSS) {
+	public void setIsRSS(boolean isRSS) {
 		this.isRSS = isRSS;
 	}
 

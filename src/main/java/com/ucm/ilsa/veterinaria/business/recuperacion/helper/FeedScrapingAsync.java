@@ -61,7 +61,7 @@ public class FeedScrapingAsync {
 	}
 
 	@Async
-	public Future<News> asyncGetNewsWithOutRSS(Feed feed, String linkNews) {
+	public Future<News> asyncGetNewsWithOutRSS(Feed feed, String linkNews, String title) {
 		LOGGER.debug("Comenzada llamada asincrona feed: " + feed.getCodeName()
 				+ " noticia: " + linkNews);
 		try {
@@ -71,6 +71,7 @@ public class FeedScrapingAsync {
 
 			NewsBuilder temp = new NewsBuilder(feed);
 			temp.setUrl(linkNews);
+			temp.setTitle(title);
 			for (PairValues attribute : feed.getSelectorHtml()) {
 				temp.setValueOf(attribute.getKey(),
 						newsPage.select(attribute.getValue()).text());
