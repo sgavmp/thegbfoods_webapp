@@ -48,6 +48,11 @@ public class AdminController extends BaseController {
 		return Fiabilidad.values();
 	}
 	
+	@ModelAttribute("enumLanguaje")
+	public Language[] getValuesOfLanguaje() {
+		return Language.values();
+	}
+	
 	@RequestMapping("**")
 	public String menuWeb(){
 		return PREFIX.concat("main");

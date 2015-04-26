@@ -69,7 +69,7 @@
 			</div>
 			<!-- Pestaña alertas resueltas -->
 			<div id="check" class="row">
-				<div th:if="${#maps.isEmpty(alertsCheck)}"
+				<div th:if="${#maps.isEmpty(alertsCheck)}">
 					<h1>No hay alertas resueltas</h1>
 				</div>
 				<div th:each="day : ${alertsCheck}" class="col s12">
