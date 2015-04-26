@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
 <head th:include="base :: head">
 </head>
 <body>
@@ -22,13 +23,13 @@
 					<li class="tab col s3"><a href="#check">Alertas resultas</a></li>
 				</ul>
 			</div>
-			<!-- Pestaña alertas activas -->
+			<!-- PestaÃ±a alertas activas -->
 			<div id="uncheck" class="row">
 				<div th:if="${#maps.isEmpty(alertsUncheck)}"
 					class="collection-header watermark">
 					<h1>No hay alertas sin resolver</h1>
 				</div>
-				<div th:each="day : ${alertsUncheck}" class="col s12">
+				<div th:each="day : ${alertsUncheck}" class="col s12 day">
 					<span
 						th:if="${#dates.format(hoy, 'dd/MM/yyyy')==#dates.format(day.key, 'dd/MM/yyyy')}">Hoy</span>
 					<span
@@ -66,9 +67,9 @@
 					</ul>
 				</div>
 			</div>
-			<!-- Pestaña alertas resueltas -->
+			<!-- PestaÃ±a alertas resueltas -->
 			<div id="check" class="row">
-				<div th:if="${#maps.isEmpty(alertsCheck)}" class="collection-header watermark">
+				<div th:if="${#maps.isEmpty(alertsCheck)}"
 					<h1>No hay alertas resueltas</h1>
 				</div>
 				<div th:each="day : ${alertsCheck}" class="col s12">
