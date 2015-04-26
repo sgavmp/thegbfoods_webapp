@@ -39,7 +39,7 @@ public class GeoTagAlert implements IntfAlerta<GeoTagAlertEvent> {
 		List<PlaceAlert> lugares = placeAlertService.getAllLocations();
 		LOGGER.info("Ejemplo de comprobacion de alerta para el sitio: "
 				+ event.getFeed().getName());
-		Integer num = 1;
+		Integer num = 0;
 		// Una alerta por noticia
 		for (News news : event.getLocations().keySet()) {
 			String stringLocations = "La noticia puede hablar de municipios cerca de los siguientes lugares:";

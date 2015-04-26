@@ -67,8 +67,6 @@ public class FeedScrapingImpl implements FeedScraping {
 		feed.setNumNewNews(newsList.size());
 		repositoryFeed.save(feed);
 		if (!newsList.isEmpty()) {
-			// Ordenamos por fecha de publicacion
-			Collections.sort(newsList, News.Comparators.PUBDATE);
 			// Informamos a todos los tratamientos de la actualizacion
 			FeedUpdateEvent event = new FeedUpdateEvent();
 			event.setFeed(feed);
@@ -101,6 +99,7 @@ public class FeedScrapingImpl implements FeedScraping {
 				List<Future<News>> listaTareas = new ArrayList<Future<News>>();
 				boolean isFirst = true;
 				String lastNews = null;
+				Integer num = 0;
 				for (SyndEntry news : newsList.getEntries()) {
 					// Vamos comprobando el link de la entrada con el enlace de
 					// la ultima noticia almacenada del feed
@@ -121,6 +120,9 @@ public class FeedScrapingImpl implements FeedScraping {
 					}
 					listaTareas.add(asyncService
 							.asyncGetNewsWithRSS(feed, news));
+					num++;
+					if (num>50)//Limite de 50 noticias con RSS
+						break;
 				}
 				if (lastNews != null) {
 					feed.setLastNewsLink(lastNews);

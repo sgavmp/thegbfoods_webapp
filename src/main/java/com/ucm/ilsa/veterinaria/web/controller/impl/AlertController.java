@@ -1,9 +1,7 @@
 package com.ucm.ilsa.veterinaria.web.controller.impl;
 
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -13,13 +11,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-
-import sun.util.resources.CalendarData;
-
-import com.google.common.collect.Lists;
 import com.ucm.ilsa.veterinaria.domain.Alert;
-import com.ucm.ilsa.veterinaria.domain.Feed;
-import com.ucm.ilsa.veterinaria.repository.AlertRepository;
 import com.ucm.ilsa.veterinaria.service.impl.AlertServiceImpl;
 import com.ucm.ilsa.veterinaria.web.controller.BaseController;
 

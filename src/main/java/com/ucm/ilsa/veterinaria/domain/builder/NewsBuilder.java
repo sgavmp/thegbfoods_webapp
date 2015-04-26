@@ -71,7 +71,10 @@ public class NewsBuilder {
 			break;
 		case "content":
 			this.news.setContent(value);
-			this.news.setDescription(value.substring(0, 200).concat("..."));
+			if (value.length()>200)
+				this.news.setDescription(value.substring(0, 200).concat("..."));
+			else
+				this.news.setDescription(value);
 			break;
 		case "url":
 			this.news.setUrl(value);

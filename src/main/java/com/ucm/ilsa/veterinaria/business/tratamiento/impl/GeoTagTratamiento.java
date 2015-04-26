@@ -29,7 +29,10 @@ public class GeoTagTratamiento implements IntfTratamiento<FeedUpdateEvent> {
 	private final static Logger LOGGER = Logger.getLogger(GeoTagTratamiento.class);
 	
 	public GeoTagTratamiento() throws ClavinException {
-		parser = GeoParserFactory.getDefault("./IndexDirectory", new AlphaExtractor(), 50, 15, false);
+		ClassLoader classLoader = getClass().getClassLoader();
+		String path = classLoader.getResource("IndexDirectory").getFile();
+		path = path.replaceAll("%20", " ");
+		parser = GeoParserFactory.getDefault(path, new AlphaExtractor(), 50, 15, false);
 	}
 
 	@Override

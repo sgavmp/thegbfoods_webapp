@@ -25,7 +25,7 @@ public class TodoAlerta implements IntfAlerta<TodoAlertEvent> {
 	@Override
 	@Subscribe public void responseToEvent(TodoAlertEvent event) {
 		LOGGER.info("Ejemplo de comprobacion de alerta para el sitio: " + event.getFeed().getName());
-		Integer num = 1;
+		Integer num = 0;
 		//Una alerta por noticia
 		for (News news : event.getNews()) {
 			Alert alert = new Alert();
