@@ -1,6 +1,7 @@
 package com.ucm.ilsa.veterinaria.scheduler;
 
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
@@ -32,9 +33,12 @@ public class SchedulerService {
 	
 	public void init() {
 		List<Feed> listFeeds = serviceFeed.getAllFeed();
+		Date startTime = new Date();
+		startTime.setTime(startTime.getTime()+1000*120);//Las tareas se comienzan a ejecutar despues de dos minutos tras planificar
 		for (Feed feed : listFeeds) {
 			TaskContainer task = new TaskContainer(feed,serviceFeed);
-			ScheduledFuture<?> futureTask = scheduler.scheduleWithFixedDelay(task, HOUR_MILIS * 6);
+			ScheduledFuture<?> futureTask = scheduler.scheduleWithFixedDelay(task, startTime, HOUR_MILIS * 6);
+			startTime.setTime(startTime.getTime()+1000*30);//Vamos espacioandolas cada 2 minutos
 			tasks.put(feed.getCodeName(), futureTask);
 		}
 	}

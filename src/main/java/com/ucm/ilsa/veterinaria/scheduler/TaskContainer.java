@@ -23,6 +23,7 @@ public class TaskContainer implements Runnable {
 	public void run() {
 		LOGGER.info("Inicia tarea planificada para el sitio: " + feed.getCodeName());
 		service.scrapFeed(feed);
+		feed = service.getFeedByCodeName(feed.getCodeName());
 		LOGGER.info("Finalizada tarea planificada para el sitio: " + feed.getCodeName());
 	}
 
