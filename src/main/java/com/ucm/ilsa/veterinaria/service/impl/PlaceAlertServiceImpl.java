@@ -6,32 +6,32 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Lists;
-import com.ucm.ilsa.veterinaria.domain.PlaceAlert;
+import com.ucm.ilsa.veterinaria.domain.Location;
 import com.ucm.ilsa.veterinaria.repository.PlaceAlertRepository;
 
 @Service
-public class PlaceAlertService {
+public class PlaceAlertServiceImpl {
 	
 	@Autowired
 	private PlaceAlertRepository repository;
 	
-	public List<PlaceAlert> getAllLocations() {
+	public List<Location> getAllLocations() {
 		return Lists.newArrayList(repository.findAll());
 	}
 	
-	public PlaceAlert getOneById(Integer id) {
+	public Location getOneById(Integer id) {
 		return repository.findOne(id);
 	}
 	
-	public PlaceAlert createLocation(PlaceAlert place) {
+	public Location createLocation(Location place) {
 		return repository.save(place);
 	}
 	
-	public PlaceAlert updateLocation(PlaceAlert place) {
+	public Location updateLocation(Location place) {
 		return repository.save(place);
 	}
 	
-	public void removeLocation(PlaceAlert place) {
+	public void removeLocation(Location place) {
 		repository.delete(place);
 	}
 

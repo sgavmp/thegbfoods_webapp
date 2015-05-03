@@ -9,13 +9,13 @@ import com.ucm.ilsa.veterinaria.business.event.Event;
 import com.ucm.ilsa.veterinaria.domain.Feed;
 import com.ucm.ilsa.veterinaria.domain.News;
 
-public class GeoTagAlertEvent extends Event {
+public class GeoTagAndFilterAlertEvent extends Event {
 	
 	private Feed feed;
 	private Map<News,List<ResolvedLocation>> locations;
 	private Date date;
 	
-	public GeoTagAlertEvent() {
+	public GeoTagAndFilterAlertEvent() {
 	
 	}
 	

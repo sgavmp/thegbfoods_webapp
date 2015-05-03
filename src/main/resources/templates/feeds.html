@@ -21,7 +21,11 @@
 			</div>
 		</div>
 	</div>
-
+	<div sec:authorize="isAuthenticated()" class="row">
+		<div class="col s12 m6 l4 offset-m6 offset-l8">
+			<a class="btn btn-large col s12" th:href="@{/admin/feeds/create}" href="#">Crear nueva fuente</a>
+		</div>
+	</div>
 
 	</section>
 	<footer th:include="base :: footer"> </footer>

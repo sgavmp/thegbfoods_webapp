@@ -13,7 +13,7 @@
 				<div th:class="${location.id!=null}? 'collapsible-header active' : 'collapsible-header'" class="collapsible-header">A&ntilde;adir nuevo lugar<i class="mdi-hardware-keyboard-arrow-down right"></i></div>
 				<div class="collapsible-body">
 				<div class="col s10 offset-s1">
-					<form action="#" th:action="@{/admin/locations/create}"
+					<form action="#" th:action="${location.id==null}?@{/admin/locations/create}:@{/admin/locations/get/{id}/edit(id=${location.id})}"
 						val:validate="${location}" th:object="${location}" method="post">
 
 						<input
@@ -50,7 +50,7 @@
 									de alerta</label>
 							</div>
 						</div>
-						<p><button class="btn" type="submit">Enviar</button></p>
+						<p><button class="btn" type="submit">Enviar</button><a th:if="${location.id!=null}" class="btn right" th:href="@{/admin/locations}" href="#">Cancelar</a></p>
 					</form>
 					</div>
 				</div>
@@ -77,7 +77,7 @@
 						<td th:text="${loc.longitude}">-2.5653</td>
 						<td th:text="${loc.distance}">100km</td>
 						<td><a href="#" th:href="@{/admin/locations/get/{id}/edit(id=${loc.id})}"><i class="mdi-editor-mode-edit"></i></a></td>
-						<td><a href="#" th:href="@{/admin/locations/get/{id}/remove(id=${loc.id})}"><i class="mdi-action-delete"></i></a></td>
+						<td><a class="confirm" href="#" th:href="@{/admin/locations/get/{id}/remove(id=${loc.id})}"><i class="mdi-action-delete"></i></a></td>
 					</tr>
 				</tbody>
 			</table>
@@ -85,5 +85,14 @@
 	</div>
 	</section>
 	<footer th:include="base :: footer"> </footer>
+	<script type="text/javascript">
+		$(document).ready(function(){
+			$(".confirm").confirm({
+					text: "¿Estas seguro de eliminar la localizaci&oacute;n seleccionada?",
+				    title: "Confirme la eliminaci&oacute;n",
+				    confirmButton: "Si, eliminar",
+				    cancelButton: "No, volver"});
+		});
+	</script>
 </body>
 </html>

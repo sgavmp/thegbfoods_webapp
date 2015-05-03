@@ -14,7 +14,7 @@ import com.bericotech.clavin.GeoParserFactory;
 import com.bericotech.clavin.extractor.AlphaExtractor;
 import com.bericotech.clavin.resolver.ResolvedLocation;
 import com.google.common.eventbus.Subscribe;
-import com.ucm.ilsa.veterinaria.business.event.alerta.GeoTagAlertEvent;
+import com.ucm.ilsa.veterinaria.business.event.alerta.GeoTagAndFilterAlertEvent;
 import com.ucm.ilsa.veterinaria.business.event.alerta.TodoAlertEvent;
 import com.ucm.ilsa.veterinaria.business.event.config.EventBusFactoryBean;
 import com.ucm.ilsa.veterinaria.business.event.tratamiento.FeedUpdateEvent;
@@ -38,7 +38,7 @@ public class GeoTagTratamiento implements IntfTratamiento<FeedUpdateEvent> {
 	@Override
 	@Subscribe public void responseToEvent(FeedUpdateEvent event) {
 		LOGGER.info("Ejemplo de tratamiento para el sitio: " + event.getFeed().getName());
-		GeoTagAlertEvent evento = new GeoTagAlertEvent();
+		GeoTagAndFilterAlertEvent evento = new GeoTagAndFilterAlertEvent();
 		evento.setFeed(event.getFeed());
 		Map<News, List<ResolvedLocation>> map = new HashMap<>();
 		for (News news : event.getListNews()) {

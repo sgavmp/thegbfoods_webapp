@@ -13,7 +13,7 @@
 					<form action="#" val:validate="${feed}" th:object="${feed}"
 						method="post">
 						<div class="card-content white-text">
-							<span class="card-title">Crear un sitio</span> <input
+							<span class="card-title" th:text="${nuevo}?'Crear nueva fuente':'Editar fuente'">Crear un sitio</span> <input
 								type="hidden" th:name="${_csrf.parameterName}"
 								th:value="${_csrf.token}" />
 							<div class="row">
@@ -47,7 +47,7 @@
 											del sitio</option>
 										<option th:each="type : ${enumLanguaje}" th:value="${type}"
 											th:text="${type}">Wireframe</option>
-									</select> <label>Fiabilidad del Sitio</label>
+									</select> <label>Idioma del Sitio</label>
 								</div>
 							</div>
 							<div class="row">
@@ -65,9 +65,8 @@
 							</div>
 							<div class="row">
 								<div class="input-field col s12">
-									<input type="text" th:field="*{urlNews}" /> <label
-										for="urlRSS">Url del RSS de noticias o de la primera
-										p&aacute;gina de noticias</label>
+									<input type="text" th:field="*{urlNews}" /> <label id="labelUrl"
+										for="urlRSS" th:text="*{isRSS}?'Url del RSS de noticias':'Url de la primera p&aacute;gina de noticias'"> </label>
 								</div>
 							</div>
 							<div class="html row">
@@ -184,9 +183,11 @@
 								if (!$("#rss").is(":checked")) {
 									$(".rss").hide();
 									$(".html").show();
+									$("#labelUrl").html("Url de la primera p&aacute;gina de noticias");
 								} else {
 									$(".rss").show();
 									$(".html").hide();
+									$("#labelUrl").html("Url del RSS de noticias");
 								}
 							});
 							$(".right").submit(function() {

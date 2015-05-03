@@ -5,7 +5,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
 @Entity
-public class PlaceAlert extends BaseEntity {
+public class Location extends BaseEntity {
 
 	@Id
 	@GeneratedValue
@@ -15,7 +15,7 @@ public class PlaceAlert extends BaseEntity {
 	private Double longitude;
 	private Integer distance;// KM
 
-	public PlaceAlert() {
+	public Location() {
 
 	}
 

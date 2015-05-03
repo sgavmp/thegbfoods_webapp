@@ -14,7 +14,7 @@
 							class="card-title">[[${feed.name}]]</span> <span
 							sec:authorize="hasRole('ROLE_ADMIN')" th:inline="text"
 							class="card-title">[[${feed.name}]]<a
-							th:href="@{/admin/feeds/get/{codeName}/remove(codeName=${feed.codeName})}"
+							class="confirm" th:href="@{/admin/feeds/get/{codeName}/remove(codeName=${feed.codeName})}"
 							href="#"><i class="mdi-action-delete right tooltipped"
 								data-position="bottom" data-delay="50" data-tooltip="Borrar"></i></a><a
 							th:href="@{/admin/feeds/get/{codeName}/edit(codeName=${feed.codeName})}"
@@ -48,5 +48,14 @@
 
 	</section>
 	<footer th:include="base :: footer"> </footer>
+	<script type="text/javascript">
+		$(document).ready(function(){
+			$(".confirm").confirm({
+					text: "¿Estas seguro de eliminar la fuente seleccionada?",
+				    title: "Confirme la eliminaci&oacute;n",
+				    confirmButton: "Si, eliminar",
+				    cancelButton: "No, volver"});
+		});
+	</script>
 </body>
 </html>
