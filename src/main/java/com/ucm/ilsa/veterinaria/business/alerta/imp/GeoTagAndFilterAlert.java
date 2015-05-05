@@ -50,6 +50,7 @@ public class GeoTagAndFilterAlert implements IntfAlerta<GeoTagAndFilterAlertEven
 		for (News news : event.getLocations().keySet()) {
 			String stringLocations = "La noticia puede hablar de municipios cerca de los siguientes lugares:";
 			List<Location> lugaresCercanos = Lists.newArrayList();
+			List<String> palabrasAlertas = Lists.newArrayList();
 			for (ResolvedLocation loc : event.getLocations().get(news)) {
 				for (Location lugar : lugares) {
 					if (lugar.isNearOf(loc.getGeoname().getLatitude(), loc
@@ -65,24 +66,27 @@ public class GeoTagAndFilterAlert implements IntfAlerta<GeoTagAndFilterAlertEven
 			if (!lugaresCercanos.isEmpty()) {
 				for (WordFilter wordFilter : terminos) {
 					if (news.getContent().toLowerCase().contains(wordFilter.getWord().toLowerCase())) {
-						//Se almacena la alerta si se encuentra alguna coincidencia
-						Alert alert = new Alert();
-						alert.setDatePub(news.getPubDate());
-						alert.setSite(event.getFeed());
-						alert.setTitle(news.getTitle());
-						alert.setLink(news.getUrl());
-						alert.setInfoAlert(stringLocations);
-						alert.setLevel(AlertLevel.yellow);
-						alert.setTypeAlert("geotag");
-						try {
-							repository.save(alert);
-						} catch (DataIntegrityViolationException ex) {
-							LOGGER.error("Se ha producico un error al guardar la alerta. Ya existe que coinciden en tipo y enlace.");
-						}
-						num++;
-						break;//A la primera coincidencia dejamos de buscar
+						palabrasAlertas.add(wordFilter.getWord());
 					}
 				}
+			}
+			
+			if (!lugaresCercanos.isEmpty() && !palabrasAlertas.isEmpty()) {
+				//Se almacena la alerta si se encuentra alguna coincidencia
+				Alert alert = new Alert();
+				alert.setDatePub(news.getPubDate());
+				alert.setSite(event.getFeed());
+				alert.setTitle(news.getTitle());
+				alert.setLink(news.getUrl());
+				alert.setInfoAlert(stringLocations.concat("\n Se han encontrado las siguientes palabras de alertas: ").concat(palabrasAlertas.toString()));
+				alert.setLevel(AlertLevel.yellow);
+				alert.setTypeAlert("geotag");
+				try {
+					repository.save(alert);
+				} catch (DataIntegrityViolationException ex) {
+					LOGGER.error("Se ha producico un error al guardar la alerta. Ya existe que coinciden en tipo y enlace.");
+				}
+				num++;
 			}
 		}
 		BaseController
