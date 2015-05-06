@@ -33,6 +33,8 @@ public class GeoTagTratamiento implements IntfTratamiento<FeedUpdateEvent> {
 		String path = classLoader.getResource("IndexDirectory").getFile();
 		path = path.replaceAll("%20", " ");
 		parser = GeoParserFactory.getDefault(path, new AlphaExtractor(), 50, 15, false);
+		LOGGER.info("Indice CLAVIN-MOD: ".concat(path));
+		LOGGER.info("GeoParser ".concat(parser!=null?"Iniciado":"No iniciado"));
 	}
 
 	@Override

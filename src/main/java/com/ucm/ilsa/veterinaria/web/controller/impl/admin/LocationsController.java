@@ -41,7 +41,7 @@ public class LocationsController extends BaseController {
             return "locations";
         }
 		serviceLocation.createLocation(location);
-		putInfoMessage("Se ha a&ntilde;adido correctamente la localizaci$oacute;n");
+		putInfoMessage("Se ha a&ntilde;adido correctamente la localizaci&oacute;n");
 		return "redirect:/admin/locations";
 	}
 	
