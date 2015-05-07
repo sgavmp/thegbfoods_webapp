@@ -23,8 +23,7 @@
 						<p>Mas informaci&oacute;n sobre el sitio</p>
 					</div>
 					<div class="card-action">
-						<a
-							th:href="@{/admin/feeds/get/{codeName}/update(codeName=${feed.codeName})}"
+						<a id="update"	th:href="@{/admin/feeds/get/{codeName}/update(codeName=${feed.codeName})}"
 							href="#">Actualizar</a>
 					</div>
 				</div>
@@ -50,6 +49,16 @@
 	<footer th:include="base :: footer"> </footer>
 	<script type="text/javascript">
 		$(document).ready(function(){
+			$("#update").click(function() {
+				$.get($(this).attr('href')+"/ajax", function(data) {
+					if (data=="ok") {
+						Materialize.toast('Actualizando sitio', 10000, 'light-green');
+					} else {
+						Materialize.toast('Ha ocurrido un error', 10000, 'red');
+					}
+				});
+				return false;
+			});
 			$(".confirm").confirm({
 					text: "¿Estas seguro de eliminar la fuente seleccionada?",
 				    title: "Confirme la eliminaci&oacute;n",

@@ -79,7 +79,7 @@ public class GeoTagAndFilterAlert implements IntfAlerta<GeoTagAndFilterAlertEven
 				alert.setTitle(news.getTitle());
 				alert.setLink(news.getUrl());
 				alert.setInfoAlert(stringLocations.concat("\n Se han encontrado las siguientes palabras de alertas: ").concat(palabrasAlertas.toString()));
-				alert.setLevel(AlertLevel.yellow);
+				alert.setAlertLevelFromFiabilidad(event.getFeed().getFiabilidad());
 				alert.setTypeAlert("geotag");
 				try {
 					repository.save(alert);

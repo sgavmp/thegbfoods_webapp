@@ -54,7 +54,13 @@ public class FeedAdminController extends BaseController {
 		model.addAttribute(feed);
 		model.addAttribute(newsListAdd);
 		putInfoMessage("Sitio actualizado");
-		return "oneFeed";
+		return "redirect:/feeds/get/{codeName}";
+	}
+	@RequestMapping("/get/{codeName}/update/ajax")
+	
+	public @ResponseBody String updateNewsByFeedAjax(Model model, @PathVariable ("codeName") Feed feed) {
+		serviceFeed.scrapFeed(feed);
+		return "ok";
 	}
 	
 	@RequestMapping(value="/create", method=RequestMethod.GET)

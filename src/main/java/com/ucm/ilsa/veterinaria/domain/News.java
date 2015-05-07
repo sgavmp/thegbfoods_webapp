@@ -21,7 +21,7 @@ public class News {
 	private String content;
 	private String site;
 	private String url;
-	private Date pubDate;
+	private Date pubDate = new Date(System.currentTimeMillis());
 	private Map<String,String> others;
 	
 	public News() {

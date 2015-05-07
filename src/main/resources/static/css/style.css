@@ -15,7 +15,7 @@
 	text-shadow: 0px 2px 3px #fcfcfc;
 }
 
-.no-padding{
+.no-padding {
 	padding: 0 !important;
 }
 
@@ -26,16 +26,25 @@ body {
 	background-color: #e2e2e2;
 }
 
-
 main {
 	flex: 1 0 auto;
 }
 
 .collapsible-header i {
 	line-height: 3rem;
-	margin-left:-1rem;
+	margin-left: -1rem;
 }
 
 span.badge.new::after {
 	content: " alertas sin resolver";
+}
+
+.collapsible-header {
+	padding: 0;
+}
+
+.titulo {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
 }

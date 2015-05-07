@@ -20,13 +20,13 @@
 				<ul class="tabs transparent">
 					<li class="tab col s3"><a class="active" href="#uncheck">Alertas
 							sin resolver</a></li>
-					<li class="tab col s3"><a href="#check">Alertas resultas</a></li>
+					<li class="tab col s3"><a href="#check">Alertas resueltas</a></li>
 				</ul>
 			</div>
 			<!-- Pestaña alertas activas -->
 			<div id="uncheck" class="row">
 				<div th:if="${#maps.isEmpty(alertsUncheck)}"
-					class="collection-header watermark">
+					class="watermark">
 					<h1>No hay alertas sin resolver</h1>
 				</div>
 				<div th:each="day : ${alertsUncheck}" class="col s12 day">
@@ -46,7 +46,7 @@
 									th:if="${alert.level.toString()=='orange'}"
 									class="square orange">&nbsp;</i> <i
 									th:if="${alert.level.toString()=='red'}" class="square red">&nbsp;</i>
-								[[${alert.title}]] <a sec:authorize="isAuthenticated()"
+								[[${alert.title}]]<a sec:authorize="isAuthenticated()"
 									th:href="@{/alerts/get/{id}/check(id=${alert.id})}" href="#"><i
 									class="mdi-navigation-check tooltipped right"
 									data-position="bottom" data-delay="50"
@@ -69,7 +69,7 @@
 			</div>
 			<!-- Pestaña alertas resueltas -->
 			<div id="check" class="row">
-				<div th:if="${#maps.isEmpty(alertsCheck)}">
+				<div th:if="${#maps.isEmpty(alertsCheck)}" class="watermark">
 					<h1>No hay alertas resueltas</h1>
 				</div>
 				<div th:each="day : ${alertsCheck}" class="col s12">
