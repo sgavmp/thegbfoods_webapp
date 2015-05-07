@@ -89,4 +89,9 @@ public class Location extends BaseEntity {
 		return (rad * 180 / Math.PI);
 	}
 
+	@Override
+	public String toString() {
+		return name;
+	}
+
 }

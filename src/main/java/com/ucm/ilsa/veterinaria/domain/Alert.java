@@ -28,7 +28,9 @@ public class Alert extends BaseEntity {
 	@ManyToOne
 	@JoinColumn(name="siteCodeName")
 	private Feed site;
+	@Lob
 	private String title;
+	@Lob
 	private String link;
 	private Date datePub;
 	@Lob

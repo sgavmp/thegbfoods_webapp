@@ -37,6 +37,7 @@ public class AlertServiceImpl {
 		return repository.findAllByCheckIsTrueAndSiteOrderByDatePubDesc(feed);
 	}
 	
+	@SuppressWarnings("deprecation")
 	public SortedMap<Date,List<Alert>> getAllAlertsUncheckedOrderByDate() {
 		SortedMap<Date,List<Alert>> alertasPorFecha = new TreeMap<Date, List<Alert>>(Collections.reverseOrder());
 		for (Alert alert : repository.readAllByCheckIsFalseOrderByDatePubDesc()) {
@@ -53,6 +54,7 @@ public class AlertServiceImpl {
 		return alertasPorFecha;
 	}
 	
+	@SuppressWarnings("deprecation")
 	public SortedMap<Date,List<Alert>> getAllAlertsUncheckedByFeedOrderByDate(Feed feed) {
 		SortedMap<Date,List<Alert>> alertasPorFecha = new TreeMap<Date, List<Alert>>(Collections.reverseOrder());
 		for (Alert alert : repository.findAllByCheckIsFalseAndSiteOrderByDatePubDesc(feed)) {
@@ -69,6 +71,7 @@ public class AlertServiceImpl {
 		return alertasPorFecha;
 	}
 	
+	@SuppressWarnings("deprecation")
 	public SortedMap<Date,List<Alert>> getAllAlertsCheckedOrderByDate() {
 		SortedMap<Date,List<Alert>> alertasPorFecha = new TreeMap<Date, List<Alert>>(Collections.reverseOrder());
 		for (Alert alert : repository.readAllByCheckIsTrueOrderByDatePubDesc()) {
@@ -85,6 +88,7 @@ public class AlertServiceImpl {
 		return alertasPorFecha;
 	}
 	
+	@SuppressWarnings("deprecation")
 	public SortedMap<Date,List<Alert>> getAllAlertsCheckedOrderByFeedByDate(Feed feed) {
 		SortedMap<Date,List<Alert>> alertasPorFecha = new TreeMap<Date, List<Alert>>(Collections.reverseOrder());
 		for (Alert alert : repository.findAllByCheckIsTrueAndSiteOrderByDatePubDesc(feed)) {

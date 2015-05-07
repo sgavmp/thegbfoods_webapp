@@ -19,6 +19,7 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderColumn;
 import javax.persistence.Temporal;
@@ -40,6 +41,7 @@ public class Feed extends BaseEntity {
 	@GenericGenerator(name = "system-uuid", strategy = "uuid")
 	private String codeName;
 	private String name;
+	@Lob
 	private String urlSite;
 	@ElementCollection(fetch = FetchType.EAGER)
 	@CollectionTable(name = "feed_selector_hmtl", joinColumns = @JoinColumn(name = "SITE_ID"))
@@ -52,9 +54,11 @@ public class Feed extends BaseEntity {
 	private String dateFormat;
 	@Enumerated(EnumType.STRING)
 	private Language languaje;
+	@Lob
 	private String lastNewsLink = "";
 	@OneToMany(mappedBy = "site", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Alert> listOfAlerts;
+	@Lob
 	private String urlNews;
 	private boolean isRSS = true;
 	@Enumerated(EnumType.ORDINAL)
@@ -66,6 +70,7 @@ public class Feed extends BaseEntity {
 	@ElementCollection(fetch = FetchType.EAGER)
 	@CollectionTable(name = "feed_url_pages", joinColumns = @JoinColumn(name = "SITE_ID"))
 	@OrderColumn
+	@Lob
 	private List<String> urlPages;
 	private String newsLink;
 

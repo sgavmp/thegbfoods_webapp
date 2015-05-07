@@ -15,7 +15,6 @@ import com.bericotech.clavin.extractor.AlphaExtractor;
 import com.bericotech.clavin.resolver.ResolvedLocation;
 import com.google.common.eventbus.Subscribe;
 import com.ucm.ilsa.veterinaria.business.event.alerta.GeoTagAndFilterAlertEvent;
-import com.ucm.ilsa.veterinaria.business.event.alerta.TodoAlertEvent;
 import com.ucm.ilsa.veterinaria.business.event.config.EventBusFactoryBean;
 import com.ucm.ilsa.veterinaria.business.event.tratamiento.FeedUpdateEvent;
 import com.ucm.ilsa.veterinaria.business.tratamiento.IntfTratamiento;

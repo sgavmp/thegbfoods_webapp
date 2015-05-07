@@ -1,6 +1,7 @@
 package com.ucm.ilsa.veterinaria.business.alerta.imp;
 
 import java.util.List;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,10 +10,10 @@ import org.springframework.stereotype.Component;
 
 import com.bericotech.clavin.resolver.ResolvedLocation;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.google.common.eventbus.Subscribe;
 import com.ucm.ilsa.veterinaria.business.alerta.IntfAlerta;
 import com.ucm.ilsa.veterinaria.business.event.alerta.GeoTagAndFilterAlertEvent;
-import com.ucm.ilsa.veterinaria.business.tratamiento.impl.TodoTratamiento;
 import com.ucm.ilsa.veterinaria.domain.Alert;
 import com.ucm.ilsa.veterinaria.domain.AlertLevel;
 import com.ucm.ilsa.veterinaria.domain.News;
@@ -49,15 +50,13 @@ public class GeoTagAndFilterAlert implements IntfAlerta<GeoTagAndFilterAlertEven
 		// Una alerta por noticia
 		for (News news : event.getLocations().keySet()) {
 			String stringLocations = "La noticia puede hablar de municipios cerca de los siguientes lugares:";
-			List<Location> lugaresCercanos = Lists.newArrayList();
-			List<String> palabrasAlertas = Lists.newArrayList();
+			Set<Location> lugaresCercanos = Sets.newHashSet();
+			Set<String> palabrasAlertas = Sets.newHashSet();
 			for (ResolvedLocation loc : event.getLocations().get(news)) {
 				for (Location lugar : lugares) {
 					if (lugar.isNearOf(loc.getGeoname().getLatitude(), loc
 							.getGeoname().getLongitude())) {
 						lugaresCercanos.add(lugar);
-						stringLocations = stringLocations.concat(
-								lugar.getName()).concat(", ");
 					}
 				}
 			}
@@ -78,6 +77,7 @@ public class GeoTagAndFilterAlert implements IntfAlerta<GeoTagAndFilterAlertEven
 				alert.setSite(event.getFeed());
 				alert.setTitle(news.getTitle());
 				alert.setLink(news.getUrl());
+				stringLocations = stringLocations.concat(lugaresCercanos.toString());
 				alert.setInfoAlert(stringLocations.concat("\n Se han encontrado las siguientes palabras de alertas: ").concat(palabrasAlertas.toString()));
 				alert.setAlertLevelFromFiabilidad(event.getFeed().getFiabilidad());
 				alert.setTypeAlert("geotag");
