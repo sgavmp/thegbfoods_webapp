@@ -23,7 +23,7 @@
 						<li th:class="((${menu}=='alerts')?'active')"><a th:href="@{/alerts}" href="/alerts">Alertas</a></li>
 						<li th:class="((${menu}=='feeds')?'active')"><a th:href="@{/feeds}" href="/feeds">Fuentes</a></li>
 						<li sec:authorize="isAuthenticated()" th:class="((${menu}=='locations')?'active')"><a th:href="@{/admin/locations}" href="#">Localizaciones</a></li>
-						<li sec:authorize="isAuthenticated()" th:class="((${menu}=='words')?'active')"><a th:href="@{/admin/words}" href="#">Terminos</a></li>
+						<li sec:authorize="isAuthenticated()" th:class="((${menu}=='words')?'active')"><a th:href="@{/admin/words}" href="#">Términos</a></li>
 						<li sec:authorize="!isAuthenticated()"><a th:href="@{/login}" href="#">Acceso</a></li>	  				
 						<li sec:authorize="isAuthenticated()"><a th:href="@{/logout}" href="#">Logout</a></li>
 					</ul>
@@ -31,7 +31,7 @@
 						<li th:class="((${menu}=='alerts')?'active')"><a th:href="@{/alerts}" href="/alerts">Alertas</a></li>
 						<li th:class="((${menu}=='feeds')?'active')"><a th:href="@{/feeds}" href="/feeds">Fuentes</a></li>
 						<li sec:authorize="isAuthenticated()" th:class="((${menu}=='locations')?'active')"><a th:href="@{/admin/locations}" href="#">Localizaciones</a></li>
-						<li sec:authorize="isAuthenticated()" th:class="((${menu}=='words')?'active')"><a th:href="@{/admin/words}" href="#">Terminos</a></li>
+						<li sec:authorize="isAuthenticated()" th:class="((${menu}=='words')?'active')"><a th:href="@{/admin/words}" href="#">Términos</a></li>
 						<li sec:authorize="!isAuthenticated()"><a th:href="@{/login}" href="#">Acceso</a></li>	  				
 						<li sec:authorize="isAuthenticated()"><a th:href="@{/logout}" href="#">Logout</a></li>
 					</ul>
