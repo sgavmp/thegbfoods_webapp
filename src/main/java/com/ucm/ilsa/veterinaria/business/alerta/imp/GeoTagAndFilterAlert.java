@@ -44,7 +44,7 @@ public class GeoTagAndFilterAlert implements IntfAlerta<GeoTagAndFilterAlertEven
 	public void responseToEvent(GeoTagAndFilterAlertEvent event) {
 		List<Location> lugares = placeAlertService.getAllLocations();
 		List<WordFilter> terminos = wordService.getAllWordFilter();
-		LOGGER.info("Ejemplo de comprobacion de alerta de cercania y palabras de filtro para el sitio: "
+		LOGGER.info("Iniciada comprobacion de alerta de cercania y palabras de filtro para el sitio: "
 				+ event.getFeed().getName());
 		Integer num = 0;
 		// Una alerta por noticia
@@ -90,8 +90,10 @@ public class GeoTagAndFilterAlert implements IntfAlerta<GeoTagAndFilterAlertEven
 			}
 		}
 		BaseController
-				.putInfoMessage("Se han comprobado las alertas de cercania. Alertas detectadas: "
-						+ num);
+				.putInfoMessage(num + " nuevas alertas detectadas");
+		LOGGER.info("Finalizada comprobacion de alerta de cercania y palabras de filtro para el sitio: "
+				+ event.getFeed().getName());
+		LOGGER.info("Se han detectado ".concat(num.toString()).concat(" nuevas alertas de la fuente ".concat(event.getFeed().getName())));
 	}
 
 }

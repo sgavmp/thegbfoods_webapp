@@ -53,7 +53,7 @@ public class FeedAdminController extends BaseController {
 		List<News> newsListAdd = serviceFeed.scrapFeed(feed);
 		model.addAttribute(feed);
 		model.addAttribute(newsListAdd);
-		putInfoMessage("Sitio actualizado");
+		putInfoMessage("Actualizando fuente");
 		return "redirect:/feeds/get/{codeName}";
 	}
 	@RequestMapping("/get/{codeName}/update/ajax")
@@ -149,9 +149,9 @@ public class FeedAdminController extends BaseController {
 	@RequestMapping("/get/{codeName}/remove")
 	public String removeFeed(@PathVariable ("codeName") Feed feed) {
 		if (this.serviceFeed.removeFeed(feed)) {
-			this.putInfoMessage("Se ha borrado correctamente el sitio " + feed.getName());
+			this.putInfoMessage("Se ha borrado correctamente la fuente " + feed.getName());
 		} else {
-			this.putErrorMessage("No se ha borrado el sitio " + feed.getName());
+			this.putErrorMessage("No se ha borrado la fuente " + feed.getName());
 			return "oneFeed";
 		}
 		return "redirect:/feeds";

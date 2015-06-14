@@ -52,7 +52,7 @@
 			$("#update").click(function() {
 				$.get($(this).attr('href')+"/ajax", function(data) {
 					if (data=="ok") {
-						Materialize.toast('Actualizando sitio', 10000, 'light-green');
+						Materialize.toast('Actualizando fuente', 10000, 'light-green');
 					} else {
 						Materialize.toast('Ha ocurrido un error', 10000, 'red');
 					}
