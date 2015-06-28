@@ -4,6 +4,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
+import com.bericotech.clavin.gazetteer.CountryCode;
+
 @Entity
 public class Location extends BaseEntity {
 
@@ -14,6 +16,7 @@ public class Location extends BaseEntity {
 	private Double latitude;
 	private Double longitude;
 	private Integer distance;// KM
+	private CountryCode country;
 
 	public Location() {
 
@@ -93,5 +96,15 @@ public class Location extends BaseEntity {
 	public String toString() {
 		return name;
 	}
+
+	public CountryCode getCountry() {
+		return country;
+	}
+
+	public void setCountry(CountryCode country) {
+		this.country = country;
+	}
+	
+	
 
 }
