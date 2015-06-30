@@ -2,6 +2,7 @@ package com.ucm.ilsa.veterinaria.service;
 
 import java.util.List;
 
+import com.ucm.ilsa.veterinaria.domain.AlertDetect;
 import com.ucm.ilsa.veterinaria.domain.Feed;
 import com.ucm.ilsa.veterinaria.domain.FeedForm;
 import com.ucm.ilsa.veterinaria.domain.News;
@@ -16,4 +17,5 @@ public interface FeedService {
 	public boolean removeFeed(Feed feed);
 	public void setSchedulerService(SchedulerService schedulerService);
 	public News testFeed(FeedForm feed);
+	public List<AlertDetect> comprobarFeed(Feed feed);
 }

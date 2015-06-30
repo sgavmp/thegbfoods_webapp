@@ -5,6 +5,23 @@
  *
  * Made By MaterializeCSS.com
  */
+ 
+ .card-title.secondary-color {
+ 	font-weight: bold;
+ }
+ 
+ .card-image {
+ 	height: 100px;
+ }
+ 
+ .primary-color {
+ 	background-color: #f97333 !important;
+ }
+ 
+ .secondary-color {
+ 	color: #666 !important;
+ }
+ 
 .icon-block {
 	padding: 0 15px;
 }
@@ -23,7 +40,7 @@ body {
 	display: flex;
 	min-height: 100vh;
 	flex-direction: column;
-	background-color: #e2e2e2;
+	background-color: #fff;
 }
 
 main {
@@ -37,10 +54,6 @@ main {
 
 span.badge.new::after {
 	content: " alertas sin resolver";
-}
-
-.collapsible-header {
-	padding: 0;
 }
 
 .titulo {

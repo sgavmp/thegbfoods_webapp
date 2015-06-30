@@ -56,8 +56,6 @@ public class Feed extends BaseEntity {
 	private Language languaje;
 	@Lob
 	private String lastNewsLink = "";
-	@OneToMany(mappedBy = "site", cascade = CascadeType.ALL, orphanRemoval = true)
-	private List<Alert> listOfAlerts;
 	@Lob
 	private String urlNews;
 	private boolean isRSS = true;
@@ -89,7 +87,6 @@ public class Feed extends BaseEntity {
 		this.urlSite = feed.getUrl();
 		this.urlNews = feed.getUrlNews();
 		this.urlPages = feed.getUrlPages();
-		this.listOfAlerts = new ArrayList<Alert>();
 		this.newsLink = feed.getNewsLink();
 		this.fiabilidad = feed.getFiabilidad();
 	}
@@ -170,14 +167,6 @@ public class Feed extends BaseEntity {
 
 	public void setLastNewsLink(String lastNewsLink) {
 		this.lastNewsLink = lastNewsLink;
-	}
-
-	public List<Alert> getListOfAlerts() {
-		return listOfAlerts;
-	}
-
-	public void setListOfAlerts(List<Alert> listOfAlerts) {
-		this.listOfAlerts = listOfAlerts;
 	}
 
 	public String getUrlNews() {

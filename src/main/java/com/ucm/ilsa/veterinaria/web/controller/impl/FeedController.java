@@ -17,7 +17,7 @@ import com.ucm.ilsa.veterinaria.domain.Feed;
 import com.ucm.ilsa.veterinaria.domain.FeedForm;
 import com.ucm.ilsa.veterinaria.domain.News;
 import com.ucm.ilsa.veterinaria.service.FeedService;
-import com.ucm.ilsa.veterinaria.service.impl.AlertServiceImpl;
+import com.ucm.ilsa.veterinaria.service.impl.AlertDetectServiceImpl;
 import com.ucm.ilsa.veterinaria.web.controller.BaseController;
 
 @Controller
@@ -31,7 +31,7 @@ public class FeedController extends BaseController {
 	@Autowired
 	private FeedService serviceFeed;
 	@Autowired
-	private AlertServiceImpl serviceAlert;
+	private AlertDetectServiceImpl serviceAlert;
 	
 	
 	@ModelAttribute("feeds")

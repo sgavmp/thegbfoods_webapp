@@ -3,16 +3,16 @@ package com.ucm.ilsa.veterinaria.web.converter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.converter.Converter;
 
-import com.ucm.ilsa.veterinaria.domain.Alert;
-import com.ucm.ilsa.veterinaria.repository.AlertRepository;
+import com.ucm.ilsa.veterinaria.domain.AlertDetect;
+import com.ucm.ilsa.veterinaria.repository.AlertDetectRepository;
 
-public class StringToAlert implements Converter<String, Alert> {
+public class StringToAlert implements Converter<String, AlertDetect> {
 
 	@Autowired
-    AlertRepository alertRepository;
+    AlertDetectRepository alertRepository;
 	
 	@Override
-	public Alert convert(String source) {
+	public AlertDetect convert(String source) {
 		return alertRepository.findOne(Long.parseLong(source));
 	}
 

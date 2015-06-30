@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.rometools.rome.io.impl.FeedParsers;
 import com.ucm.ilsa.veterinaria.domain.Feed;
 import com.ucm.ilsa.veterinaria.domain.FeedForm;
 import com.ucm.ilsa.veterinaria.domain.Fiabilidad;
@@ -56,8 +57,8 @@ public class FeedAdminController extends BaseController {
 		putInfoMessage("Actualizando fuente");
 		return "redirect:/feeds/get/{codeName}";
 	}
-	@RequestMapping("/get/{codeName}/update/ajax")
 	
+	@RequestMapping("/get/{codeName}/update/ajax")
 	public @ResponseBody String updateNewsByFeedAjax(Model model, @PathVariable ("codeName") Feed feed) {
 		serviceFeed.scrapFeed(feed);
 		return "ok";
@@ -97,14 +98,54 @@ public class FeedAdminController extends BaseController {
 		return "feedForm";
 	}
 	
-	@RequestMapping(value={"/get/{codeName}/edit","/create"}, method=RequestMethod.POST, params={"addHtml"})
+	@RequestMapping(value="/get/{codeName}/test", method=RequestMethod.GET)
+	public String formTestFeed(Model model, @PathVariable ("codeName") Feed feedP) {
+		if (feedP.isRSS()) {
+			feedP.setUrlNews("");
+			feedP.setRSS(false);
+		}
+		model.addAttribute("feed", new FeedForm(feedP));
+		return "comprobarForm";
+	}
+	
+	@RequestMapping(value="/get/{codeName}/test", method=RequestMethod.POST)
+	public String saveTestEditFeed(Model model, @PathVariable ("codeName") Feed feedP, @ModelAttribute(value="feed") FeedForm feed, BindingResult bindingResult) {
+		feed.setIsRSS(false);
+		Feed feedTest = new Feed(feed);
+		model.addAttribute("alertsUncheck", serviceFeed.comprobarFeed(feedTest));
+		return "comprobarForm";
+	}
+	
+	@RequestMapping(value="/get/{codeName}/test", method=RequestMethod.POST, params={"testFeed"})
+	public @ResponseBody News testTestFeed(Model model, @ModelAttribute(value="feed") FeedForm feed) {
+		feed.setIsRSS(false);
+		News news = serviceFeed.testFeed(feed);
+		//model.addAttribute(feed);
+		return news;
+	}
+	
+	@RequestMapping(value="/get/{codeName}/test", method=RequestMethod.POST, params={"addHtml"})
+	public String addHtmlSelectorTest(Model model, @ModelAttribute(value="feed") FeedForm feed) {
+		feed.getSelectorHtml().add(new PairValues());
+		//model.addAttribute(feed);
+		return "comprobarForm";
+	}
+	
+	@RequestMapping(value="/get/{codeName}/test", method=RequestMethod.POST, params={"removeHtml"})
+	public String removeHtmlSelectorTest(Model model, @ModelAttribute(value="feed") FeedForm feed, @RequestParam("removeHtml")Integer index) {
+		feed.getSelectorHtml().remove(index.intValue());
+		//model.addAttribute(feed);
+		return "comprobarForm";
+	}
+	
+	@RequestMapping(value={"/get/{codeName}/edit","/create","/get/{codeName}/test"}, method=RequestMethod.POST, params={"addHtml"})
 	public String addHtmlSelector(Model model, @ModelAttribute(value="feed") FeedForm feed) {
 		feed.getSelectorHtml().add(new PairValues());
 		//model.addAttribute(feed);
 		return "feedForm";
 	}
 	
-	@RequestMapping(value={"/get/{codeName}/edit","/create"}, method=RequestMethod.POST, params={"removeHtml"})
+	@RequestMapping(value={"/get/{codeName}/edit","/create","/get/{codeName}/test"}, method=RequestMethod.POST, params={"removeHtml"})
 	public String removeHtmlSelector(Model model, @ModelAttribute(value="feed") FeedForm feed, @RequestParam("removeHtml")Integer index) {
 		feed.getSelectorHtml().remove(index.intValue());
 		//model.addAttribute(feed);

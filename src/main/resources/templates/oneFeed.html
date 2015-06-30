@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="es" xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:th="http://www.thymeleaf.org">
+	xmlns:th="http://www.thymeleaf.org">
 <head th:include="base :: head">
 </head>
 <body>
@@ -13,8 +13,8 @@
 						<span sec:authorize="!hasRole('ROLE_ADMIN')" th:inline="text"
 							class="card-title">[[${feed.name}]]</span> <span
 							sec:authorize="hasRole('ROLE_ADMIN')" th:inline="text"
-							class="card-title">[[${feed.name}]]<a
-							class="confirm" th:href="@{/admin/feeds/get/{codeName}/remove(codeName=${feed.codeName})}"
+							class="card-title">[[${feed.name}]]<a class="confirm"
+							th:href="@{/admin/feeds/get/{codeName}/remove(codeName=${feed.codeName})}"
 							href="#"><i class="mdi-action-delete right tooltipped"
 								data-position="bottom" data-delay="50" data-tooltip="Borrar"></i></a><a
 							th:href="@{/admin/feeds/get/{codeName}/edit(codeName=${feed.codeName})}"
@@ -22,15 +22,15 @@
 								data-position="bottom" data-delay="50" data-tooltip="Editar"></i></a></span>
 						<p>Mas informaci&oacute;n sobre el sitio</p>
 					</div>
-					<div class="card-action">
+					<div sec:authorize="hasRole('ROLE_ADMIN')" class="card-action">
 						<a id="update"	th:href="@{/admin/feeds/get/{codeName}/update(codeName=${feed.codeName})}"
 							href="#">Actualizar</a>
+						<a id="update"	th:href="@{/admin/feeds/get/{codeName}/test(codeName=${feed.codeName})}"
+							href="#">Comprobar</a>
 					</div>
 				</div>
 			</div>
 		</div>
-		<section th:include="alerts :: alerts">
-		</section>
 		<!--  
 	<h1 th:if="${newsListAdd}!=null">Nuevas noticias añadidas</h1>
 	<div th:if="${newsListAdd}!=null" th:each="news : ${newsListAdd}" class="row">

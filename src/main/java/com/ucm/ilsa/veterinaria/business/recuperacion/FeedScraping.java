@@ -10,5 +10,6 @@ import com.ucm.ilsa.veterinaria.domain.News;
 
 public interface FeedScraping {
 	public List<News> scrapNews(Feed feed);
+	public List<News> scrapNewsWithOutEvent(Feed feed);
 	public News scrapOneNews(FeedForm feed);
 }

@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import com.ucm.ilsa.veterinaria.domain.WordFilter;
-import com.ucm.ilsa.veterinaria.service.impl.WordFilterServiceImpl;
+import com.ucm.ilsa.veterinaria.domain.Alert;
+import com.ucm.ilsa.veterinaria.service.impl.AlertServiceImpl;
 import com.ucm.ilsa.veterinaria.web.controller.BaseController;
 
 @Controller
@@ -19,7 +19,7 @@ import com.ucm.ilsa.veterinaria.web.controller.BaseController;
 public class WordFilterController extends BaseController {
 	
 	@Autowired
-	private WordFilterServiceImpl wordService;
+	private AlertServiceImpl wordService;
 	
 	public WordFilterController() {
 		this.menu = "words";
@@ -27,13 +27,13 @@ public class WordFilterController extends BaseController {
 	
 	@RequestMapping("**")
 	public String getAllLocations(Model model) {
-		model.addAttribute("allWords", wordService.getAllWordFilter());
-		model.addAttribute("term", new WordFilter());
+		model.addAttribute("allWords", wordService.getAllAlert());
+		model.addAttribute("term", new Alert());
 		return "words";
 	}
 	
 	@RequestMapping(value="/create", method=RequestMethod.POST)
-	public String createLocation(Model model, WordFilter wordFilter,BindingResult result) {
+	public String createLocation(Model model, Alert wordFilter,BindingResult result) {
         if (result.hasErrors()) {
             return "words";
         }
@@ -43,14 +43,14 @@ public class WordFilterController extends BaseController {
 	}
 	
 	@RequestMapping(value = "/get/{id}/edit", method=RequestMethod.GET)
-	public String getFormUpdateLocation(Model model, @PathVariable ("id") WordFilter word) {
-		model.addAttribute("allWords", wordService.getAllWordFilter());
+	public String getFormUpdateLocation(Model model, @PathVariable ("id") Alert word) {
+		model.addAttribute("allWords", wordService.getAllAlert());
 		model.addAttribute("term",word);
 		return "words";
 	}
 	
 	@RequestMapping(value="/get/{id}/edit", method=RequestMethod.POST)
-	public String updateLocation(Model model, @Valid WordFilter wordFilter, @PathVariable ("id") WordFilter before,BindingResult result) {
+	public String updateLocation(Model model, @Valid Alert wordFilter, @PathVariable ("id") Alert before,BindingResult result) {
         if (result.hasErrors()) {
         	putErrorMessage("Hay un error en el formulario");
             return "words";
@@ -61,7 +61,7 @@ public class WordFilterController extends BaseController {
 	}
 	
 	@RequestMapping(value = "/get/{id}/remove", method=RequestMethod.GET)
-	public String updateNewsByFeed(Model model, @PathVariable ("id") WordFilter word) {
+	public String updateNewsByFeed(Model model, @PathVariable ("id") Alert word) {
 		wordService.remove(word);
 		return "redirect:/admin/words";
 	}

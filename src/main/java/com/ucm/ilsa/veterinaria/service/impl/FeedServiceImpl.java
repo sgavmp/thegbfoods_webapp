@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
@@ -19,6 +20,7 @@ import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.bericotech.clavin.resolver.ResolvedLocation;
 import com.google.common.collect.Lists;
 import com.rometools.rome.feed.synd.SyndContent;
 import com.rometools.rome.feed.synd.SyndEntry;
@@ -26,7 +28,10 @@ import com.rometools.rome.feed.synd.SyndFeed;
 import com.rometools.rome.io.FeedException;
 import com.rometools.rome.io.SyndFeedInput;
 import com.rometools.rome.io.XmlReader;
+import com.ucm.ilsa.veterinaria.business.alerta.imp.GeoTagAndFilterAlert;
 import com.ucm.ilsa.veterinaria.business.recuperacion.FeedScraping;
+import com.ucm.ilsa.veterinaria.business.tratamiento.impl.GeoTagTratamiento;
+import com.ucm.ilsa.veterinaria.domain.AlertDetect;
 import com.ucm.ilsa.veterinaria.domain.Feed;
 import com.ucm.ilsa.veterinaria.domain.FeedForm;
 import com.ucm.ilsa.veterinaria.domain.News;
@@ -43,6 +48,10 @@ public class FeedServiceImpl implements FeedService {
 	private FeedRepository repositoryFeed;
 	@Autowired
 	private FeedScraping scrapingFeed;
+	@Autowired
+	private GeoTagTratamiento geoTagTratamiento;
+	@Autowired
+	private GeoTagAndFilterAlert filterAlert;
 	
 	private SchedulerService schedulerService;
 
@@ -93,6 +102,13 @@ public class FeedServiceImpl implements FeedService {
 
 	public void setSchedulerService(SchedulerService schedulerService) {
 		this.schedulerService = schedulerService;
+	}
+
+	@Override
+	public List<AlertDetect> comprobarFeed(Feed feed) {
+		List<News> listNews = scrapingFeed.scrapNewsWithOutEvent(feed);
+		Map<News,List<ResolvedLocation>> locations = geoTagTratamiento.getLocations(listNews);
+		return filterAlert.detectAlert(feed, locations);
 	}	
 	
 	

@@ -53,10 +53,21 @@ public class GeoTagTratamiento implements IntfTratamiento<FeedUpdateEvent> {
 		}
 		evento.setLocations(map);
 		evento.setDate(new Date(System.currentTimeMillis()));
-		//Enviamos el evento al bus para que las alertas interesadas los comprueben
-		if (map.size() > 0) {// Se envia el evento si se ha encontrado alguna coincidencia
-			EventBusFactoryBean.getInstance().post(evento);
+		EventBusFactoryBean.getInstance().post(evento);
+	}
+	
+	public Map<News, List<ResolvedLocation>> getLocations(List<News> listNews) {
+		Map<News, List<ResolvedLocation>> map = new HashMap<>();
+		for (News news : listNews) {
+			try {
+			List<ResolvedLocation> locations = parser.parse(news.getContent());
+			if (locations.size()>0) 
+				map.put(news, locations);
+			} catch (Exception ex) {
+				LOGGER.error(ex.getMessage());
+			}
 		}
+		return map;
 	}
 
 }

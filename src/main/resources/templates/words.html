@@ -10,7 +10,7 @@
 	<div class="row">
 		<ul class="collapsible col s10 offset-s1" data-collapsible="accordion">
 			<li>
-				<div th:class="${term.word!=''}? 'collapsible-header active' : 'collapsible-header'" class="collapsible-header" th:inline="text">[[${term.id==null}?'A&ntilde;adir nuevo termino':'Editar termino']]<i class="mdi-hardware-keyboard-arrow-down right"></i></div>
+				<div th:class="${term.title!=''}? 'collapsible-header active' : 'collapsible-header'" class="collapsible-header" th:inline="text">[[${term.id==null}?'A&ntilde;adir nuevo termino':'Editar termino']]<i class="mdi-hardware-keyboard-arrow-down right"></i></div>
 				<div class="collapsible-body">
 				<div class="col s10 offset-s1">
 					<form action="#" th:action="${term.id==null}?@{/admin/words/create}:@{/admin/words/get/{id}/edit(id=${term.id})}"
@@ -27,8 +27,14 @@
 						</div>
 						<div class="row">
 							<div class="input-field col s12">
-								<label for="word">Introduce la palabra de filtro para las alertas</label>
-								<input type="text" th:field="*{word}" />
+								<label for="title">Introduce el titulo de la alerta</label>
+								<input type="text" th:field="*{title}" />
+							</div>
+						</div>
+						<div class="row">
+							<div class="input-field col s12">
+								<label for="words">Introduce las palabras de filtro para la alerta separadas por coma</label>
+								<input type="text" th:field="*{words}" />
 							</div>
 						</div>
 						<p><button class="btn" type="submit">Enviar</button><a th:if="${term.id!=null}" class="btn right" th:href="@{/admin/words}" href="#">Cancelar</a></p>
@@ -43,14 +49,16 @@
 			<table class="hoverable">
 				<thead>
 					<tr>
-						<td>Palabra</td>
+						<td>Titulo</td>
+						<td>Palabras</td>
 						<td>Editar</td>
 						<td>Borrar</td>
 					</tr>
 				</thead>
 				<tbody>
 					<tr th:each="word : ${allWords}">
-						<td th:text="${word.word}">Pescados manolo</td>
+						<td th:text="${word.title}">Alerta de fiebre</td>
+						<td th:text="${word.words}">Pescados manolo</td>
 						<td><a href="#" th:href="@{/admin/words/get/{id}/edit(id=${word.id})}"><i class="mdi-editor-mode-edit"></i></a></td>
 						<td><a class="confirm" href="#" th:href="@{/admin/words/get/{id}/remove(id=${word.id})}"><i class="mdi-action-delete"></i></a></td>
 					</tr>

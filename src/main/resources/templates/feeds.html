@@ -15,7 +15,7 @@
 				<ul class="collection">
 					<a th:each="feed : ${feeds}"
 						th:href="@{/feeds/get/{codeName}(codeName=${feed.codeName})}"
-						href="#!" class="collection-item" th:inline="text">[[${feed.name}]]<span th:if="${#lists.size(feed.listOfAlerts)>0}" class="new badge">[[${#lists.size(feed.listOfAlerts)}]]</span>
+						href="#!" class="collection-item" th:inline="text">[[${feed.name}]]s
 					</a>
 				</ul>
 			</div>

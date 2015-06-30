@@ -11,8 +11,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import com.ucm.ilsa.veterinaria.domain.Alert;
-import com.ucm.ilsa.veterinaria.service.impl.AlertServiceImpl;
+import com.ucm.ilsa.veterinaria.domain.AlertDetect;
+import com.ucm.ilsa.veterinaria.service.impl.AlertDetectServiceImpl;
 import com.ucm.ilsa.veterinaria.web.controller.BaseController;
 
 @Controller
@@ -24,20 +24,20 @@ public class AlertController extends BaseController {
 	}
 	
 	@Autowired
-	private AlertServiceImpl service;
+	private AlertDetectServiceImpl service;
 	
 	@ModelAttribute("alertsUncheck")
-	public Map<Date,List<Alert>> getAllAlertsUnchecked() {
-		return service.getAllAlertsUncheckedOrderByDate();
+	public List<AlertDetect> getAllAlertsUnchecked() {
+		return service.getAllAlertUnchecked();
 	}
 	
 	@ModelAttribute("alertsCheck")
-	public Map<Date,List<Alert>> getAllAlertsChecked() {
-		return service.getAllAlertsCheckedOrderByDate();
+	public List<AlertDetect> getAllAlertsChecked() {
+		return service.getAllAlertChecked();
 	}
 	
 	@RequestMapping("/get/{idAlert}/check")
-	public String checkAlert(Model model, @PathVariable ("idAlert") Alert alert) {
+	public String checkAlert(Model model, @PathVariable ("idAlert") AlertDetect alert) {
 		service.checkAlert(alert);
 		putInfoMessage("Alerta revisada");
 		return "redirect:/alerts";

@@ -5,13 +5,13 @@ import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
 
 import com.ucm.ilsa.veterinaria.domain.Location;
-import com.ucm.ilsa.veterinaria.repository.PlaceAlertRepository;
+import com.ucm.ilsa.veterinaria.repository.LocationRepository;
 
 @Component
 public class StringToPlaceAlertConverter implements Converter<String, Location> {
 	
 	@Autowired
-	private PlaceAlertRepository repository;
+	private LocationRepository repository;
 
 	@Override
 	public Location convert(String arg0) {

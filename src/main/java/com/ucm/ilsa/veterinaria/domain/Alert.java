@@ -1,120 +1,54 @@
 package com.ucm.ilsa.veterinaria.domain;
 
-import java.util.Date;
-
-import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.Lob;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
+import javax.validation.constraints.NotNull;
 
 import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Type;
-import org.springframework.data.annotation.CreatedDate;
 
 @Entity
-@Table(uniqueConstraints=@UniqueConstraint(columnNames={"link","typeAlert"}))
 public class Alert extends BaseEntity {
 	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
-	private Long id;
-	@ManyToOne
-	@JoinColumn(name="siteCodeName")
-	private Feed site;
-	@Lob
+	@GeneratedValue(generator = "system-uuid")
+	@GenericGenerator(name = "system-uuid", strategy = "uuid")
+	private String id;
+	@NotNull
 	private String title;
-	@Lob
-	private String link;
-	private Date datePub;
-	@Lob
-	private String infoAlert;
-	private String typeAlert;
-	@Enumerated(EnumType.ORDINAL)
-	private AlertLevel level;
-	@Column(name="isCheck")
-	private boolean check;
-
+	@NotNull
+	private String words;
+	
 	public Alert() {
-	
-	}
-	
-	public Feed getSite() {
-		return site;
-	}
-	public void setSite(Feed site) {
-		this.site = site;
-	}
-	public String getTitle() {
-		return title;
-	}
-	public void setTitle(String title) {
-		this.title = title;
-	}
-	public String getLink() {
-		return link;
-	}
-	public void setLink(String link) {
-		this.link = link;
-	}
-	public Date getDatePub() {
-		return datePub;
-	}
-	public void setDatePub(Date datePub) {
-		this.datePub = datePub;
-	}
-	public String getInfoAlert() {
-		return infoAlert;
-	}
-	public void setInfoAlert(String infoAlert) {
-		this.infoAlert = infoAlert;
-	}
-	public String getTypeAlert() {
-		return typeAlert;
-	}
-	public void setTypeAlert(String typeAlert) {
-		this.typeAlert = typeAlert;
-	}
-	public AlertLevel getLevel() {
-		return level;
-	}
-	public void setLevel(AlertLevel level) {
-		this.level = level;
+		this.words="";
 	}
 
-	public boolean isCheck() {
-		return check;
+	public Alert(String word) {
+		this.words = word;
 	}
 
-	public void setCheck(boolean check) {
-		this.check = check;
-	}
-
-	public Long getId() {
+	public String getId() {
 		return id;
 	}
 
-	public void setId(Long id) {
+	public void setId(String id) {
 		this.id = id;
 	}
-	
-	public void setAlertLevelFromFiabilidad(Fiabilidad fiabilidad) {
-		switch(fiabilidad) {
-		case Baja:
-				this.level=AlertLevel.yellow;
-				break;
-		case Media:
-				this.level=AlertLevel.orange;
-				break;
-		case Alta:
-				this.level=AlertLevel.red;
-				break;
-		}
+
+	public String getWords() {
+		return words;
 	}
+
+	public void setWords(String word) {
+		this.words = word;
+	}
+
+	public String getTitle() {
+		return title;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
+	}
+	
+	
 }

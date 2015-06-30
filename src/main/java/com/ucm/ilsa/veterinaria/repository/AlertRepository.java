@@ -1,16 +1,11 @@
 package com.ucm.ilsa.veterinaria.repository;
 
-import java.util.List;
-
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.stereotype.Repository;
 
 import com.ucm.ilsa.veterinaria.domain.Alert;
-import com.ucm.ilsa.veterinaria.domain.Feed;
 
-public interface AlertRepository extends CrudRepository<Alert, Long> {
+@Repository
+public interface AlertRepository extends CrudRepository<Alert, String> {
 
-	public List<Alert> readAllByCheckIsTrueOrderByDatePubDesc();
-	public List<Alert> readAllByCheckIsFalseOrderByDatePubDesc();
-	public List<Alert> findAllByCheckIsTrueAndSiteOrderByDatePubDesc(Feed site);
-	public List<Alert> findAllByCheckIsFalseAndSiteOrderByDatePubDesc(Feed site);
 }

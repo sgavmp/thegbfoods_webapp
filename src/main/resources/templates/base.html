@@ -16,14 +16,14 @@
 </head>
 <body>
 	<header class="navbar-fixed">
-		<nav class="purple darken-4" role="navigation">
+		<nav class="primary-color" role="navigation">
 			<div class="container">
 				<div class="nav-wrapper">
 					<ul class="right">
-						<li th:class="((${menu}=='alerts')?'active')"><a th:href="@{/alerts}" href="/alerts">Alertas</a></li>
-						<li th:class="((${menu}=='feeds')?'active')"><a th:href="@{/feeds}" href="/feeds">Fuentes</a></li>
-						<li sec:authorize="isAuthenticated()" th:class="((${menu}=='locations')?'active')"><a th:href="@{/admin/locations}" href="#">Localizaciones</a></li>
-						<li sec:authorize="isAuthenticated()" th:class="((${menu}=='words')?'active')"><a th:href="@{/admin/words}" href="#">Términos</a></li>
+						<li th:class="((${menu}=='alerts')?'active')"><a th:href="@{/alerts}" href="/alerts">Alertas detectadas</a></li>
+						<li th:class="((${menu}=='feeds')?'active')"><a th:href="@{/feeds}" href="/feeds">Webs</a></li>
+						<li sec:authorize="isAuthenticated()" th:class="((${menu}=='locations')?'active')"><a th:href="@{/admin/locations}" href="#">Proveedores</a></li>
+						<li sec:authorize="isAuthenticated()" th:class="((${menu}=='words')?'active')"><a th:href="@{/admin/words}" href="#">Alertas</a></li>
 						<li sec:authorize="!isAuthenticated()"><a th:href="@{/login}" href="#">Acceso</a></li>	  				
 						<li sec:authorize="isAuthenticated()"><a th:href="@{/logout}" href="#">Logout</a></li>
 					</ul>

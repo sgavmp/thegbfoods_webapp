@@ -11,9 +11,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.ucm.ilsa.veterinaria.domain.Location;
-import com.ucm.ilsa.veterinaria.domain.WordFilter;
+import com.ucm.ilsa.veterinaria.domain.Alert;
 import com.ucm.ilsa.veterinaria.service.impl.PlaceAlertServiceImpl;
-import com.ucm.ilsa.veterinaria.service.impl.WordFilterServiceImpl;
+import com.ucm.ilsa.veterinaria.service.impl.AlertServiceImpl;
 import com.ucm.ilsa.veterinaria.web.controller.BaseController;
 
 @Controller

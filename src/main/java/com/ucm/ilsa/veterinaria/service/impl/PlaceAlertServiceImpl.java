@@ -7,13 +7,13 @@ import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Lists;
 import com.ucm.ilsa.veterinaria.domain.Location;
-import com.ucm.ilsa.veterinaria.repository.PlaceAlertRepository;
+import com.ucm.ilsa.veterinaria.repository.LocationRepository;
 
 @Service
 public class PlaceAlertServiceImpl {
 	
 	@Autowired
-	private PlaceAlertRepository repository;
+	private LocationRepository repository;
 	
 	public List<Location> getAllLocations() {
 		return Lists.newArrayList(repository.findAll());
