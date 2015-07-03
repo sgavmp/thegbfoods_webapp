@@ -1,5 +1,6 @@
 package com.ucm.ilsa.veterinaria.business.tratamiento.impl;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -23,18 +24,8 @@ import com.ucm.ilsa.veterinaria.domain.News;
 @Component
 public class GeoTagTratamiento implements IntfTratamiento<FeedUpdateEvent> {
 	
-	private GeoParser parser;
 	
 	private final static Logger LOGGER = Logger.getLogger(GeoTagTratamiento.class);
-	
-	public GeoTagTratamiento() throws ClavinException {
-		ClassLoader classLoader = getClass().getClassLoader();
-		String path = classLoader.getResource("IndexDirectory").getFile();
-		path = path.replaceAll("%20", " ");
-		parser = GeoParserFactory.getDefault(path, new AlphaExtractor(), 50, 15, false);
-		LOGGER.info("Indice CLAVIN-MOD: ".concat(path));
-		LOGGER.info("GeoParser ".concat(parser!=null?"Iniciado":"No iniciado"));
-	}
 
 	@Override
 	@Subscribe public void responseToEvent(FeedUpdateEvent event) {
@@ -43,13 +34,14 @@ public class GeoTagTratamiento implements IntfTratamiento<FeedUpdateEvent> {
 		evento.setFeed(event.getFeed());
 		Map<News, List<ResolvedLocation>> map = new HashMap<>();
 		for (News news : event.getListNews()) {
-			try {
-			List<ResolvedLocation> locations = parser.parse(news.getContent());
-			if (locations.size()>0) 
-				map.put(news, locations);
-			} catch (Exception ex) {
-				LOGGER.error(ex.getMessage());
-			}
+//			try {
+//			//List<ResolvedLocation> locations = parser.parse(news.getContent());
+//			if (locations.size()>0) 
+//				map.put(news, locations);
+//			} catch (Exception ex) {
+//				LOGGER.error(ex.getMessage());
+//			}
+			map.put(news, new ArrayList<ResolvedLocation>());
 		}
 		evento.setLocations(map);
 		evento.setDate(new Date(System.currentTimeMillis()));
@@ -59,13 +51,14 @@ public class GeoTagTratamiento implements IntfTratamiento<FeedUpdateEvent> {
 	public Map<News, List<ResolvedLocation>> getLocations(List<News> listNews) {
 		Map<News, List<ResolvedLocation>> map = new HashMap<>();
 		for (News news : listNews) {
-			try {
-			List<ResolvedLocation> locations = parser.parse(news.getContent());
-			if (locations.size()>0) 
-				map.put(news, locations);
-			} catch (Exception ex) {
-				LOGGER.error(ex.getMessage());
-			}
+//			try {
+//			List<ResolvedLocation> locations = parser.parse(news.getContent());
+//			if (locations.size()>0) 
+//				map.put(news, locations);
+//			} catch (Exception ex) {
+//				LOGGER.error(ex.getMessage());
+//			}
+			map.put(news, new ArrayList<ResolvedLocation>());
 		}
 		return map;
 	}

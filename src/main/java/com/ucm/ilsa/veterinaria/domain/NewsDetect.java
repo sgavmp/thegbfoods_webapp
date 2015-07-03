@@ -1,8 +1,12 @@
 package com.ucm.ilsa.veterinaria.domain;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
@@ -16,6 +20,9 @@ import javax.persistence.Lob;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+
+import com.bericotech.clavin.gazetteer.CountryCode;
+import com.google.common.collect.Lists;
 
 @Entity
 public class NewsDetect extends BaseEntity {
@@ -89,5 +96,14 @@ public class NewsDetect extends BaseEntity {
 		this.alert_detect = alert_detect;
 	}
 
+	public Map<CountryCode,List<Location>> getCountryWithLocations() {
+		Map<CountryCode,List<Location>> mapa = new HashMap<CountryCode, List<Location>>();
+		for (Location loc : locationsNear) {
+			List<Location> lista = mapa.getOrDefault(loc.getCountry(), new ArrayList<Location>());
+			lista.add(loc);
+			mapa.put(loc.getCountry(), lista);
+		}
+		return mapa;
+	}
 	
 }

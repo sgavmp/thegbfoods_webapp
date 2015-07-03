@@ -85,10 +85,6 @@ public class FeedScrapingImpl implements FeedScraping {
 		} else {
 			newsList = scrapingWithOutRSS(feed);
 		}
-		feed = repositoryFeed.findOne(feed.getCodeName());
-		feed.setUltimaRecuperacion(new Timestamp(System.currentTimeMillis()));
-		feed.setNumNewNews(newsList.size());
-		repositoryFeed.save(feed);
 		return newsList;
 	}
 
@@ -274,11 +270,16 @@ public class FeedScrapingImpl implements FeedScraping {
 				for (Element link : newsLinks) {
 					// Enlace de la noticia
 					String linkNews = link.absUrl("href");
-					// Titutlo de la noticia
-					String title = link.text();
-					listaTareas.add(asyncService.asyncGetNewsWithOutRSS(
-							new Feed(feed), linkNews, title));
-					break;
+					if (linkNews != null) {
+						if (!linkNews.isEmpty()) {
+							// Titutlo de la noticia
+							String title = link.text();
+							listaTareas.add(asyncService
+									.asyncGetNewsWithOutRSS(new Feed(feed),
+											linkNews, title));
+							break;
+						}
+					}
 				}
 				for (Future<News> result : listaTareas) {
 					if (result != null) {

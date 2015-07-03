@@ -11,6 +11,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Component;
 
+import com.bericotech.clavin.ClavinException;
+import com.bericotech.clavin.GeoParser;
+import com.bericotech.clavin.GeoParserFactory;
+import com.bericotech.clavin.extractor.AlphaExtractor;
 import com.bericotech.clavin.gazetteer.CountryCode;
 import com.bericotech.clavin.resolver.ResolvedLocation;
 import com.google.common.collect.Lists;
@@ -46,9 +50,20 @@ public class GeoTagAndFilterAlert implements
 
 	@Autowired
 	private PlaceAlertServiceImpl placeAlertService;
+	
+	private GeoParser parser;
 
 	private final static Logger LOGGER = Logger
 			.getLogger(GeoTagAndFilterAlert.class);
+	
+	public GeoTagAndFilterAlert() throws ClavinException {
+		ClassLoader classLoader = getClass().getClassLoader();
+		String path = classLoader.getResource("IndexDirectory").getFile();
+		path = path.replaceAll("%20", " ");
+		parser = GeoParserFactory.getDefault(path, new AlphaExtractor(), 50, 15, false);
+		LOGGER.info("Indice CLAVIN-MOD: ".concat(path));
+		LOGGER.info("GeoParser ".concat(parser!=null?"Iniciado":"No iniciado"));
+	}
 
 	@Override
 	@Subscribe
@@ -62,7 +77,7 @@ public class GeoTagAndFilterAlert implements
 			//Comprobamos todos los terminos y los almacenamos
 			for (News news : event.getLocations().keySet()) {
 				for (String word : alerta.getWords().split(",")) {
-					if (news.getContent().toLowerCase().contains(alerta.getWords().toLowerCase())) {
+					if (news.getContent().toLowerCase().contains(word.toLowerCase())) {
 						if (mapNewsDetect.containsKey(news)){
 							mapNewsDetect.get(news).add(word);
 						} else {
@@ -92,7 +107,14 @@ public class GeoTagAndFilterAlert implements
 					newsDetect.setSite(event.getFeed());
 					newsDetect.setTitle(news.getTitle());
 					newsDetect.setWordsDetect(wordsDetect);
-					newsDetect.setLocationsNear(obtenerLocalizacionesCercanas(event.getLocations().get(news),lugares));//Obtenemos los lugares que coincidan con el pais de las localizaciones encontradas
+					List<ResolvedLocation> locationsAp = null;
+					try {
+						locationsAp = parser.parse(news.getContent());
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					newsDetect.setLocationsNear(obtenerLocalizacionesCercanas(locationsAp,lugares));//Obtenemos los lugares que coincidan con el pais de las localizaciones encontradas
 					repositoryNewsDetect.save(newsDetect);
 					alertDetectActive.getNewsDetect().add(newsDetect);
 				}
@@ -122,7 +144,7 @@ public class GeoTagAndFilterAlert implements
 			//Comprobamos todos los terminos y los almacenamos
 			for (News news : locations.keySet()) {
 				for (String word : alerta.getWords().split(",")) {
-					if (news.getContent().toLowerCase().contains(alerta.getWords().toLowerCase())) {
+					if (news.getContent().toLowerCase().contains(word.toLowerCase())) {
 						if (mapNewsDetect.containsKey(news)){
 							mapNewsDetect.get(news).add(word);
 						} else {
@@ -139,7 +161,6 @@ public class GeoTagAndFilterAlert implements
 					alertDetectActive = new AlertDetect();
 					alertDetectActive.setAlert(alerta);
 					alertDetectActive.setCheck(false);
-					repository.save(alertDetectActive);
 					if (alertDetectActive.getNewsDetect()==null)
 						alertDetectActive.setNewsDetect(new ArrayList<NewsDetect>());
 				}
@@ -152,8 +173,14 @@ public class GeoTagAndFilterAlert implements
 					newsDetect.setSite(feed);
 					newsDetect.setTitle(news.getTitle());
 					newsDetect.setWordsDetect(wordsDetect);
-					newsDetect.setLocationsNear(obtenerLocalizacionesCercanas(locations.get(news),lugares));//Obtenemos los lugares que coincidan con el pais de las localizaciones encontradas
-					repositoryNewsDetect.save(newsDetect);
+					List<ResolvedLocation> locationsAp = null;
+					try {
+						locationsAp = parser.parse(news.getContent());
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					newsDetect.setLocationsNear(obtenerLocalizacionesCercanas(locationsAp,lugares));//Obtenemos los lugares que coincidan con el pais de las localizaciones encontradas
 					alertDetectActive.getNewsDetect().add(newsDetect);
 				}
 				listDetect.add(alertDetectActive);

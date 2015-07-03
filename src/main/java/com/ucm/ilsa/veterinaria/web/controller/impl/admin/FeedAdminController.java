@@ -112,6 +112,8 @@ public class FeedAdminController extends BaseController {
 	public String saveTestEditFeed(Model model, @PathVariable ("codeName") Feed feedP, @ModelAttribute(value="feed") FeedForm feed, BindingResult bindingResult) {
 		feed.setIsRSS(false);
 		Feed feedTest = new Feed(feed);
+		feedTest.setName(feedP.getName());
+		feed.setName(feedP.getName());
 		model.addAttribute("alertsUncheck", serviceFeed.comprobarFeed(feedTest));
 		return "comprobarForm";
 	}
@@ -138,14 +140,14 @@ public class FeedAdminController extends BaseController {
 		return "comprobarForm";
 	}
 	
-	@RequestMapping(value={"/get/{codeName}/edit","/create","/get/{codeName}/test"}, method=RequestMethod.POST, params={"addHtml"})
+	@RequestMapping(value={"/get/{codeName}/edit","/create"}, method=RequestMethod.POST, params={"addHtml"})
 	public String addHtmlSelector(Model model, @ModelAttribute(value="feed") FeedForm feed) {
 		feed.getSelectorHtml().add(new PairValues());
 		//model.addAttribute(feed);
 		return "feedForm";
 	}
 	
-	@RequestMapping(value={"/get/{codeName}/edit","/create","/get/{codeName}/test"}, method=RequestMethod.POST, params={"removeHtml"})
+	@RequestMapping(value={"/get/{codeName}/edit","/create"}, method=RequestMethod.POST, params={"removeHtml"})
 	public String removeHtmlSelector(Model model, @ModelAttribute(value="feed") FeedForm feed, @RequestParam("removeHtml")Integer index) {
 		feed.getSelectorHtml().remove(index.intValue());
 		//model.addAttribute(feed);

@@ -33,8 +33,10 @@
 						<div class="col s12 m12">
 							<div class="card">
 								<div class="card-image primary-color">
-									<span th:inline="text" class="card-title secondary-color">[[${alert.alert.title}]]</span><span class="strong right"><a sec:authorize="isAuthenticated()"
-									th:href="@{/alerts/get/{id}/check(id=${alert.id})}" href="#">Resolver</a></span>
+									<span th:inline="text" class="card-title secondary-color">[[${alert.alert.title}]]</span><span
+										class="strong right"><a
+										sec:authorize="isAuthenticated()"
+										th:href="@{/alerts/get/{id}/check(id=${alert.id})}" href="#">Resolver</a></span>
 								</div>
 								<div class="card-content">
 									<div th:each="day : ${alert.getAllNewsDetectOrderByDate()}"
@@ -71,8 +73,23 @@
 													<blockquote>
 														<h3>Lugares afectados</h3>
 														<ul>
-															<li th:each="loc : ${news.locationsNear}"
-																th:text="${loc}">Jerez</li>
+															<li th:each="loc : ${news.getCountryWithLocations()}">
+																<!-- Modal Trigger --> <a
+																class="waves-effect waves-light btn modal-trigger"
+																th:href="${'#'+ loc.key}" href="#modal1"
+																th:text="${loc.key.name}">Modal</a> <!-- Modal Structure -->
+																<div th:id="${loc.key}" id="modal1"
+																	class="modal bottom-sheet">
+																	<div class="modal-content">
+																		<h4 th:inline="text">Proveedores de [[loc.key.name]]</h4>
+																		<p th:each="p : ${loc.value}" th:text="${p}">A bunch of text</p>
+																	</div>
+																	<div class="modal-footer">
+																		<a href="#!"
+																			class=" modal-action modal-close waves-effect waves-green btn-flat">Agree</a>
+																	</div>
+																</div>
+															</li>
 														</ul>
 													</blockquote>
 												</div>
@@ -133,8 +150,23 @@
 													<blockquote>
 														<h3>Lugares afectados</h3>
 														<ul>
-															<li th:each="loc : ${news.locationsNear}"
-																th:text="${loc}">Jerez</li>
+															<li th:each="loc : ${news.getCountryWithLocations()}">
+																<!-- Modal Trigger --> <a
+																class="waves-effect waves-light btn modal-trigger"
+																th:href="${'#'+ loc.key}" href="#modal1"
+																th:text="${loc.key.name}">Modal</a> <!-- Modal Structure -->
+																<div th:id="${loc.key}" id="modal1"
+																	class="modal bottom-sheet">
+																	<div class="modal-content">
+																		<h4 th:inline="text">Proveedores de [[loc.key.name]]</h4>
+																		<p th:each="p : ${loc.value}" th:text="${p}">A bunch of text</p>
+																	</div>
+																	<div class="modal-footer">
+																		<a href="#!"
+																			class=" modal-action modal-close waves-effect waves-green btn-flat">Agree</a>
+																	</div>
+																</div>
+															</li>
 														</ul>
 													</blockquote>
 												</div>
@@ -151,5 +183,11 @@
 		</div>
 	</section>
 	<footer th:include="base :: footer"> </footer>
+		<script type="text/javascript">
+		$(document).ready(function() {
+			// the "href" attribute of .modal-trigger must specify the modal ID that wants to be triggered
+			$('.modal-trigger').leanModal();
+		});
+	</script>
 </body>
 </html>
