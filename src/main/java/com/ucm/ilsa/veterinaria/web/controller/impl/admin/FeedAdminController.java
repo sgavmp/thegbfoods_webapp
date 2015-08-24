@@ -1,5 +1,6 @@
 package com.ucm.ilsa.veterinaria.web.controller.impl.admin;
 
+import java.net.MalformedURLException;
 import java.util.Date;
 import java.util.List;
 
@@ -199,4 +200,5 @@ public class FeedAdminController extends BaseController {
 		}
 		return "redirect:/feeds";
 	}
+
 }

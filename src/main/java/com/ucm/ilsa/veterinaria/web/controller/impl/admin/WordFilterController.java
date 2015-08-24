@@ -50,7 +50,7 @@ public class WordFilterController extends BaseController {
 	}
 	
 	@RequestMapping(value="/get/{id}/edit", method=RequestMethod.POST)
-	public String updateLocation(Model model, @Valid Alert wordFilter, @PathVariable ("id") Alert before,BindingResult result) {
+	public String updateLocation(Model model, Alert wordFilter, @PathVariable ("id") Alert before,BindingResult result) {
         if (result.hasErrors()) {
         	putErrorMessage("Hay un error en el formulario");
             return "words";

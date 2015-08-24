@@ -1,80 +1,121 @@
 <!DOCTYPE html>
 <html lang="es" xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:th="http://www.thymeleaf.org">
+	xmlns:th="http://www.thymeleaf.org">
 <head th:include="base :: head">
 </head>
 <body>
 	<header th:include="base :: header"> </header>
 	<section class="container">
-	<div id="modal"></div>
-	<div class="row">
-		<ul class="collapsible col s10 offset-s1" data-collapsible="accordion">
-			<li>
-				<div th:class="${term.title!=''}? 'collapsible-header active' : 'collapsible-header'" class="collapsible-header" th:inline="text">[[${term.id==null}?'A&ntilde;adir nuevo termino':'Editar termino']]<i class="mdi-hardware-keyboard-arrow-down right"></i></div>
-				<div class="collapsible-body">
-				<div class="col s10 offset-s1">
-					<form action="#" th:action="${term.id==null}?@{/admin/words/create}:@{/admin/words/get/{id}/edit(id=${term.id})}"
-						val:validate="${term}" th:object="${term}" method="post">
-
-						<input
-							type="hidden" th:name="${_csrf.parameterName}"
-							th:value="${_csrf.token}" />
-
-						<div class="row">
-							<div class="input-field col s12">
-								<input type="hidden" th:field="*{id}" />
-							</div>
-						</div>
-						<div class="row">
-							<div class="input-field col s12">
-								<label for="title">Introduce el titulo de la alerta</label>
-								<input type="text" th:field="*{title}" />
-							</div>
-						</div>
-						<div class="row">
-							<div class="input-field col s12">
-								<label for="words">Introduce las palabras de filtro para la alerta separadas por coma</label>
-								<input type="text" th:field="*{words}" />
-							</div>
-						</div>
-						<p><button class="btn" type="submit">Enviar</button><a th:if="${term.id!=null}" class="btn right" th:href="@{/admin/words}" href="#">Cancelar</a></p>
-					</form>
+		<div id="modal"></div>
+		<div class="row">
+			<ul class="collapsible col s10 offset-s1"
+				data-collapsible="accordion">
+				<li>
+					<div
+						th:class="${term.title!=''}? 'collapsible-header active' : 'collapsible-header'"
+						class="collapsible-header" th:inline="text">
+						[[${term.id==null}?'A&ntilde;adir nuevo termino':'Editar
+						termino']]<i class="mdi-hardware-keyboard-arrow-down right"></i>
 					</div>
-				</div>
-			</li>
-		</ul>
-	</div>
-	<div class="row">
-		<div class="col s10 offset-s1">
-			<table class="hoverable">
-				<thead>
-					<tr>
-						<td>Titulo</td>
-						<td>Palabras</td>
-						<td>Editar</td>
-						<td>Borrar</td>
-					</tr>
-				</thead>
-				<tbody>
-					<tr th:each="word : ${allWords}">
-						<td th:text="${word.title}">Alerta de fiebre</td>
-						<td th:text="${word.words}">Pescados manolo</td>
-						<td><a href="#" th:href="@{/admin/words/get/{id}/edit(id=${word.id})}"><i class="mdi-editor-mode-edit"></i></a></td>
-						<td><a class="confirm" href="#" th:href="@{/admin/words/get/{id}/remove(id=${word.id})}"><i class="mdi-action-delete"></i></a></td>
-					</tr>
-				</tbody>
-			</table>
+					<div class="collapsible-body">
+						<div class="col s10 offset-s1">
+							<form action="#"
+								th:action="${term.id==null}?@{/admin/words/create}:@{/admin/words/get/{id}/edit(id=${term.id})}"
+								val:validate="${term}" th:object="${term}" method="post">
+
+								<input type="hidden" th:name="${_csrf.parameterName}"
+									th:value="${_csrf.token}" />
+
+								<div class="row">
+									<div class="input-field col s12">
+										<input type="hidden" th:field="*{id}" />
+									</div>
+								</div>
+								<div class="row">
+									<div class="input-field col s12">
+										<label for="title">Introduce el titulo de la alerta</label> <input
+											type="text" th:field="*{title}" />
+									</div>
+								</div>
+								<div class="row">
+									<label for="isPeligroBiologico">&iquest;Es una alerta de peligro biologico (aditivo en caso contrario)?</label>
+									<div class="switch">
+										<label> No <input type="checkbox" id="isPeligroBiologico"
+											name="isPeligroBiologico" th:checked="*{isPeligroBiologico}" /> <span class="lever"></span>
+											Si
+										</label> <input type="hidden" name="_isPeligroBiologico" th:value="*{isPeligroBiologico}" />
+									</div>
+								</div>
+								<div class="row">
+									<label for="global">&iquest;Es una alerta global o por cercanias?</label>
+									<div class="switch">
+										<label> No <input type="checkbox" id="global"
+											name="global" th:checked="*{global}" /> <span class="lever"></span>
+											Si
+										</label> <input type="hidden" name="_global" th:value="*{global}" />
+									</div>
+								</div>
+								<div class="row">
+									<div class="input-field col s12">
+										<label for="words">Introduce las palabras de filtro
+											para la alerta separadas por coma</label> <textarea type="text"
+											th:field="*{words}"></textarea>
+									</div>
+								</div>
+								<p>
+									<button class="btn" type="submit">Enviar</button>
+									<a th:if="${term.id!=null}" class="btn right"
+										th:href="@{/admin/words}" href="#">Cancelar</a>
+								</p>
+							</form>
+						</div>
+					</div>
+				</li>
+			</ul>
 		</div>
-	</div>
+		<div class="row">
+			<div class="col s10 offset-s1">
+				<table class="hoverable" width="100%">
+					<thead>
+						<tr>
+							<td>Titulo</td>
+							<td>Tipo</td>
+							<td>Global</td>
+							<td>Palabras</td>
+							<td>Editar</td>
+							<td>Borrar</td>
+						</tr>
+					</thead>
+					<tbody>
+						<tr th:each="word : ${allWords}">
+							<td th:text="${word.title}">Alerta de fiebre</td>
+							<td th:text="${word.isPeligroBiologico}"></td>
+							<td th:text="${word.global}"></td>
+							<td style="width: 700px;
+    overflow: hidden;
+    display: inline-block;
+    white-space: nowrap;" th:text="${word.words}">Pescados manolo</td>
+							<td><a href="#"
+								th:href="@{/admin/words/get/{id}/edit(id=${word.id})}"><i
+									class="mdi-editor-mode-edit"></i></a></td>
+							<td><a class="confirm" href="#"
+								th:href="@{/admin/words/get/{id}/remove(id=${word.id})}"><i
+									class="mdi-action-delete"></i></a></td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
 	</section>
 	<footer th:include="base :: footer"> </footer>
 	<script type="text/javascript">
-		$(document).ready(function(){
+		$(document).ready(function() {
 			$(".confirm").confirm({
-					text: "¿Estas seguro de eliminar el termino seleccionado?",
-				    title: "Confirme la eliminaci&oacute;n",
-				    confirmButton: "Si, eliminar",
-				    cancelButton: "No, volver"});
+				text : "¿Estas seguro de eliminar el termino seleccionado?",
+				title : "Confirme la eliminaci&oacute;n",
+				confirmButton : "Si, eliminar",
+				cancelButton : "No, volver"
+			});
 		});
 	</script>
 </body>

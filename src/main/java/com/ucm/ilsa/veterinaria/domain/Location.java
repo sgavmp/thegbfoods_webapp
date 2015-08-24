@@ -15,7 +15,7 @@ public class Location extends BaseEntity {
 	private String name;
 	private Double latitude;
 	private Double longitude;
-	private Integer distance;// KM
+	private Integer distance = 10;// KM
 	private CountryCode country;
 
 	public Location() {

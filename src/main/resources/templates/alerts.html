@@ -158,7 +158,7 @@
 																<div th:id="${loc.key}" id="modal1"
 																	class="modal bottom-sheet">
 																	<div class="modal-content">
-																		<h4 th:inline="text">Proveedores de [[loc.key.name]]</h4>
+																		<h4 th:inline="text">Proveedores de [[${loc.key.name}]]</h4>
 																		<p th:each="p : ${loc.value}" th:text="${p}">A bunch of text</p>
 																	</div>
 																	<div class="modal-footer">

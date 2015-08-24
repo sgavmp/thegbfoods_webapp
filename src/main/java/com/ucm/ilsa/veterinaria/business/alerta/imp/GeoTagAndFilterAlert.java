@@ -41,7 +41,7 @@ public class GeoTagAndFilterAlert implements
 
 	@Autowired
 	private AlertDetectRepository repository;
-	
+
 	@Autowired
 	private NewsDetectRepository repositoryNewsDetect;
 
@@ -50,19 +50,21 @@ public class GeoTagAndFilterAlert implements
 
 	@Autowired
 	private PlaceAlertServiceImpl placeAlertService;
-	
+
 	private GeoParser parser;
 
 	private final static Logger LOGGER = Logger
 			.getLogger(GeoTagAndFilterAlert.class);
-	
+
 	public GeoTagAndFilterAlert() throws ClavinException {
 		ClassLoader classLoader = getClass().getClassLoader();
 		String path = classLoader.getResource("IndexDirectory").getFile();
 		path = path.replaceAll("%20", " ");
-		parser = GeoParserFactory.getDefault(path, new AlphaExtractor(), 50, 15, false);
+		parser = GeoParserFactory.getDefault(path, new AlphaExtractor(), 50,
+				15, false);
 		LOGGER.info("Indice CLAVIN-MOD: ".concat(path));
-		LOGGER.info("GeoParser ".concat(parser!=null?"Iniciado":"No iniciado"));
+		LOGGER.info("GeoParser ".concat(parser != null ? "Iniciado"
+				: "No iniciado"));
 	}
 
 	@Override
@@ -72,13 +74,15 @@ public class GeoTagAndFilterAlert implements
 		List<Alert> alertas = alertService.getAllAlert();
 
 		for (Alert alerta : alertas) {
-			AlertDetect alertDetectActive = repository.findByCheckIsFalseAndAlertOrderByCreateDateDesc(alerta);
-			Map<News,List<String>> mapNewsDetect = new HashedMap();
-			//Comprobamos todos los terminos y los almacenamos
+			AlertDetect alertDetectActive = repository
+					.findByCheckIsFalseAndAlertOrderByCreateDateDesc(alerta);
+			Map<News, List<String>> mapNewsDetect = new HashedMap();
+			// Comprobamos todos los terminos y los almacenamos
 			for (News news : event.getLocations().keySet()) {
 				for (String word : alerta.getWords().split(",")) {
-					if (news.getContent().toLowerCase().contains(word.toLowerCase())) {
-						if (mapNewsDetect.containsKey(news)){
+					if (news.getContent().toLowerCase()
+							.contains(word.toLowerCase())) {
+						if (mapNewsDetect.containsKey(news)) {
 							mapNewsDetect.get(news).add(word);
 						} else {
 							List<String> wordsDetect = new ArrayList<String>();
@@ -88,15 +92,16 @@ public class GeoTagAndFilterAlert implements
 					}
 				}
 			}
-			//Si se han detectado palabras de la alerta en alguna noticia
-			if (mapNewsDetect.size()>0) {
-				if (alertDetectActive==null) {
+			// Si se han detectado palabras de la alerta en alguna noticia
+			if (mapNewsDetect.size() > 0) {
+				if (alertDetectActive == null) {
 					alertDetectActive = new AlertDetect();
 					alertDetectActive.setAlert(alerta);
 					alertDetectActive.setCheck(false);
 					repository.save(alertDetectActive);
-					if (alertDetectActive.getNewsDetect()==null)
-						alertDetectActive.setNewsDetect(new ArrayList<NewsDetect>());
+					if (alertDetectActive.getNewsDetect() == null)
+						alertDetectActive
+								.setNewsDetect(new ArrayList<NewsDetect>());
 				}
 				for (News news : mapNewsDetect.keySet()) {
 					List<String> wordsDetect = mapNewsDetect.get(news);
@@ -107,20 +112,34 @@ public class GeoTagAndFilterAlert implements
 					newsDetect.setSite(event.getFeed());
 					newsDetect.setTitle(news.getTitle());
 					newsDetect.setWordsDetect(wordsDetect);
-					List<ResolvedLocation> locationsAp = null;
-					try {
-						locationsAp = parser.parse(news.getContent());
-					} catch (Exception e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+					// Si es alerta de peligro biologico se localizan los
+					// posibles lugares
+					if (alerta.isPeligroBiologico()) {
+						List<ResolvedLocation> locationsAp = null;
+						try {
+							locationsAp = parser.parse(news.getContent());
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+						if (alerta.isGlobal()) {
+							// Obtenemos los lugares que coincidan con el paisde
+							// las localizaciones encontradas
+							newsDetect
+									.setLocationsNear(obtenerLocalizacionesCercanasPais(
+											locationsAp, lugares));
+						} else {
+							// Obtenemos los lugares que entren en el radio de la localizacion
+							newsDetect
+									.setLocationsNear(obtenerLocalizacionesCercanas(
+											locationsAp, lugares));
+						}
 					}
-					newsDetect.setLocationsNear(obtenerLocalizacionesCercanas(locationsAp,lugares));//Obtenemos los lugares que coincidan con el pais de las localizaciones encontradas
 					repositoryNewsDetect.save(newsDetect);
 					alertDetectActive.getNewsDetect().add(newsDetect);
 				}
 				repository.save(alertDetectActive);
 			}
-			
+
 		}
 
 		LOGGER.info("Iniciada comprobacion de alerta de cercania y palabras de filtro para el sitio: "
@@ -133,19 +152,21 @@ public class GeoTagAndFilterAlert implements
 		// " nuevas alertas de la fuente ".concat(event.getFeed()
 		// .getName())));
 	}
-	
-	public List<AlertDetect> detectAlert(Feed feed, Map<News,List<ResolvedLocation>> locations) {
+
+	public List<AlertDetect> detectAlert(Feed feed,
+			Map<News, List<ResolvedLocation>> locations) {
 		List<Location> lugares = placeAlertService.getAllLocations();
 		List<Alert> alertas = alertService.getAllAlert();
 		List<AlertDetect> listDetect = new ArrayList<AlertDetect>();
 		for (Alert alerta : alertas) {
 			AlertDetect alertDetectActive = null;
-			Map<News,List<String>> mapNewsDetect = new HashedMap();
-			//Comprobamos todos los terminos y los almacenamos
+			Map<News, List<String>> mapNewsDetect = new HashedMap();
+			// Comprobamos todos los terminos y los almacenamos
 			for (News news : locations.keySet()) {
 				for (String word : alerta.getWords().split(",")) {
-					if (news.getContent().toLowerCase().contains(word.toLowerCase())) {
-						if (mapNewsDetect.containsKey(news)){
+					if (news.getContent().toLowerCase()
+							.contains(word.toLowerCase())) {
+						if (mapNewsDetect.containsKey(news)) {
 							mapNewsDetect.get(news).add(word);
 						} else {
 							List<String> wordsDetect = new ArrayList<String>();
@@ -155,14 +176,15 @@ public class GeoTagAndFilterAlert implements
 					}
 				}
 			}
-			//Si se han detectado palabras de la alerta en alguna noticia
-			if (mapNewsDetect.size()>0) {
-				if (alertDetectActive==null) {
+			// Si se han detectado palabras de la alerta en alguna noticia
+			if (mapNewsDetect.size() > 0) {
+				if (alertDetectActive == null) {
 					alertDetectActive = new AlertDetect();
 					alertDetectActive.setAlert(alerta);
 					alertDetectActive.setCheck(false);
-					if (alertDetectActive.getNewsDetect()==null)
-						alertDetectActive.setNewsDetect(new ArrayList<NewsDetect>());
+					if (alertDetectActive.getNewsDetect() == null)
+						alertDetectActive
+								.setNewsDetect(new ArrayList<NewsDetect>());
 				}
 				for (News news : mapNewsDetect.keySet()) {
 					List<String> wordsDetect = mapNewsDetect.get(news);
@@ -173,14 +195,27 @@ public class GeoTagAndFilterAlert implements
 					newsDetect.setSite(feed);
 					newsDetect.setTitle(news.getTitle());
 					newsDetect.setWordsDetect(wordsDetect);
-					List<ResolvedLocation> locationsAp = null;
-					try {
-						locationsAp = parser.parse(news.getContent());
-					} catch (Exception e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+					if (alerta.isPeligroBiologico()) {
+						List<ResolvedLocation> locationsAp = null;
+						try {
+							locationsAp = parser.parse(news.getContent());
+						} catch (Exception e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+						if (alerta.isGlobal()) {
+							// Obtenemos los lugares que coincidan con el paisde
+							// las localizaciones encontradas
+							newsDetect
+									.setLocationsNear(obtenerLocalizacionesCercanasPais(
+											locationsAp, lugares));
+						} else {
+							// Obtenemos los lugares que entren en el radio de la localizacion
+							newsDetect
+									.setLocationsNear(obtenerLocalizacionesCercanas(
+											locationsAp, lugares));
+						}
 					}
-					newsDetect.setLocationsNear(obtenerLocalizacionesCercanas(locationsAp,lugares));//Obtenemos los lugares que coincidan con el pais de las localizaciones encontradas
 					alertDetectActive.getNewsDetect().add(newsDetect);
 				}
 				listDetect.add(alertDetectActive);
@@ -192,33 +227,50 @@ public class GeoTagAndFilterAlert implements
 		return listDetect;
 	}
 
-	private List<Location> obtenerLocalizacionesCercanas(List<ResolvedLocation> locations,List<Location> lugares) {
-		Map<CountryCode,Integer> countCountry = new HashedMap();
+	private List<Location> obtenerLocalizacionesCercanasPais(
+			List<ResolvedLocation> locations, List<Location> lugares) {
+		Map<CountryCode, Integer> countCountry = new HashedMap();
 		CountryCode maxCountry;
 		Integer maxCount = 0;
-		//Contamos las apariciones de cada pais
+		// Contamos las apariciones de cada pais
 		for (ResolvedLocation loc : locations) {
 			CountryCode code = loc.getGeoname().getPrimaryCountryCode();
-			Integer num = countCountry.getOrDefault(code, 0)+1;
+			Integer num = countCountry.getOrDefault(code, 0) + 1;
 			countCountry.put(code, num);
-			if (maxCount<num) {
+			if (maxCount < num) {
 				maxCount = num;
 				maxCountry = code;
 			}
 		}
-		//Seleccionamos el pais con mas apraciones o los que mas en caso de empate
+		// Seleccionamos el pais con mas apraciones o los que mas en caso de
+		// empate
 		List<CountryCode> countries = new ArrayList<CountryCode>();
 		for (CountryCode code : countCountry.keySet()) {
-			if (countCountry.get(code)>=maxCount) {
+			if (countCountry.get(code) >= maxCount) {
 				countries.add(code);
 			}
 		}
 		Set<Location> lugaresCercanos = Sets.newHashSet();
-		//Comprobamos la inclusion de cada proveedor en los paises
+		// Comprobamos la inclusion de cada proveedor en los paises
 		for (CountryCode code : countries) {
 			for (Location lugar : lugares) {
 				if (lugar.getCountry().equals(code)) {
 					lugaresCercanos.add(lugar);
+				}
+			}
+		}
+		return Lists.newArrayList(lugaresCercanos);
+	}
+
+	private List<Location> obtenerLocalizacionesCercanas(
+			List<ResolvedLocation> locations, List<Location> lugares) {
+		List<Location> lugaresCercanos = new ArrayList<Location>();
+		for (ResolvedLocation resolvedLocation : locations) {
+			for (Location location : lugares) {
+				if (location.isNearOf(resolvedLocation.getGeoname()
+						.getLatitude(), resolvedLocation.getGeoname()
+						.getLongitude())) {
+					lugaresCercanos.add(location);
 				}
 			}
 		}

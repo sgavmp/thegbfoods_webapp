@@ -20,11 +20,13 @@ import javax.persistence.Lob;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 
 import com.bericotech.clavin.gazetteer.CountryCode;
 import com.google.common.collect.Lists;
 
 @Entity
+@Table(uniqueConstraints={@UniqueConstraint(columnNames={"alert_detect_id","link"})})
 public class NewsDetect extends BaseEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
@@ -35,6 +37,7 @@ public class NewsDetect extends BaseEntity {
 	@Lob
 	private String title;
 	@Lob
+	@Column(name="link")
 	private String link;
 	private Date datePub;
 	@ElementCollection(fetch=FetchType.EAGER)
