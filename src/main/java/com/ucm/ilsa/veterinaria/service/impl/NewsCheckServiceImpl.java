@@ -1,6 +1,8 @@
-package com.ucm.ilsa.veterinaria.business.alerta.imp;
+package com.ucm.ilsa.veterinaria.service.impl;
 
+import java.sql.Date;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -8,8 +10,7 @@ import java.util.Set;
 import org.apache.commons.collections.map.HashedMap;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import com.bericotech.clavin.ClavinException;
 import com.bericotech.clavin.GeoParser;
@@ -20,25 +21,21 @@ import com.bericotech.clavin.resolver.ResolvedLocation;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.common.eventbus.Subscribe;
-import com.ucm.ilsa.veterinaria.business.alerta.IntfAlerta;
-import com.ucm.ilsa.veterinaria.business.event.alerta.GeoTagAndFilterAlertEvent;
+import com.ucm.ilsa.veterinaria.domain.Alert;
 import com.ucm.ilsa.veterinaria.domain.AlertDetect;
 import com.ucm.ilsa.veterinaria.domain.AlertLevel;
 import com.ucm.ilsa.veterinaria.domain.Feed;
-import com.ucm.ilsa.veterinaria.domain.News;
 import com.ucm.ilsa.veterinaria.domain.Location;
-import com.ucm.ilsa.veterinaria.domain.Alert;
+import com.ucm.ilsa.veterinaria.domain.News;
 import com.ucm.ilsa.veterinaria.domain.NewsDetect;
+import com.ucm.ilsa.veterinaria.domain.Statistics;
 import com.ucm.ilsa.veterinaria.repository.AlertDetectRepository;
 import com.ucm.ilsa.veterinaria.repository.NewsDetectRepository;
-import com.ucm.ilsa.veterinaria.service.impl.PlaceAlertServiceImpl;
-import com.ucm.ilsa.veterinaria.service.impl.AlertServiceImpl;
-import com.ucm.ilsa.veterinaria.web.controller.BaseController;
+import com.ucm.ilsa.veterinaria.repository.StatisticsRepository;
+import com.ucm.ilsa.veterinaria.service.NewsCheckService;
 
-@Component
-public class GeoTagAndFilterAlert implements
-		IntfAlerta<GeoTagAndFilterAlertEvent> {
-
+@Service
+public class NewsCheckServiceImpl implements NewsCheckService {
 	@Autowired
 	private AlertDetectRepository repository;
 
@@ -50,13 +47,16 @@ public class GeoTagAndFilterAlert implements
 
 	@Autowired
 	private PlaceAlertServiceImpl placeAlertService;
+	
+	@Autowired
+	private StatisticsRepository statisticsRepository;
 
 	private GeoParser parser;
 
 	private final static Logger LOGGER = Logger
-			.getLogger(GeoTagAndFilterAlert.class);
+			.getLogger(NewsCheckServiceImpl.class);
 
-	public GeoTagAndFilterAlert() throws ClavinException {
+	public NewsCheckServiceImpl() throws ClavinException {
 		ClassLoader classLoader = getClass().getClassLoader();
 		String path = classLoader.getResource("IndexDirectory").getFile();
 		path = path.replaceAll("%20", " ");
@@ -67,9 +67,9 @@ public class GeoTagAndFilterAlert implements
 				: "No iniciado"));
 	}
 
-	@Override
-	@Subscribe
-	public void responseToEvent(GeoTagAndFilterAlertEvent event) {
+	public void checkNews(List<News> listNews, Feed feed) {
+		Integer newsNum = listNews.size();
+		Integer alertDetectNum = 0;
 		List<Location> lugares = placeAlertService.getAllLocations();
 		List<Alert> alertas = alertService.getAllAlert();
 
@@ -78,7 +78,7 @@ public class GeoTagAndFilterAlert implements
 					.findByCheckIsFalseAndAlertOrderByCreateDateDesc(alerta);
 			Map<News, List<String>> mapNewsDetect = new HashedMap();
 			// Comprobamos todos los terminos y los almacenamos
-			for (News news : event.getLocations().keySet()) {
+			for (News news : listNews) {
 				for (String word : alerta.getWords().split(",")) {
 					if (news.getContent().toLowerCase()
 							.contains(word.toLowerCase())) {
@@ -109,12 +109,12 @@ public class GeoTagAndFilterAlert implements
 					newsDetect.setDatePub(news.getPubDate());
 					newsDetect.setAlert_detect(alertDetectActive);
 					newsDetect.setLink(news.getUrl());
-					newsDetect.setSite(event.getFeed());
+					newsDetect.setSite(feed);
 					newsDetect.setTitle(news.getTitle());
 					newsDetect.setWordsDetect(wordsDetect);
 					// Si es alerta de peligro biologico se localizan los
 					// posibles lugares
-					if (alerta.isPeligroBiologico()) {
+					if (alerta.getType()!=AlertLevel.blue) {
 						List<ResolvedLocation> locationsAp = null;
 						try {
 							locationsAp = parser.parse(news.getContent());
@@ -135,22 +135,24 @@ public class GeoTagAndFilterAlert implements
 						}
 					}
 					repositoryNewsDetect.save(newsDetect);
+					alertDetectNum++;
 					alertDetectActive.getNewsDetect().add(newsDetect);
 				}
 				repository.save(alertDetectActive);
 			}
 
 		}
-
+		Date today = new Date(System.currentTimeMillis());
+		Statistics statistics = statisticsRepository.findOne(today);
+		if (statistics!=null) {
+			statistics.increment(alertDetectNum, newsNum);
+		} else {
+			statistics = new Statistics(today, alertDetectNum, newsNum);
+		}
+		statisticsRepository.save(statistics);
 		LOGGER.info("Iniciada comprobacion de alerta de cercania y palabras de filtro para el sitio: "
-				+ event.getFeed().getName());
-		Integer num = 0;
-		// BaseController.putInfoMessage(num + " nuevas alertas detectadas");
-		// LOGGER.info("Finalizada comprobacion de alerta de cercania y palabras de filtro para el sitio: "
-		// + event.getFeed().getName());
-		// LOGGER.info("Se han detectado ".concat(num.toString()).concat(
-		// " nuevas alertas de la fuente ".concat(event.getFeed()
-		// .getName())));
+				+ feed.getName());
+		
 	}
 
 	public List<AlertDetect> detectAlert(Feed feed,
@@ -195,7 +197,7 @@ public class GeoTagAndFilterAlert implements
 					newsDetect.setSite(feed);
 					newsDetect.setTitle(news.getTitle());
 					newsDetect.setWordsDetect(wordsDetect);
-					if (alerta.isPeligroBiologico()) {
+					if (alerta.getType()!=AlertLevel.blue) {
 						List<ResolvedLocation> locationsAp = null;
 						try {
 							locationsAp = parser.parse(news.getContent());
@@ -276,5 +278,19 @@ public class GeoTagAndFilterAlert implements
 		}
 		return Lists.newArrayList(lugaresCercanos);
 	}
-
+	
+	public Map<News, List<ResolvedLocation>> getLocations(List<News> listNews) {
+		Map<News, List<ResolvedLocation>> map = new HashMap<>();
+		for (News news : listNews) {
+			try {
+			List<ResolvedLocation> locations = parser.parse(news.getContent());
+			if (locations.size()>0) 
+				map.put(news, locations);
+			} catch (Exception ex) {
+				LOGGER.error(ex.getMessage());
+			}
+			map.put(news, new ArrayList<ResolvedLocation>());
+		}
+		return map;
+	}
 }

@@ -1,70 +1,107 @@
-<!DOCTYPE html>
-<html lang="es" xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:th="http://www.thymeleaf.org">
-<head>
-<meta charset="UTF-8"/>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<meta name="viewport"
-	content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no" />
-<title>Project Find News</title>
+<!doctype html>
+<!--
+  Material Design Lite
+  Copyright 2015 Google Inc. All rights reserved.
 
-<!-- CSS  -->
-<link th:href="@{/webjars/materialize/css/materialize.css}" href="/css/materialize.css" type="text/css" rel="stylesheet"
-	media="screen,projection" />
-<link th:href="@{/static/css/style.css}" href="/css/style.css" type="text/css" rel="stylesheet"
-	media="screen,projection" />
-</head>
-<body>
-	<header class="navbar-fixed">
-		<nav class="primary-color" role="navigation">
-			<div class="container">
-				<div class="nav-wrapper">
-					<ul class="right">
-						<li th:class="((${menu}=='alerts')?'active')"><a th:href="@{/alerts}" href="/alerts">Alertas detectadas</a></li>
-						<li th:class="((${menu}=='feeds')?'active')"><a th:href="@{/feeds}" href="/feeds">Webs</a></li>
-						<li sec:authorize="isAuthenticated()" th:class="((${menu}=='locations')?'active')"><a th:href="@{/admin/locations}" href="#">Proveedores</a></li>
-						<li sec:authorize="isAuthenticated()" th:class="((${menu}=='words')?'active')"><a th:href="@{/admin/words}" href="#">Alertas</a></li>
-						<li sec:authorize="!isAuthenticated()"><a th:href="@{/login}" href="#">Acceso</a></li>	  				
-						<li sec:authorize="isAuthenticated()"><a th:href="@{/logout}" href="#">Logout</a></li>
-					</ul>
-					<ul id="nav-mobile" class="side-nav">
-						<li th:class="((${menu}=='alerts')?'active')"><a th:href="@{/alerts}" href="/alerts">Alertas</a></li>
-						<li th:class="((${menu}=='feeds')?'active')"><a th:href="@{/feeds}" href="/feeds">Fuentes</a></li>
-						<li sec:authorize="isAuthenticated()" th:class="((${menu}=='locations')?'active')"><a th:href="@{/admin/locations}" href="#">Localizaciones</a></li>
-						<li sec:authorize="isAuthenticated()" th:class="((${menu}=='words')?'active')"><a th:href="@{/admin/words}" href="#">Términos</a></li>
-						<li sec:authorize="!isAuthenticated()"><a th:href="@{/login}" href="#">Acceso</a></li>	  				
-						<li sec:authorize="isAuthenticated()"><a th:href="@{/logout}" href="#">Logout</a></li>
-					</ul>
-					<a href="#" data-activates="nav-mobile" class="button-collapse"><i
-						class="mdi-navigation-menu"></i></a>
-				</div>
-			</div>
-		</nav>
-	</header>
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
 
-	<section class="container"></section>
-	
+      https://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="description" content="A front-end template that helps you build fast, modern mobile web apps."/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>Material Design Lite</title>
+
+    <link href="https://fonts.googleapis.com/css?family=Roboto:regular,bold,italic,thin,light,bolditalic,black,medium&amp;lang=en" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+    <link rel="stylesheet" href="https://storage.googleapis.com/code.getmdl.io/1.0.4/material.deep_orange-orange.min.css"/>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/c3/0.4.10/c3.min.css" rel="stylesheet"/>
+    <link th:href="@{/static/css/style.css}" href="style.css" type="text/css" rel="stylesheet" media="screen,projection" />
+    <style>
+    #view-source {
+      position: fixed;
+      display: block;
+      right: 0;
+      bottom: 0;
+      margin-right: 40px;
+      margin-bottom: 40px;
+      z-index: 900;
+    }
+    </style>
+  </head>
+  <body>
+    <div class="demo-layout mdl-layout mdl-js-layout mdl-layout--fixed-drawer mdl-layout--fixed-header">
+      <header th:fragment="menu-superior" class="demo-header mdl-layout__header mdl-color--white mdl-color--grey-100 mdl-color-text--grey-600">
+        <div class="mdl-layout__header-row">
+          <span class="mdl-layout-title">Resumen</span>
+          <div class="mdl-layout-spacer"></div>
+          <div class="mdl-textfield mdl-js-textfield mdl-textfield--expandable">
+            <label class="mdl-button mdl-js-button mdl-button--icon" for="search">
+              <i class="material-icons">search</i>
+            </label>
+            <div class="mdl-textfield__expandable-holder">
+              <input class="mdl-textfield__input" type="text" id="search" />
+              <label class="mdl-textfield__label" for="search">Enter your query...</label>
+            </div>
+          </div>
+        </div>
+      </header>
+      <div th:fragment="menu-izquierdo" class="demo-drawer mdl-layout__drawer mdl-color--primary mdl-color-text--blue-grey-50">
+        <header sec:authorize="isAuthenticated()" class="demo-drawer-header">
+          <img th:src="${avatar}" src="http://www.gravatar.com/avatar/205e460b479e2e5b48aec07710c08d50" class="demo-avatar"></img>
+          <div class="demo-avatar-dropdown">
+            <span>hello@example.com</span>
+            <div class="mdl-layout-spacer"></div>
+            <button id="accbtn" class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon">
+              <i class="material-icons" role="presentation">arrow_drop_down</i>
+              <span class="visuallyhidden">Accounts</span>
+            </button>
+            <ul class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect" for="accbtn">
+              <li class="mdl-menu__item"><a href="@{/profile}">Perfil</a></li>
+              <li class="mdl-menu__item"><a th:href="@{/logout}" href="">Salir</a></li>
+            </ul>
+          </div>
+        </header>
+        <header sec:authorize="!isAuthenticated()" class="demo-drawer-header">
+          <div class="demo-avatar-dropdown">
+            <span>Hola Anonimo. <a th:href="@{/login}" href="">Accede</a></span>
+            <div class="mdl-layout-spacer"></div>
+          </div>
+        </header>
+        <nav class="demo-navigation mdl-navigation mdl-color--blue-grey-800">
+          <a class="mdl-navigation__link mdl-navigation__link--current" href=""><i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">insert_chart</i>Resumen</a>
+          <a class="mdl-navigation__link" th:href="@{/alerts}" href=""><i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">add_alert</i>Alertas activas</a>
+          <a class="mdl-navigation__link" th:href="@{/feeds}" href=""><i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">storage</i>Webs</a>
+          <a sec:authorize="isAuthenticated()" class="mdl-navigation__link" th:href="@{/admin/locations}" href=""><i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">language</i>Provedores</a>
+          <a sec:authorize="isAuthenticated()" class="mdl-navigation__link" th:href="@{/admin/words}" href=""><i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">create</i>Alertas</a>
+          <div class="mdl-layout-spacer"></div>
+          <a class="mdl-navigation__link" href=""><i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">help_outline</i><span class="visuallyhidden">Help</span></a>
+        </nav>
+      </div>
+      <main class="mdl-layout__content mdl-color--grey-100">
+
+      </main>
 	<footer>
-		<div id="toast-container"></div>
 		<!--  Scripts-->
-		<script th:src="@{/webjars/jquery/jquery.min.js}" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
-		<script th:src="@{/webjars/materialize/js/materialize.js}" src="/js/materialize.js"></script>
-		<script th:src="@{/static/js/jquery.confirm.js}" src="/js/jquery.confirm.js"></script>
-		<script th:inline="javascript">
-		/*<![CDATA[*/
-			$(document).ready(function(){
-			$(".dropdown-button").dropdown({ hover: false });
-			var mesInfo = /*[[${info}]]*/ []; 
-			var mesError = /*[[${error}]]*/ []; 
-	        for (var i = 0; i < mesInfo.length; i++) { 
-	         Materialize.toast(mesInfo[i], 10000,'light-green');
-	        } 
-	        for (var i = 0; i < mesError.length; i++) { 
-	         Materialize.toast(mesError[i], 10000,'red');
-	        } 
-			  });
-	  	/*]]>*/
-		</script>
+		<script src="https://storage.googleapis.com/code.getmdl.io/1.0.4/material.min.js"></script>
+		<script
+			src="https://storage.googleapis.com/code.getmdl.io/1.0.4/material.min.js"></script>
+		<script th:src="@{/webjars/jquery/jquery.min.js}"
+			src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+		<script th:src="@{/static/js/jquery.confirm.js}"
+			src="/js/jquery.confirm.js"></script>
 	</footer>
-</body>
+    </div>
+  </body>
 </html>

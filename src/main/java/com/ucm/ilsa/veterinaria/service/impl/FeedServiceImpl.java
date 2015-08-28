@@ -28,9 +28,6 @@ import com.rometools.rome.feed.synd.SyndFeed;
 import com.rometools.rome.io.FeedException;
 import com.rometools.rome.io.SyndFeedInput;
 import com.rometools.rome.io.XmlReader;
-import com.ucm.ilsa.veterinaria.business.alerta.imp.GeoTagAndFilterAlert;
-import com.ucm.ilsa.veterinaria.business.recuperacion.FeedScraping;
-import com.ucm.ilsa.veterinaria.business.tratamiento.impl.GeoTagTratamiento;
 import com.ucm.ilsa.veterinaria.domain.AlertDetect;
 import com.ucm.ilsa.veterinaria.domain.Feed;
 import com.ucm.ilsa.veterinaria.domain.FeedForm;
@@ -39,7 +36,9 @@ import com.ucm.ilsa.veterinaria.domain.PairValues;
 import com.ucm.ilsa.veterinaria.domain.builder.NewsBuilder;
 import com.ucm.ilsa.veterinaria.repository.FeedRepository;
 import com.ucm.ilsa.veterinaria.scheduler.SchedulerService;
+import com.ucm.ilsa.veterinaria.service.FeedScraping;
 import com.ucm.ilsa.veterinaria.service.FeedService;
+import com.ucm.ilsa.veterinaria.service.NewsCheckService;
 
 @Service
 public class FeedServiceImpl implements FeedService {
@@ -49,9 +48,7 @@ public class FeedServiceImpl implements FeedService {
 	@Autowired
 	private FeedScraping scrapingFeed;
 	@Autowired
-	private GeoTagTratamiento geoTagTratamiento;
-	@Autowired
-	private GeoTagAndFilterAlert filterAlert;
+	private NewsCheckService newsCheckService;
 	
 	private SchedulerService schedulerService;
 
@@ -86,7 +83,7 @@ public class FeedServiceImpl implements FeedService {
 	public boolean removeFeed(Feed feed) {
 		schedulerService.removeFeedTask(feed);
 		this.repositoryFeed.delete(feed);
-		return !this.repositoryFeed.exists(feed.getCodeName());
+		return !this.repositoryFeed.exists(feed.getCode());
 	}
 
 	@Override
@@ -107,8 +104,8 @@ public class FeedServiceImpl implements FeedService {
 	@Override
 	public List<AlertDetect> comprobarFeed(Feed feed) {
 		List<News> listNews = scrapingFeed.scrapNewsWithOutEvent(feed);
-		Map<News,List<ResolvedLocation>> locations = geoTagTratamiento.getLocations(listNews);
-		return filterAlert.detectAlert(feed, locations);
+		Map<News,List<ResolvedLocation>> locations = newsCheckService.getLocations(listNews);
+		return newsCheckService.detectAlert(feed, locations);
 	}	
 	
 	

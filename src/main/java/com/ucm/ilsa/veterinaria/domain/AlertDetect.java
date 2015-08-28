@@ -38,7 +38,7 @@ public class AlertDetect extends BaseEntity {
 	@ManyToOne
 	@JoinColumn(name = "alertId")
 	private Alert alert;
-	@OneToMany(mappedBy="alert_detect")
+	@OneToMany(mappedBy="alert_detect",fetch = FetchType.EAGER)
 	private List<NewsDetect> newsDetect;
 	@Enumerated(EnumType.ORDINAL)
 	private AlertLevel level = AlertLevel.yellow;
@@ -46,7 +46,7 @@ public class AlertDetect extends BaseEntity {
 	private boolean check;
 
 	public AlertDetect() {
-
+		
 	}
 
 	public AlertLevel getLevel() {
@@ -87,20 +87,6 @@ public class AlertDetect extends BaseEntity {
 
 	public void setNewsDetect(List<NewsDetect> newsDetect) {
 		this.newsDetect = newsDetect;
-	}
-
-	public void setAlertLevelFromFiabilidad(Fiabilidad fiabilidad) {
-		switch (fiabilidad) {
-		case Baja:
-			this.level = AlertLevel.yellow;
-			break;
-		case Media:
-			this.level = AlertLevel.orange;
-			break;
-		case Alta:
-			this.level = AlertLevel.red;
-			break;
-		}
 	}
 	
 	public SortedMap<Date,List<NewsDetect>> getAllNewsDetectOrderByDate() {

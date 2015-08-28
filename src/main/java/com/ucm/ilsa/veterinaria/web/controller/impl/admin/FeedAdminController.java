@@ -20,10 +20,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.rometools.rome.io.impl.FeedParsers;
 import com.ucm.ilsa.veterinaria.domain.Feed;
 import com.ucm.ilsa.veterinaria.domain.FeedForm;
-import com.ucm.ilsa.veterinaria.domain.Fiabilidad;
 import com.ucm.ilsa.veterinaria.domain.Language;
 import com.ucm.ilsa.veterinaria.domain.News;
 import com.ucm.ilsa.veterinaria.domain.PairValues;
+import com.ucm.ilsa.veterinaria.domain.WebLevel;
+import com.ucm.ilsa.veterinaria.scheduler.SchedulerService;
 import com.ucm.ilsa.veterinaria.domain.Location;
 import com.ucm.ilsa.veterinaria.service.FeedService;
 import com.ucm.ilsa.veterinaria.service.impl.PlaceAlertServiceImpl;
@@ -36,13 +37,16 @@ public class FeedAdminController extends BaseController {
 	@Autowired
 	private FeedService serviceFeed;	
 	
+	@Autowired
+	private SchedulerService schedulerService;
+	
 	public FeedAdminController() {
 		this.menu = "feeds";
 	}
 	
 	@ModelAttribute("enumFiabilidad")
-	public Fiabilidad[] getValuesOfFiabilidad() {
-		return Fiabilidad.values();
+	public WebLevel[] getValuesOfFiabilidad() {
+		return WebLevel.values();
 	}
 	
 	@ModelAttribute("enumLanguaje")
@@ -61,7 +65,8 @@ public class FeedAdminController extends BaseController {
 	
 	@RequestMapping("/get/{codeName}/update/ajax")
 	public @ResponseBody String updateNewsByFeedAjax(Model model, @PathVariable ("codeName") Feed feed) {
-		serviceFeed.scrapFeed(feed);
+//		serviceFeed.scrapFeed(feed);
+		schedulerService.startTask(feed);
 		return "ok";
 	}
 	
@@ -79,7 +84,7 @@ public class FeedAdminController extends BaseController {
         }
 		Feed feedP = new Feed(feed);
 		feedP = serviceFeed.createFeed(feedP);
-		return "redirect:/admin/feeds/get/"+feedP.getCodeName()+"/edit";
+		return "redirect:/admin/feeds/get/"+feedP.getCode()+"/edit";
 	}
 	
 	@RequestMapping(value="/get/{codeName}/edit", method=RequestMethod.GET)

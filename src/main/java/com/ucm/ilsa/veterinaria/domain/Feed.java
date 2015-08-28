@@ -39,7 +39,7 @@ public class Feed extends BaseEntity {
 	@Id
 	@GeneratedValue(generator = "system-uuid")
 	@GenericGenerator(name = "system-uuid", strategy = "uuid")
-	private String codeName;
+	private String code;
 	private String name;
 	@Lob
 	private String urlSite;
@@ -60,9 +60,13 @@ public class Feed extends BaseEntity {
 	private String urlNews;
 	private boolean isRSS = true;
 	@Enumerated(EnumType.ORDINAL)
-	private Fiabilidad fiabilidad = Fiabilidad.Baja;
+	private WebLevel type;
 	private Integer numNewNews;
 	private Timestamp ultimaRecuperacion;
+	private boolean actived = false;
+	private boolean accepted = false;
+	private String comment;
+	private Integer minRefresh;
 
 	// Solo sitios sin RSS
 	@ElementCollection(fetch = FetchType.EAGER)
@@ -88,7 +92,8 @@ public class Feed extends BaseEntity {
 		this.urlNews = feed.getUrlNews();
 		this.urlPages = feed.getUrlPages();
 		this.newsLink = feed.getNewsLink();
-		this.fiabilidad = feed.getFiabilidad();
+		this.type = feed.getType();
+		this.minRefresh = feed.getMinRefresh();
 	}
 
 	public void changeValues(FeedForm feed) {
@@ -102,15 +107,24 @@ public class Feed extends BaseEntity {
 		this.urlPages = feed.getUrlPages();
 		this.isRSS = feed.getIsRSS();
 		this.newsLink = feed.getNewsLink();
-		this.fiabilidad = feed.getFiabilidad();
+		this.type = feed.getType();
+		this.minRefresh = feed.getMinRefresh();
 	}
 
-	public String getCodeName() {
-		return codeName;
+	public String getCode() {
+		return code;
 	}
 
-	public void setCodeName(String codeName) {
-		this.codeName = codeName;
+	public void setCode(String code) {
+		this.code = code;
+	}
+
+	public WebLevel getType() {
+		return type;
+	}
+
+	public void setType(WebLevel type) {
+		this.type = type;
 	}
 
 	public String getName() {
@@ -201,14 +215,6 @@ public class Feed extends BaseEntity {
 		this.newsLink = newsLink;
 	}
 
-	public Fiabilidad getFiabilidad() {
-		return fiabilidad;
-	}
-
-	public void setFiabilidad(Fiabilidad fiabilidad) {
-		this.fiabilidad = fiabilidad;
-	}
-
 	public Integer getNumNewNews() {
 		return numNewNews;
 	}
@@ -225,4 +231,35 @@ public class Feed extends BaseEntity {
 		this.ultimaRecuperacion = ultimaRecuperacion;
 	}
 
+	public boolean isActived() {
+		return actived;
+	}
+
+	public void setActived(boolean actived) {
+		this.actived = actived;
+	}
+
+	public boolean isAccepted() {
+		return accepted;
+	}
+
+	public void setAccepted(boolean accepted) {
+		this.accepted = accepted;
+	}
+
+	public String getComment() {
+		return comment;
+	}
+
+	public void setComment(String comment) {
+		this.comment = comment;
+	}
+
+	public Integer getMinRefresh() {
+		return minRefresh;
+	}
+
+	public void setMinRefresh(Integer minRefresh) {
+		this.minRefresh = minRefresh;
+	}
 }

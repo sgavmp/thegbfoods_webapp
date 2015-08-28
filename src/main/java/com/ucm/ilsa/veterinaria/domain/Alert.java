@@ -1,6 +1,8 @@
 package com.ucm.ilsa.veterinaria.domain;
 
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Lob;
@@ -21,7 +23,8 @@ public class Alert extends BaseEntity {
 	@NotNull
 	@Lob
 	private String words;
-	private boolean isPeligroBiologico;
+	@Enumerated(EnumType.ORDINAL)
+	private AlertLevel type;
 	private boolean global = true;
 
 	public Alert() {
@@ -56,16 +59,12 @@ public class Alert extends BaseEntity {
 		this.title = title;
 	}
 
-	public boolean isPeligroBiologico() {
-		return isPeligroBiologico;
-	}
-	
-	public boolean getIsPeligroBiologico() {
-		return isPeligroBiologico;
+	public AlertLevel getType() {
+		return type;
 	}
 
-	public void setPeligroBiologico(boolean isPeligroBiologico) {
-		this.isPeligroBiologico = isPeligroBiologico;
+	public void setType(AlertLevel type) {
+		this.type = type;
 	}
 
 	public boolean isGlobal() {

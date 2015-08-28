@@ -1,11 +1,12 @@
 package com.ucm.ilsa.veterinaria.domain;
 
-public enum Fiabilidad {
-	Baja(0),Media(1),Alta(2);
+public enum WebLevel {
+	
+	yellow(1),orange(2),red(3);
 	
 	private int value;
 
-    private Fiabilidad(int value) {
+    private WebLevel(int value) {
             this.value = value;
     }
 
@@ -16,4 +17,5 @@ public enum Fiabilidad {
 	public void setValue(int value) {
 		this.value = value;
 	}
+
 }

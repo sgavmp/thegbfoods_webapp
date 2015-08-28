@@ -1,4 +1,4 @@
-package com.ucm.ilsa.veterinaria.domain.converter;
+package com.ucm.ilsa.veterinaria.web.converter;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.converter.Converter;

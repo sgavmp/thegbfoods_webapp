@@ -18,7 +18,8 @@ public class FeedForm {
 	//Por defecto Spanish
 	private Language languaje = Language.SPANISH;
 	private boolean isRSS = true;
-	private Fiabilidad fiabilidad = Fiabilidad.Baja;
+	private WebLevel type = WebLevel.yellow;
+	private Integer minRefresh = 120;
 	
 	@URL
 	private String urlNews;//Url de la pagina de noticias o de rss
@@ -42,8 +43,9 @@ public class FeedForm {
 		this.url=feed.getUrlSite();
 		this.urlNews=feed.getUrlNews();
 		this.newsLink = feed.getNewsLink();
-		this.fiabilidad = feed.getFiabilidad();
+		this.type = feed.getType();
 		this.isRSS = feed.isRSS();
+		this.minRefresh = feed.getMinRefresh();
 	}
 
 	public String getName() {
@@ -126,13 +128,20 @@ public class FeedForm {
 		this.newsLink = newsLink;
 	}
 
-	public Fiabilidad getFiabilidad() {
-		return fiabilidad;
+	public WebLevel getType() {
+		return type;
 	}
 
-	public void setFiabilidad(Fiabilidad fiabilidad) {
-		this.fiabilidad = fiabilidad;
+	public void setType(WebLevel type) {
+		this.type = type;
 	}
-	
-	
+
+	public Integer getMinRefresh() {
+		return minRefresh;
+	}
+
+	public void setMinRefresh(Integer minRefresh) {
+		this.minRefresh = minRefresh;
+	}
+
 }

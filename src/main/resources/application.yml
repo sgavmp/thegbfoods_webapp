@@ -33,7 +33,8 @@ spring:
     cache: false
   datasource:
     url: jdbc:mysql://localhost:3306/veterinaria
-    username: local
+    username: root
+    password: root
     driverClassName: com.mysql.jdbc.Driver
     continueOnError: true
 
