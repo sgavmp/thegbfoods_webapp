@@ -106,4 +106,8 @@ public class AlertDetectServiceImpl {
 		alert.setCheck(true);
 		repository.save(alert);
 	}
+	
+	public List<AlertDetect> getAlertDetectActivatedAfter(Date date) {
+		return repository.readAllByCheckIsFalseAndNewsDetectDatePubAfterOrderByCreateDateDesc(date);
+	}
 }

@@ -104,4 +104,15 @@ public class AlertDetect extends BaseEntity {
 		}
 		return alertasPorFecha;
 	}
+	
+	public int numNewsDetectInDate(int day, int month, int year) {
+		Date start = new Date(year-1900,month-1,day);
+		Date end = new Date(year-1900,month-1,day+1);
+		int count = 0;
+		for (NewsDetect news : newsDetect) {
+			if (news.getDatePub().before(end) && ( news.getDatePub().after(start) || news.getDatePub().equals(start)))
+				count++;
+		}
+		return count;
+	}
 }

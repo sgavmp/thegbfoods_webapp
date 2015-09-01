@@ -41,7 +41,7 @@ public class FeedAdminController extends BaseController {
 	private SchedulerService schedulerService;
 	
 	public FeedAdminController() {
-		this.menu = "feeds";
+		this.menu = "Sitios";
 	}
 	
 	@ModelAttribute("enumFiabilidad")

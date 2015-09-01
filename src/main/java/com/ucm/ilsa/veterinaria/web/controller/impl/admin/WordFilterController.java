@@ -22,7 +22,7 @@ public class WordFilterController extends BaseController {
 	private AlertServiceImpl wordService;
 	
 	public WordFilterController() {
-		this.menu = "words";
+		this.menu = "Alertas";
 	}
 	
 	@RequestMapping("**")

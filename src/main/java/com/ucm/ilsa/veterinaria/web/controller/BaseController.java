@@ -23,11 +23,6 @@ import com.ucm.ilsa.veterinaria.util.MD5Util;
 
 public abstract class BaseController {
 	
-	private static long ONE_DAY = 86400000;
-	
-	@Autowired
-	private StatisticsRepository statisticsRepository;
-	
 	private static List<String> info = new ArrayList<String>();
 	private static List<String> error = new ArrayList<String>();
 	//Indica al template el menu que tiene que activar
@@ -70,32 +65,6 @@ public abstract class BaseController {
 		List<String> copy = Lists.newArrayList(error);
 		error.clear();
 		return copy;
-	}
-	
-	@ModelAttribute("stat")
-	public Statistics getStatisticsToday() {
-		Statistics statistics = statisticsRepository.findOne(new java.sql.Date(System.currentTimeMillis()));
-		if (statistics==null) {
-			statistics = new Statistics(new java.sql.Date(System.currentTimeMillis()), 0, 0);
-			statisticsRepository.save(statistics);
-		}
-		return statistics;
-	}
-	
-	@ModelAttribute("graph")
-	public List<Statistics> getGraphStat() {
-		List<Statistics> graph = new ArrayList<Statistics>();
-		Statistics statistics = null;
-		Long date = System.currentTimeMillis() - (ONE_DAY * 6);
-		for (int i=0;i<7;i++) {
-			java.sql.Date current = new java.sql.Date(date + (ONE_DAY * i));
-			statistics = statisticsRepository.findOne(current);
-			if (statistics==null) {
-				statistics = new Statistics(current);
-			}
-			graph.add(statistics);
-		}
-		return graph;
 	}
 	
 	public BaseController() {

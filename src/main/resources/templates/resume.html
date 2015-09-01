@@ -15,6 +15,48 @@
 		<main
 			class="mdl-layout__content mdl-color--grey-100 mdl-typography--text-center"
 			th:fragment="alerts">
+		<div
+			class="mdl-color--white mdl-shadow--2dp mdl-cell mdl-cell--12-col mdl-grid">
+			<div
+				class="mdl-cell mdl-cell--12-col mdl-cell--12-col-desktop mdl-typography--display-1-color-contrast" th:inline="text">Hoy
+				se han analizado [[${stat.numNews}]] noticias</div>
+			<div
+				class="mdl-cell mdl-cell--12-col mdl-cell--12-col-desktop mdl-typography--display-1-color-contrast" th:inline="text">y
+				se han detectado [[${stat.numAlerts}]] posibles alertas</div>
+			<div id="chart"
+				class="demo-chart mdl-cell mdl-cell--12-col mdl-cell--12-col-desktop"></div>
+		</div>
+		<div
+			class="mdl-color--white mdl-shadow--2dp mdl-cell mdl-cell--12-col mdl-grid mdl-typography--text-left">
+			<div
+				class="mdl-cell mdl-cell--12-col mdl-cell--12-col-desktop mdl-typography--display-1-color-contrast mdl-typography--text-center" th:inline="text">Mapa de posibles paises afectados</div>
+			<div id="container" style="width: 100%; height: 100%;"></div>
+		</div>
+		<div class="mdl-typography--display-1-color-contrast">Alertas
+			activas hoy</div>
+		<!--  Cuando hay alertas -->
+		<div th:if="${!#lists.isEmpty(alertsActivateToday)}" class="mdl-grid">
+			<div th:if="${#lists.isEmpty(alertsActivateToday)}" class="watermark">
+				<h1>No se ha detectado ninguna alerta hoy</h1>
+			</div>
+			<div th:each="alert : ${alertsUncheck}"
+				class="mdl-cell mdl-cell--3-col mdl-cell--4-col-tablet mdl-cell--4-col-phone mdl-card mdl-shadow--3dp">
+				<div class="mdl-card__title mdl-color--red-200">
+					<h2 class="mdl-card__title-text" th:inline="text">[[${alert.alert.title}]]</h2>
+					<span class="mdl-badge vet-alerta-num" th:attr="data-badge=${alert.numNewsDetectInDate(27,8,2015)}" data-badge="4"></span>
+				</div>
+				<div class="mdl-card__supporting-text mdl-color--red-200">En
+					el ultimo mes se han detectado 20 posibles alertas de las cuales 10
+					fueron verificadas.</div>
+				<div class="mdl-card__actions mdl-card--border">
+					<a
+						class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">Ver
+						mas detalles</a>
+				</div>
+			</div>
+		</div>
+		<div class="mdl-typography--display-1-color-contrast">Alertas
+			activas de los ultimos 30 días</div>
 		<!--  Cuando hay alertas -->
 		<div th:if="${!#lists.isEmpty(alertsUncheck)}" class="mdl-grid">
 			<div th:if="${#lists.isEmpty(alertsUncheck)}" class="watermark">

@@ -25,7 +25,7 @@ import com.ucm.ilsa.veterinaria.web.controller.BaseController;
 public class FeedController extends BaseController {
 	
 	public FeedController() {
-		this.menu="feeds";
+		this.menu="Sitios";
 	}
 	
 	@Autowired

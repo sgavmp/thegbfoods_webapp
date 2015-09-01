@@ -44,7 +44,7 @@
     <div class="demo-layout mdl-layout mdl-js-layout mdl-layout--fixed-drawer mdl-layout--fixed-header">
       <header th:fragment="menu-superior" class="demo-header mdl-layout__header mdl-color--white mdl-color--grey-100 mdl-color-text--grey-600">
         <div class="mdl-layout__header-row">
-          <span class="mdl-layout-title">Resumen</span>
+          <span class="mdl-layout-title mdl-color-text--primary" th:text="${menu}">Resumen</span>
           <div class="mdl-layout-spacer"></div>
           <div class="mdl-textfield mdl-js-textfield mdl-textfield--expandable">
             <label class="mdl-button mdl-js-button mdl-button--icon" for="search">
@@ -80,11 +80,11 @@
           </div>
         </header>
         <nav class="demo-navigation mdl-navigation mdl-color--blue-grey-800">
-          <a class="mdl-navigation__link mdl-navigation__link--current" href=""><i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">insert_chart</i>Resumen</a>
-          <a class="mdl-navigation__link" th:href="@{/alerts}" href=""><i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">add_alert</i>Alertas activas</a>
-          <a class="mdl-navigation__link" th:href="@{/feeds}" href=""><i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">storage</i>Webs</a>
-          <a sec:authorize="isAuthenticated()" class="mdl-navigation__link" th:href="@{/admin/locations}" href=""><i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">language</i>Provedores</a>
-          <a sec:authorize="isAuthenticated()" class="mdl-navigation__link" th:href="@{/admin/words}" href=""><i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">create</i>Alertas</a>
+          <a class="mdl-navigation__link" th:class="${url == #httpServletRequest.requestURI ? 'mdl-navigation\_\_link mdl-navigation\_\_link--current' : 'mdl-navigation__link'}" th:href="${url}" th:with="url=@{/}" href=""><i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">insert_chart</i>Resumen</a>
+          <a class="mdl-navigation__link" th:class="${url == #httpServletRequest.requestURI ? 'mdl-navigation\_\_link mdl-navigation\_\_link--current' : 'mdl-navigation__link'}" th:href="${url}" th:with="url=@{/alerts}" href=""><i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">add_alert</i>Alertas activas</a>
+          <a class="mdl-navigation__link" th:class="${url == #httpServletRequest.requestURI ? 'mdl-navigation\_\_link mdl-navigation\_\_link--current' : 'mdl-navigation__link'}" th:href="${url}" th:with="url=@{/feeds}" href=""><i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">storage</i>Webs</a>
+          <a sec:authorize="isAuthenticated()" class="mdl-navigation__link" th:class="${url == #httpServletRequest.requestURI ? 'mdl-navigation\_\_link mdl-navigation\_\_link--current' : 'mdl-navigation__link'}" th:href="${url}" th:with="url=@{/admin/locations}" href=""><i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">language</i>Provedores</a>
+          <a sec:authorize="isAuthenticated()" class="mdl-navigation__link" th:class="${url == #httpServletRequest.requestURI ? 'mdl-navigation\_\_link mdl-navigation\_\_link--current' : 'mdl-navigation__link'}" th:href="${url}" th:with="url=@{/admin/words}" href=""><i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">create</i>Alertas</a>
           <div class="mdl-layout-spacer"></div>
           <a class="mdl-navigation__link" href=""><i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">help_outline</i><span class="visuallyhidden">Help</span></a>
         </nav>
@@ -101,6 +101,8 @@
 			src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
 		<script th:src="@{/static/js/jquery.confirm.js}"
 			src="/js/jquery.confirm.js"></script>
+		<script th:src="@{/static/js/jquery.simplemodal.js}" type='text/javascript' src='js/jquery.simplemodal.js'></script>
+		<script th:src="@{/static/js/confirm.js}" type='text/javascript' src='js/confirm.js'></script>
 	</footer>
     </div>
   </body>

@@ -25,7 +25,7 @@ public class LocationsController extends BaseController {
 	private PlaceAlertServiceImpl serviceLocation;
 	
 	public LocationsController() {
-		this.menu = "locations";
+		this.menu = "Proveedores";
 	}
 	
 	@RequestMapping("**")
