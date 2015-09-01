@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.persistence.CascadeType;
+import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
@@ -23,6 +24,7 @@ import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
 import com.bericotech.clavin.gazetteer.CountryCode;
+import com.bericotech.clavin.resolver.ResolvedLocation;
 import com.google.common.collect.Lists;
 
 @Entity
@@ -45,6 +47,9 @@ public class NewsDetect extends BaseEntity {
 	@ManyToMany(fetch=FetchType.EAGER)
 	@JoinColumn(name="alert_detect_id")
 	private List<Location> locationsNear;
+	@ElementCollection(fetch = FetchType.EAGER)
+	@CollectionTable(name = "news_detect_locations", joinColumns = @JoinColumn(name = "NEWS_ID"))
+	private List<ResolvedLocation> locations;
 	@ManyToOne(fetch=FetchType.EAGER)
 	@JoinColumn(name="alert_detect_id")
 	private AlertDetect alert_detect;

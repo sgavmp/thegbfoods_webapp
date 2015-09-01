@@ -121,13 +121,14 @@ public class NewsCheckServiceImpl implements NewsCheckService {
 						} catch (Exception e) {
 							e.printStackTrace();
 						}
-						if (alerta.isGlobal()) {
-							// Obtenemos los lugares que coincidan con el paisde
+						//Si la alerta es de Nivel 2 o 3 se detecta los proveedores por el pais
+						if (alerta.getType().equals(AlertLevel.orange) || alerta.getType().equals(AlertLevel.red)) {
+							// Obtenemos los lugares que coincidan con el pais de
 							// las localizaciones encontradas
 							newsDetect
 									.setLocationsNear(obtenerLocalizacionesCercanasPais(
 											locationsAp, lugares));
-						} else {
+						} else { //Si la alerta es de Nivel 1 se detecta los proveedores por cercania a los puntos encontrados
 							// Obtenemos los lugares que entren en el radio de la localizacion
 							newsDetect
 									.setLocationsNear(obtenerLocalizacionesCercanas(
@@ -205,13 +206,14 @@ public class NewsCheckServiceImpl implements NewsCheckService {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
-						if (alerta.isGlobal()) {
-							// Obtenemos los lugares que coincidan con el paisde
+						//Si la alerta es de Nivel 2 o 3 se detecta los proveedores por el pais
+						if (alerta.getType().equals(AlertLevel.orange) || alerta.getType().equals(AlertLevel.red)) {
+							// Obtenemos los lugares que coincidan con el pais de
 							// las localizaciones encontradas
 							newsDetect
 									.setLocationsNear(obtenerLocalizacionesCercanasPais(
 											locationsAp, lugares));
-						} else {
+						} else { //Si la alerta es de Nivel 1 se detecta los proveedores por cercania a los puntos encontrados
 							// Obtenemos los lugares que entren en el radio de la localizacion
 							newsDetect
 									.setLocationsNear(obtenerLocalizacionesCercanas(

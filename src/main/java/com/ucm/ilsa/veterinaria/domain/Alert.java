@@ -25,7 +25,6 @@ public class Alert extends BaseEntity {
 	private String words;
 	@Enumerated(EnumType.ORDINAL)
 	private AlertLevel type;
-	private boolean global = true;
 
 	public Alert() {
 		this.words = "";
@@ -65,18 +64,6 @@ public class Alert extends BaseEntity {
 
 	public void setType(AlertLevel type) {
 		this.type = type;
-	}
-
-	public boolean isGlobal() {
-		return global;
-	}
-	
-	public boolean getGlobal() {
-		return global;
-	}
-
-	public void setGlobal(boolean global) {
-		this.global = global;
 	}
 	
 
