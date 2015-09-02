@@ -17,5 +17,5 @@ public interface FeedService {
 	public boolean removeFeed(Feed feed);
 	public void setSchedulerService(SchedulerService schedulerService);
 	public News testFeed(FeedForm feed);
-	public List<AlertDetect> comprobarFeed(Feed feed);
+
 }

@@ -29,8 +29,8 @@
 						<label class="mdl-switch mdl-js-switch mdl-js-ripple-effect"
 							for="rss"> <input type="checkbox"
 							class="mdl-switch__input" id="rss" name="isRSS"
-							th:checked="*{isRSS}" /> <span class="mdl-switch__label">&iquest;Es
-								un sitio con RSS?</span>
+							th:checked="*{isRSS}" th:field="*{isRSS}" /> <span
+							class="mdl-switch__label">&iquest;Es un sitio con RSS?</span>
 						</label>
 					</div>
 					<div
@@ -165,12 +165,102 @@
 							</table>
 						</div>
 					</div>
+					<div class="doc-page">
+						<div class="snippet-padding"></div>
+						<table
+							class="mdl-data-table mdl-js-data-table mdl-shadow--2dp snippet">
+							<thead>
+								<tr>
+									<th class="mdl-data-table__cell--non-numeric">Contenido</th>
+									<th class="mdl-data-table__cell--non-numeric">Selector</th>
+									<th>Metadatos</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td class="mdl-data-table__cell--non-numeric">Titulo</td>
+									<td class="mdl-data-table__cell--non-numeric"><div
+											class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+											<input class="mdl-textfield__input" type="text"
+												th:field="*{selectorTitle}" /> <label
+												class="mdl-textfield__label" for="selectorTitle">Selector
+												de Titulo</label>
+										</div></td>
+									<td><label
+										class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect"
+										for="checkbox-1"> <input type="checkbox"
+											id="checkbox-1" class="mdl-checkbox__input"
+											th:checked="*{selectorTitleMeta}"
+											th:field="*{selectorTitleMeta}" /> <span
+											class="mdl-checkbox__label">Si</span>
+									</label></td>
+								</tr>
+								<tr>
+									<td class="mdl-data-table__cell--non-numeric">Descripción</td>
+									<td class="mdl-data-table__cell--non-numeric"><div
+											class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+											<input class="mdl-textfield__input" type="text"
+												th:field="*{selectorDescription}" /> <label
+												class="mdl-textfield__label" for="selectorTitle">Selector
+												de Descripción</label>
+										</div></td>
+									<td><label
+										class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect"
+										for="checkbox-1"> <input type="checkbox"
+											id="checkbox-1" class="mdl-checkbox__input"
+											th:checked="*{selectorDescriptionMeta}"
+											th:field="*{selectorDescriptionMeta}" /> <span
+											class="mdl-checkbox__label">Si</span>
+									</label></td>
+								</tr>
+								<tr>
+									<td class="mdl-data-table__cell--non-numeric">Contenido</td>
+									<td class="mdl-data-table__cell--non-numeric"><div
+											class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+											<input class="mdl-textfield__input" type="text"
+												th:field="*{selectorContent}" /> <label
+												class="mdl-textfield__label" for="selectorTitle">Selector
+												de Contenido</label>
+										</div></td>
+									<td><label
+										class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect"
+										for="checkbox-1"> <input type="checkbox"
+											id="checkbox-1" class="mdl-checkbox__input"
+											th:checked="*{selectorContentMeta}"
+											th:field="*{selectorContentMeta}" /> <span
+											class="mdl-checkbox__label">Si</span>
+									</label></td>
+								</tr>
+								<tr>
+									<td class="mdl-data-table__cell--non-numeric">Fecha
+										Publicación</td>
+									<td class="mdl-data-table__cell--non-numeric"><div
+											class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+											<input class="mdl-textfield__input" type="text"
+												th:field="*{selectorPubDate}" /> <label
+												class="mdl-textfield__label" for="selectorTitle">Selector
+												de Fecha Publicación</label>
+										</div></td>
+									<td><label
+										class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect"
+										for="checkbox-1"> <input type="checkbox"
+											id="checkbox-1" class="mdl-checkbox__input"
+											th:checked="*{selectorPubDateMeta}"
+											th:field="*{selectorPubDateMeta}" /> <span
+											class="mdl-checkbox__label">Si</span>
+									</label></td>
+								</tr>
+							</tbody>
+						</table>
+						<div class="snippet-padding"></div>
+					</div>
 					<div class="mdl-grid">
 						<div class="mdl-cell mdl-cell--1-col"></div>
 						<div class="mdl-cell mdl-cell--10-col">
 							<button class="mdl-button mdl-js-button mdl-color--primary"
 								type="submit">Enviar</button>
-							<button id="test" class="mdl-button mdl-js-button" type="submit"
+							<button id="test" data-modal="#modal"
+								class="mdl-button mdl-js-button modal__trigger" type="submit"
 								name="testFeed">Probar sitio</button>
 						</div>
 					</div>
@@ -179,11 +269,38 @@
 		</div>
 		</main>
 		<footer th:include="base :: footer"> </footer>
+		<!-- Modal -->
+		<div id="modal" class="modal modal__bg" role="dialog"
+			aria-hidden="true">
+			<div class="modal__dialog">
+				<div class="modal__content">
+					<div id="contenido" style="visibility: hidden;">
+						<h1 id="testTitle">Titulo</h1>
+						<h5 id="testDate">Fecha</h5>
+						<p id="testContent">Contenido</p>
+						<p id="testUrl">Url</p>
+					</div>
+					<div id="testLoad" class="mdl-spinner mdl-js-spinner is-active"></div>
+					<!-- modal close button -->
+					<a href="" class="modal__close demo-close"> <svg class=""
+							viewBox="0 0 24 24">
+							<path
+								d="M19 6.41l-1.41-1.41-5.59 5.59-5.59-5.59-1.41 1.41 5.59 5.59-5.59 5.59 1.41 1.41 5.59-5.59 5.59 5.59 1.41-1.41-5.59-5.59z" />
+							<path d="M0 0h24v24h-24z" fill="none" /></svg>
+					</a>
+
+				</div>
+			</div>
+		</div>
+		<script th:src="@{/static/js/material.modal.js}"
+				src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+		
 		<script th:inline="javascript">
 			/*<![CDATA[*/
 			$(document)
 					.ready(
 							function() {
+								Modal.init();
 								if (!$("#rss").is(":checked")) {
 									$(".rss").hide();
 									$(".html").show();
@@ -217,12 +334,9 @@
 												function(event) {
 													$form = $(this).parents(
 															"form");
-													$
-															.post(
-																	$form
-																			.attr("action"),
-																	$form
-																			.serialize()
+													$.post(
+																	$form.attr("action"),
+																	$form.serialize()
 																			+ "&testFeed=",
 																	function(
 																			data) {
@@ -232,31 +346,23 @@
 																		var date = new Date(
 																				response.pubDate);
 																		$(
-																				"#modal")
+																				"#testTitle")
 																				.html(
-																						'<div id="modal1" class="modal">'
-																								+ '<div class="modal-content">'
-																								+ '<h4>Noticia obtenida del sitio</h4>'
-																								+ '<p>Titulo de la noticia:'
-																								+ response.title
-																								+ '</p>'
-																								+ '<p>Contenido de la noticia:'
-																								+ response.content
-																								+ '</p>'
-																								+ '<p>Url de la noticia:'
-																								+ response.url
-																								+ '</p>'
-																								+ '<p>Fecha de publicacion de la noticia:'
-																								+ date
-																								+ '</p>'
-																								+ '</div>'
-																								+ '<div class="modal-footer">'
-																								+ '<a href="#!" class=" modal-action modal-close waves-effect waves-green btn-flat">Cerrar</a>'
-																								+ '</div>'
-																								+ '</div>');
+																						response.title);
 																		$(
-																				'#modal1')
-																				.openModal();
+																				"#testContent")
+																				.html(
+																						response.content);
+																		$(
+																				"#testUrl")
+																				.html(
+																						response.url);
+																		$(
+																				"#testDate")
+																				.html(
+																						date);
+																		$("#contenido").css("visibility", "visible")
+																		$("#testLoad").css("visibility", "hidden")
 																	});
 													return false;
 												});

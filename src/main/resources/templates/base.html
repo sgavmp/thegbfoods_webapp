@@ -15,95 +15,162 @@
   See the License for the specific language governing permissions and
   limitations under the License
 -->
-<html lang="en">
-  <head>
-    <meta charset="utf-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <meta name="description" content="A front-end template that helps you build fast, modern mobile web apps."/>
-    <meta name="viewport" content="width=device-width, initial-scale=1"/>
-    <title>Material Design Lite</title>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="description"
+	content="A front-end template that helps you build fast, modern mobile web apps." />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Material Design Lite</title>
 
-    <link href="https://fonts.googleapis.com/css?family=Roboto:regular,bold,italic,thin,light,bolditalic,black,medium&amp;lang=en" rel="stylesheet"/>
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
-    <link rel="stylesheet" href="https://storage.googleapis.com/code.getmdl.io/1.0.4/material.deep_orange-orange.min.css"/>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/c3/0.4.10/c3.min.css" rel="stylesheet"/>
-    <link th:href="@{/static/css/style.css}" href="style.css" type="text/css" rel="stylesheet" media="screen,projection" />
-    <style>
-    #view-source {
-      position: fixed;
-      display: block;
-      right: 0;
-      bottom: 0;
-      margin-right: 40px;
-      margin-bottom: 40px;
-      z-index: 900;
-    }
-    </style>
-  </head>
-  <body>
-    <div class="demo-layout mdl-layout mdl-js-layout mdl-layout--fixed-drawer mdl-layout--fixed-header">
-      <header th:fragment="menu-superior" class="demo-header mdl-layout__header mdl-color--white mdl-color--grey-100 mdl-color-text--grey-600">
-        <div class="mdl-layout__header-row">
-          <span class="mdl-layout-title mdl-color-text--primary" th:text="${menu}">Resumen</span>
-          <div class="mdl-layout-spacer"></div>
-          <div class="mdl-textfield mdl-js-textfield mdl-textfield--expandable">
-            <label class="mdl-button mdl-js-button mdl-button--icon" for="search">
-              <i class="material-icons">search</i>
-            </label>
-            <div class="mdl-textfield__expandable-holder">
-              <input class="mdl-textfield__input" type="text" id="search" />
-              <label class="mdl-textfield__label" for="search">Enter your query...</label>
-            </div>
-          </div>
-        </div>
-      </header>
-      <div th:fragment="menu-izquierdo" class="demo-drawer mdl-layout__drawer mdl-color--primary mdl-color-text--blue-grey-50">
-        <header sec:authorize="isAuthenticated()" class="demo-drawer-header">
-          <img th:src="${avatar}" src="http://www.gravatar.com/avatar/205e460b479e2e5b48aec07710c08d50" class="demo-avatar"></img>
-          <div class="demo-avatar-dropdown">
-            <span>hello@example.com</span>
-            <div class="mdl-layout-spacer"></div>
-            <button id="accbtn" class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon">
-              <i class="material-icons" role="presentation">arrow_drop_down</i>
-              <span class="visuallyhidden">Accounts</span>
-            </button>
-            <ul class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect" for="accbtn">
-              <li class="mdl-menu__item"><a href="@{/profile}">Perfil</a></li>
-              <li class="mdl-menu__item"><a th:href="@{/logout}" href="">Salir</a></li>
-            </ul>
-          </div>
-        </header>
-        <header sec:authorize="!isAuthenticated()" class="demo-drawer-header">
-          <div class="demo-avatar-dropdown">
-            <span>Hola Anonimo. <a th:href="@{/login}" href="">Accede</a></span>
-            <div class="mdl-layout-spacer"></div>
-          </div>
-        </header>
-        <nav class="demo-navigation mdl-navigation mdl-color--blue-grey-800">
-          <a class="mdl-navigation__link" th:class="${url == #httpServletRequest.requestURI ? 'mdl-navigation\_\_link mdl-navigation\_\_link--current' : 'mdl-navigation__link'}" th:href="${url}" th:with="url=@{/}" href=""><i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">insert_chart</i>Resumen</a>
-          <a class="mdl-navigation__link" th:class="${url == #httpServletRequest.requestURI ? 'mdl-navigation\_\_link mdl-navigation\_\_link--current' : 'mdl-navigation__link'}" th:href="${url}" th:with="url=@{/alerts}" href=""><i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">add_alert</i>Alertas activas</a>
-          <a class="mdl-navigation__link" th:class="${url == #httpServletRequest.requestURI ? 'mdl-navigation\_\_link mdl-navigation\_\_link--current' : 'mdl-navigation__link'}" th:href="${url}" th:with="url=@{/feeds}" href=""><i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">storage</i>Webs</a>
-          <a sec:authorize="isAuthenticated()" class="mdl-navigation__link" th:class="${url == #httpServletRequest.requestURI ? 'mdl-navigation\_\_link mdl-navigation\_\_link--current' : 'mdl-navigation__link'}" th:href="${url}" th:with="url=@{/admin/locations}" href=""><i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">language</i>Provedores</a>
-          <a sec:authorize="isAuthenticated()" class="mdl-navigation__link" th:class="${url == #httpServletRequest.requestURI ? 'mdl-navigation\_\_link mdl-navigation\_\_link--current' : 'mdl-navigation__link'}" th:href="${url}" th:with="url=@{/admin/words}" href=""><i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">create</i>Alertas</a>
-          <div class="mdl-layout-spacer"></div>
-          <a class="mdl-navigation__link" href=""><i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">help_outline</i><span class="visuallyhidden">Help</span></a>
-        </nav>
-      </div>
-      <main class="mdl-layout__content mdl-color--grey-100">
-
-      </main>
-	<footer>
-		<!--  Scripts-->
-		<script src="https://storage.googleapis.com/code.getmdl.io/1.0.4/material.min.js"></script>
-		<script
-			src="https://storage.googleapis.com/code.getmdl.io/1.0.4/material.min.js"></script>
-		<script th:src="@{/webjars/jquery/jquery.min.js}"
-			src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
-		<script th:src="@{/static/js/jquery.confirm.js}"
-			src="/js/jquery.confirm.js"></script>
-		<script th:src="@{/static/js/jquery.simplemodal.js}" type='text/javascript' src='js/jquery.simplemodal.js'></script>
-		<script th:src="@{/static/js/confirm.js}" type='text/javascript' src='js/confirm.js'></script>
-	</footer>
-    </div>
-  </body>
+<link
+	href="https://fonts.googleapis.com/css?family=Roboto:regular,bold,italic,thin,light,bolditalic,black,medium&amp;lang=en"
+	rel="stylesheet" />
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons"
+	rel="stylesheet" />
+<link rel="stylesheet"
+	href="https://storage.googleapis.com/code.getmdl.io/1.0.4/material.deep_orange-orange.min.css" />
+<link href="https://cdnjs.cloudflare.com/ajax/libs/c3/0.4.10/c3.min.css"
+	rel="stylesheet" />
+<link th:href="@{/static/css/style.css}" href="style.css"
+	type="text/css" rel="stylesheet" media="screen,projection" />
+<link th:href="@{/static/css/material.modal.css}"
+	href="material.modal.css" type="text/css" rel="stylesheet" />
+<link th:href="@{/static/css/material.snackbar.css}"
+	href="material.modal.css" type="text/css" rel="stylesheet" />
+<style>
+#view-source {
+	position: fixed;
+	display: block;
+	right: 0;
+	bottom: 0;
+	margin-right: 40px;
+	margin-bottom: 40px;
+	z-index: 900;
+}
+</style>
+</head>
+<body>
+	<div
+		class="demo-layout mdl-layout mdl-js-layout mdl-layout--fixed-drawer mdl-layout--fixed-header">
+		<header th:fragment="menu-superior"
+			class="demo-header mdl-layout__header mdl-color--white mdl-color--grey-100 mdl-color-text--grey-600">
+			<div class="mdl-layout__header-row">
+				<span class="mdl-layout-title mdl-color-text--primary"
+					th:text="${menu}">Resumen</span>
+				<div class="mdl-layout-spacer"></div>
+				<div
+					class="mdl-textfield mdl-js-textfield mdl-textfield--expandable">
+					<label class="mdl-button mdl-js-button mdl-button--icon"
+						for="search"> <i class="material-icons">search</i>
+					</label>
+					<div class="mdl-textfield__expandable-holder">
+						<input class="mdl-textfield__input" type="text" id="search" /> <label
+							class="mdl-textfield__label" for="search">Enter your
+							query...</label>
+					</div>
+				</div>
+			</div>
+		</header>
+		<div th:fragment="menu-izquierdo"
+			class="demo-drawer mdl-layout__drawer mdl-color--primary mdl-color-text--blue-grey-50">
+			<header sec:authorize="isAuthenticated()" class="demo-drawer-header">
+				<img th:src="${avatar}"
+					src="http://www.gravatar.com/avatar/205e460b479e2e5b48aec07710c08d50"
+					class="demo-avatar"></img>
+				<div class="demo-avatar-dropdown">
+					<span>hello@example.com</span>
+					<div class="mdl-layout-spacer"></div>
+					<button id="accbtn"
+						class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon">
+						<i class="material-icons" role="presentation">arrow_drop_down</i>
+						<span class="visuallyhidden">Accounts</span>
+					</button>
+					<ul
+						class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect"
+						for="accbtn">
+						<li class="mdl-menu__item"><a href="@{/profile}">Perfil</a></li>
+						<li class="mdl-menu__item"><a th:href="@{/logout}" href="">Salir</a></li>
+					</ul>
+				</div>
+			</header>
+			<header sec:authorize="!isAuthenticated()" class="demo-drawer-header">
+				<div class="demo-avatar-dropdown">
+					<span>Hola Anonimo. <a th:href="@{/login}" href="">Accede</a></span>
+					<div class="mdl-layout-spacer"></div>
+				</div>
+			</header>
+			<nav class="demo-navigation mdl-navigation mdl-color--blue-grey-800">
+				<a class="mdl-navigation__link"
+					th:class="${url == #httpServletRequest.requestURI ? 'mdl-navigation\_\_link mdl-navigation\_\_link--current' : 'mdl-navigation__link'}"
+					th:href="${url}" th:with="url=@{/}" href=""><i
+					class="mdl-color-text--blue-grey-400 material-icons"
+					role="presentation">insert_chart</i>Resumen</a> <a
+					class="mdl-navigation__link"
+					th:class="${url == #httpServletRequest.requestURI ? 'mdl-navigation\_\_link mdl-navigation\_\_link--current' : 'mdl-navigation__link'}"
+					th:href="${url}" th:with="url=@{/alerts}" href=""><i
+					class="mdl-color-text--blue-grey-400 material-icons"
+					role="presentation">add_alert</i>Alertas activas</a> <a
+					class="mdl-navigation__link"
+					th:class="${url == #httpServletRequest.requestURI ? 'mdl-navigation\_\_link mdl-navigation\_\_link--current' : 'mdl-navigation__link'}"
+					th:href="${url}" th:with="url=@{/feeds}" href=""><i
+					class="mdl-color-text--blue-grey-400 material-icons"
+					role="presentation">storage</i>Webs</a> <a
+					sec:authorize="isAuthenticated()" class="mdl-navigation__link"
+					th:class="${url == #httpServletRequest.requestURI ? 'mdl-navigation\_\_link mdl-navigation\_\_link--current' : 'mdl-navigation__link'}"
+					th:href="${url}" th:with="url=@{/admin/locations}" href=""><i
+					class="mdl-color-text--blue-grey-400 material-icons"
+					role="presentation">language</i>Provedores</a> <a
+					sec:authorize="isAuthenticated()" class="mdl-navigation__link"
+					th:class="${url == #httpServletRequest.requestURI ? 'mdl-navigation\_\_link mdl-navigation\_\_link--current' : 'mdl-navigation__link'}"
+					th:href="${url}" th:with="url=@{/admin/words}" href=""><i
+					class="mdl-color-text--blue-grey-400 material-icons"
+					role="presentation">create</i>Alertas</a>
+				<div class="mdl-layout-spacer"></div>
+				<a class="mdl-navigation__link" href=""><i
+					class="mdl-color-text--blue-grey-400 material-icons"
+					role="presentation">help_outline</i><span class="visuallyhidden">Help</span></a>
+			</nav>
+		</div>
+		<main class="mdl-layout__content mdl-color--grey-100"> </main>
+		<footer>
+			<div aria-live="assertive" aria-atomic="true" aria-relevant="text"
+				class="mdl-js-snackbar"></div>
+			<!--  Scripts-->
+			<script th:src="@{/webjars/jquery/jquery.min.js}"
+				src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+			<script
+				src="https://storage.googleapis.com/code.getmdl.io/1.0.4/material.min.js"></script>
+			<script th:src="@{/static/js/material.snackbar.js}"
+				src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+			<script th:inline="javascript">
+				/*<![CDATA[*/
+				$(document).ready(
+						function() {
+							componentHandler.upgradeAllRegistered();
+							var mesInfo = /*[[${info}]]*/[];
+							var mesError = /*[[${error}]]*/[];
+							var notification = document
+									.querySelector('.mdl-js-snackbar');
+							for (var i = 0; i < mesInfo.length; i++) {
+								notification.MaterialSnackbar.showSnackbar({
+									message : mesInfo[i],
+									cssColor : 'mdl-color--green',
+									timeout : 3000
+								});
+							}
+							for (var i = 0; i < mesError.length; i++) {
+								notification.MaterialSnackbar.showSnackbar({
+									message : mesInfo[i],
+									cssColor : 'mdl-color--red',
+									timeout : 3000
+								});
+							}
+						});
+				/*]]>*/
+			</script>
+		</footer>
+	</div>
+</body>
 </html>

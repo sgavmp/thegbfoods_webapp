@@ -22,7 +22,6 @@
 					<tr>
 						<th class="mdl-data-table__cell--non-numeric">Titulo</th>
 						<th class="mdl-data-table__cell--non-numeric">Tipo</th>
-						<th class="mdl-data-table__cell--non-numeric">Global</th>
 						<th class="mdl-data-table__cell--non-numeric">Palabras</th>
 						<th>Editar</th>
 						<th>Borrar</th>
@@ -34,8 +33,6 @@
 							th:text="${word.title}">Alerta de fiebre</td>
 						<td class="mdl-data-table__cell--non-numeric"
 							th:text="${word.type}"></td>
-						<td class="mdl-data-table__cell--non-numeric"
-							th:text="${word.global}"></td>
 						<td class="mdl-data-table__cell--non-numeric"
 							th:text="${word.words}">Pescados manolo</td>
 						<td><a href="#"
@@ -89,14 +86,6 @@
 						<textarea class="mdl-textfield__input" rows="6" type="text"
 							th:field="*{words}"></textarea>
 					</div>
-					<div
-						class="mdl-cell mdl-cell--3-col mdl-typography--text-center">
-						<label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect"
-							for="global"> <input type="checkbox" id="global"
-							name="global" th:checked="*{global}" class="mdl-checkbox__input" />
-							<span class="mdl-checkbox__label">Alerta global</span>
-						</label>
-					</div>
 					<div class="mdl-grid">
 						<div class="mdl-cell mdl-cell--1-col"></div>
 						<div class="mdl-cell mdl-cell--10-col">
@@ -111,6 +100,24 @@
 		</div>
 		</main>
 		<footer th:include="base :: footer"> </footer>
+		<script type="text/javascript">
+		// <![CDATA[
+			$(".confirm").click(function(e) {
+				var notification = document.querySelector('.mdl-js-snackbar');
+				var url = e && (('string' === typeof e && e) || (e.currentTarget && e.currentTarget.attributes['href'].value));
+				notification.MaterialSnackbar.showSnackbar({
+					message : "¿Estas seguro de borrar la alerta seleccionada?",
+					cssColor : 'mdl-color--green',
+					timeout : 300000,
+					actionHandler: function(event) {window.location = url; notification.MaterialSnackbar.cleanup_();},
+					  actionText: 'Si',
+					  actionHandler2: function(event) {notification.MaterialSnackbar.cleanup_();},
+					  actionText2: 'No'
+				});
+				return false;
+			});
+			// ]]>
+		</script>
 	</div>
 </body>
 </html>

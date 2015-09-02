@@ -114,16 +114,6 @@ public class FeedAdminController extends BaseController {
 		return "comprobarForm";
 	}
 	
-	@RequestMapping(value="/get/{codeName}/test", method=RequestMethod.POST)
-	public String saveTestEditFeed(Model model, @PathVariable ("codeName") Feed feedP, @ModelAttribute(value="feed") FeedForm feed, BindingResult bindingResult) {
-		feed.setIsRSS(false);
-		Feed feedTest = new Feed(feed);
-		feedTest.setName(feedP.getName());
-		feed.setName(feedP.getName());
-		model.addAttribute("alertsUncheck", serviceFeed.comprobarFeed(feedTest));
-		return "comprobarForm";
-	}
-	
 	@RequestMapping(value="/get/{codeName}/test", method=RequestMethod.POST, params={"testFeed"})
 	public @ResponseBody News testTestFeed(Model model, @ModelAttribute(value="feed") FeedForm feed) {
 		feed.setIsRSS(false);

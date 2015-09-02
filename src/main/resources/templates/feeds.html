@@ -26,19 +26,20 @@
 						<th class="mdl-data-table__cell--non-numeric">Nombre</th>
 						<th>Tipo</th>
 						<th>Activo</th>
-						<th>Editar</th>
+						<th sec:authorize="isAuthenticated()">Editar</th>
 					</tr>
 				</thead>
 				<tbody>
 					<tr th:each="feed : ${feeds}">
 						<td class="mdl-data-table__cell--non-numeric"
-							th:text="${feed.name}">Pescados manolo</td>
+							><a href="#"
+							th:href="@{/feeds/get/{code}(code=${feed.code})}" th:text="${feed.name}">Pescados Manolo</a></td>
 						<td class="mdl-data-table__cell--non-numeric"
 							th:text="${feed.type}">Pescados manolo</td>
 						<td class="mdl-data-table__cell--non-numeric"
 							th:text="${feed.actived}">Pescados manolo</td>
-						<td><a href="#"
-							th:href="@{/feeds/get/{code}(code=${feed.code})}"><i
+						<td sec:authorize="isAuthenticated()"><a href="#"
+							th:href="@{/admin/feeds/get/{code}/edit(code=${feed.code})}"><i
 								class="mdl-color-text--blue-grey-400 material-icons"
 								role="presentation">mode-edit</i></a></td>
 					</tr>

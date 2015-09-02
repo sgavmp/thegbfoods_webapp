@@ -108,7 +108,8 @@
 					<div class="mdl-grid">
 						<div class="mdl-cell mdl-cell--1-col"></div>
 						<div class="mdl-cell mdl-cell--10-col">
-							<button class="mdl-button mdl-js-button mdl-color--primary" type="submit">Enviar</button>
+							<button class="mdl-button mdl-js-button mdl-color--primary"
+								type="submit">Enviar</button>
 							<a class="mdl-button mdl-js-button" th:if="${location.id!=null}"
 								th:href="@{/admin/locations}" href="#">Cancelar</a>
 						</div>
@@ -118,6 +119,22 @@
 		</div>
 		</main>
 		<footer th:include="base :: footer"> </footer>
+		<script type="text/javascript">
+			$(".confirm").click(function(e) {
+				var notification = document.querySelector('.mdl-js-snackbar');
+				var url = e.currentTarget;
+				notification.MaterialSnackbar.showSnackbar({
+					message : "¿Estas seguro de borrar el proveedor seleccionado?",
+					cssColor : 'mdl-color--green',
+					timeout : 300000,
+					actionHandler: function(event) {window.location = url; notification.MaterialSnackbar.cleanup_();},
+					  actionText: 'Si',
+					  actionHandler2: function(event) {notification.MaterialSnackbar.cleanup_();},
+					  actionText2: 'No'
+				});
+				return false;
+			});
+		</script>
 	</div>
 </body>
 </html>

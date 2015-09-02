@@ -62,7 +62,7 @@ public abstract class BaseController {
 	
 	@ModelAttribute("error")
 	public List<String> getErrorMessage() {
-		List<String> copy = Lists.newArrayList(error);
+		List<String> copy = Lists.newArrayList(error);		
 		error.clear();
 		return copy;
 	}

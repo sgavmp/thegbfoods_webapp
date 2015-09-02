@@ -100,13 +100,6 @@ public class FeedServiceImpl implements FeedService {
 	public void setSchedulerService(SchedulerService schedulerService) {
 		this.schedulerService = schedulerService;
 	}
-
-	@Override
-	public List<AlertDetect> comprobarFeed(Feed feed) {
-		List<News> listNews = scrapingFeed.scrapNewsWithOutEvent(feed);
-		Map<News,List<ResolvedLocation>> locations = newsCheckService.getLocations(listNews);
-		return newsCheckService.detectAlert(feed, locations);
-	}	
 	
 	
 

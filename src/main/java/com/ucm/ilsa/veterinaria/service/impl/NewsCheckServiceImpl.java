@@ -28,6 +28,7 @@ import com.ucm.ilsa.veterinaria.domain.Feed;
 import com.ucm.ilsa.veterinaria.domain.Location;
 import com.ucm.ilsa.veterinaria.domain.News;
 import com.ucm.ilsa.veterinaria.domain.NewsDetect;
+import com.ucm.ilsa.veterinaria.domain.PointLocation;
 import com.ucm.ilsa.veterinaria.domain.Statistics;
 import com.ucm.ilsa.veterinaria.repository.AlertDetectRepository;
 import com.ucm.ilsa.veterinaria.repository.NewsDetectRepository;
@@ -112,8 +113,7 @@ public class NewsCheckServiceImpl implements NewsCheckService {
 					newsDetect.setSite(feed);
 					newsDetect.setTitle(news.getTitle());
 					newsDetect.setWordsDetect(wordsDetect);
-					// Si es alerta de peligro biologico se localizan los
-					// posibles lugares
+					// Si no es un termino de tendencia (AlertLevel 4)
 					if (alerta.getType()!=AlertLevel.blue) {
 						List<ResolvedLocation> locationsAp = null;
 						try {
@@ -134,6 +134,17 @@ public class NewsCheckServiceImpl implements NewsCheckService {
 									.setLocationsNear(obtenerLocalizacionesCercanas(
 											locationsAp, lugares));
 						}
+						//Guardamos los lugares encontrados de la noticia
+						List<PointLocation> puntos = new ArrayList<PointLocation>();
+						for (ResolvedLocation loc : locationsAp) {
+							PointLocation point = new PointLocation();
+							point.setCountry(loc.getGeoname().getPrimaryCountryCode());
+							point.setLatitude(loc.getGeoname().getLatitude());
+							point.setLongitude(loc.getGeoname().getLongitude());
+							point.setName(loc.getMatchedName());
+							puntos.add(point);
+						}
+						newsDetect.setLocations(puntos);
 					}
 					repositoryNewsDetect.save(newsDetect);
 					alertDetectNum++;
@@ -156,80 +167,80 @@ public class NewsCheckServiceImpl implements NewsCheckService {
 		
 	}
 
-	public List<AlertDetect> detectAlert(Feed feed,
-			Map<News, List<ResolvedLocation>> locations) {
-		List<Location> lugares = placeAlertService.getAllLocations();
-		List<Alert> alertas = alertService.getAllAlert();
-		List<AlertDetect> listDetect = new ArrayList<AlertDetect>();
-		for (Alert alerta : alertas) {
-			AlertDetect alertDetectActive = null;
-			Map<News, List<String>> mapNewsDetect = new HashedMap();
-			// Comprobamos todos los terminos y los almacenamos
-			for (News news : locations.keySet()) {
-				for (String word : alerta.getWords().split(",")) {
-					if (news.getContent().toLowerCase()
-							.contains(word.toLowerCase())) {
-						if (mapNewsDetect.containsKey(news)) {
-							mapNewsDetect.get(news).add(word);
-						} else {
-							List<String> wordsDetect = new ArrayList<String>();
-							wordsDetect.add(word);
-							mapNewsDetect.put(news, wordsDetect);
-						}
-					}
-				}
-			}
-			// Si se han detectado palabras de la alerta en alguna noticia
-			if (mapNewsDetect.size() > 0) {
-				if (alertDetectActive == null) {
-					alertDetectActive = new AlertDetect();
-					alertDetectActive.setAlert(alerta);
-					alertDetectActive.setCheck(false);
-					if (alertDetectActive.getNewsDetect() == null)
-						alertDetectActive
-								.setNewsDetect(new ArrayList<NewsDetect>());
-				}
-				for (News news : mapNewsDetect.keySet()) {
-					List<String> wordsDetect = mapNewsDetect.get(news);
-					NewsDetect newsDetect = new NewsDetect();
-					newsDetect.setDatePub(news.getPubDate());
-					newsDetect.setAlert_detect(alertDetectActive);
-					newsDetect.setLink(news.getUrl());
-					newsDetect.setSite(feed);
-					newsDetect.setTitle(news.getTitle());
-					newsDetect.setWordsDetect(wordsDetect);
-					if (alerta.getType()!=AlertLevel.blue) {
-						List<ResolvedLocation> locationsAp = null;
-						try {
-							locationsAp = parser.parse(news.getContent());
-						} catch (Exception e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-						//Si la alerta es de Nivel 2 o 3 se detecta los proveedores por el pais
-						if (alerta.getType().equals(AlertLevel.orange) || alerta.getType().equals(AlertLevel.red)) {
-							// Obtenemos los lugares que coincidan con el pais de
-							// las localizaciones encontradas
-							newsDetect
-									.setLocationsNear(obtenerLocalizacionesCercanasPais(
-											locationsAp, lugares));
-						} else { //Si la alerta es de Nivel 1 se detecta los proveedores por cercania a los puntos encontrados
-							// Obtenemos los lugares que entren en el radio de la localizacion
-							newsDetect
-									.setLocationsNear(obtenerLocalizacionesCercanas(
-											locationsAp, lugares));
-						}
-					}
-					alertDetectActive.getNewsDetect().add(newsDetect);
-				}
-				listDetect.add(alertDetectActive);
-			}
-		}
-
-		LOGGER.info("Iniciada comprobacion de alerta de cercania y palabras de filtro para el sitio: "
-				+ feed.getName());
-		return listDetect;
-	}
+//	public List<AlertDetect> detectAlert(Feed feed,
+//			Map<News, List<ResolvedLocation>> locations) {
+//		List<Location> lugares = placeAlertService.getAllLocations();
+//		List<Alert> alertas = alertService.getAllAlert();
+//		List<AlertDetect> listDetect = new ArrayList<AlertDetect>();
+//		for (Alert alerta : alertas) {
+//			AlertDetect alertDetectActive = null;
+//			Map<News, List<String>> mapNewsDetect = new HashedMap();
+//			// Comprobamos todos los terminos y los almacenamos
+//			for (News news : locations.keySet()) {
+//				for (String word : alerta.getWords().split(",")) {
+//					if (news.getContent().toLowerCase()
+//							.contains(word.toLowerCase())) {
+//						if (mapNewsDetect.containsKey(news)) {
+//							mapNewsDetect.get(news).add(word);
+//						} else {
+//							List<String> wordsDetect = new ArrayList<String>();
+//							wordsDetect.add(word);
+//							mapNewsDetect.put(news, wordsDetect);
+//						}
+//					}
+//				}
+//			}
+//			// Si se han detectado palabras de la alerta en alguna noticia
+//			if (mapNewsDetect.size() > 0) {
+//				if (alertDetectActive == null) {
+//					alertDetectActive = new AlertDetect();
+//					alertDetectActive.setAlert(alerta);
+//					alertDetectActive.setCheck(false);
+//					if (alertDetectActive.getNewsDetect() == null)
+//						alertDetectActive
+//								.setNewsDetect(new ArrayList<NewsDetect>());
+//				}
+//				for (News news : mapNewsDetect.keySet()) {
+//					List<String> wordsDetect = mapNewsDetect.get(news);
+//					NewsDetect newsDetect = new NewsDetect();
+//					newsDetect.setDatePub(news.getPubDate());
+//					newsDetect.setAlert_detect(alertDetectActive);
+//					newsDetect.setLink(news.getUrl());
+//					newsDetect.setSite(feed);
+//					newsDetect.setTitle(news.getTitle());
+//					newsDetect.setWordsDetect(wordsDetect);
+//					if (alerta.getType()!=AlertLevel.blue) {
+//						List<ResolvedLocation> locationsAp = null;
+//						try {
+//							locationsAp = parser.parse(news.getContent());
+//						} catch (Exception e) {
+//							// TODO Auto-generated catch block
+//							e.printStackTrace();
+//						}
+//						//Si la alerta es de Nivel 2 o 3 se detecta los proveedores por el pais
+//						if (alerta.getType().equals(AlertLevel.orange) || alerta.getType().equals(AlertLevel.red)) {
+//							// Obtenemos los lugares que coincidan con el pais de
+//							// las localizaciones encontradas
+//							newsDetect
+//									.setLocationsNear(obtenerLocalizacionesCercanasPais(
+//											locationsAp, lugares));
+//						} else { //Si la alerta es de Nivel 1 se detecta los proveedores por cercania a los puntos encontrados
+//							// Obtenemos los lugares que entren en el radio de la localizacion
+//							newsDetect
+//									.setLocationsNear(obtenerLocalizacionesCercanas(
+//											locationsAp, lugares));
+//						}
+//					}
+//					alertDetectActive.getNewsDetect().add(newsDetect);
+//				}
+//				listDetect.add(alertDetectActive);
+//			}
+//		}
+//
+//		LOGGER.info("Iniciada comprobacion de alerta de cercania y palabras de filtro para el sitio: "
+//				+ feed.getName());
+//		return listDetect;
+//	}
 
 	private List<Location> obtenerLocalizacionesCercanasPais(
 			List<ResolvedLocation> locations, List<Location> lugares) {

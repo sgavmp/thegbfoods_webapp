@@ -24,6 +24,7 @@ import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
 import com.bericotech.clavin.gazetteer.CountryCode;
+import com.bericotech.clavin.gazetteer.GeoName;
 import com.bericotech.clavin.resolver.ResolvedLocation;
 import com.google.common.collect.Lists;
 
@@ -49,7 +50,7 @@ public class NewsDetect extends BaseEntity {
 	private List<Location> locationsNear;
 	@ElementCollection(fetch = FetchType.EAGER)
 	@CollectionTable(name = "news_detect_locations", joinColumns = @JoinColumn(name = "NEWS_ID"))
-	private List<ResolvedLocation> locations;
+	private List<PointLocation> locations;
 	@ManyToOne(fetch=FetchType.EAGER)
 	@JoinColumn(name="alert_detect_id")
 	private AlertDetect alert_detect;
@@ -113,5 +114,12 @@ public class NewsDetect extends BaseEntity {
 		}
 		return mapa;
 	}
+	public List<PointLocation> getLocations() {
+		return locations;
+	}
+	public void setLocations(List<PointLocation> locations) {
+		this.locations = locations;
+	}
+	
 	
 }

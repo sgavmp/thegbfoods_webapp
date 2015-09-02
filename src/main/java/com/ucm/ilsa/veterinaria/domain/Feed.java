@@ -67,6 +67,14 @@ public class Feed extends BaseEntity {
 	private boolean accepted = false;
 	private String comment;
 	private Integer minRefresh;
+	private String selectorTitle;
+	private String selectorDescription;
+	private String selectorContent;
+	private String selectorPubDate;
+	private boolean selectorTitleMeta;
+	private boolean selectorDescriptionMeta;
+	private boolean selectorContentMeta;
+	private boolean selectorPubDateMeta;
 
 	// Solo sitios sin RSS
 	@ElementCollection(fetch = FetchType.EAGER)
@@ -94,6 +102,15 @@ public class Feed extends BaseEntity {
 		this.newsLink = feed.getNewsLink();
 		this.type = feed.getType();
 		this.minRefresh = feed.getMinRefresh();
+		this.selectorContent = feed.getSelectorContent();
+		this.selectorContentMeta = feed.getSelectorContentMeta();
+		this.selectorDescription = feed.getSelectorDescription();
+		this.selectorDescriptionMeta = feed.getSelectorDescriptionMeta();
+		this.selectorTitle = feed.getSelectorTitle();
+		this.selectorTitleMeta = feed.getSelectorTitleMeta();
+		this.selectorPubDate = feed.getSelectorPubDate();
+		this.selectorPubDateMeta = feed.getSelectorPubDateMeta();
+				
 	}
 
 	public void changeValues(FeedForm feed) {
@@ -109,6 +126,14 @@ public class Feed extends BaseEntity {
 		this.newsLink = feed.getNewsLink();
 		this.type = feed.getType();
 		this.minRefresh = feed.getMinRefresh();
+		this.selectorContent = feed.getSelectorContent();
+		this.selectorContentMeta = feed.getSelectorContentMeta();
+		this.selectorDescription = feed.getSelectorDescription();
+		this.selectorDescriptionMeta = feed.getSelectorDescriptionMeta();
+		this.selectorTitle = feed.getSelectorTitle();
+		this.selectorTitleMeta = feed.getSelectorTitleMeta();
+		this.selectorPubDate = feed.getSelectorPubDate();
+		this.selectorPubDateMeta = feed.getSelectorPubDateMeta();
 	}
 
 	public String getCode() {
@@ -262,4 +287,70 @@ public class Feed extends BaseEntity {
 	public void setMinRefresh(Integer minRefresh) {
 		this.minRefresh = minRefresh;
 	}
+
+	public String getSelectorTitle() {
+		return selectorTitle;
+	}
+
+	public void setSelectorTitle(String selectorTitle) {
+		this.selectorTitle = selectorTitle;
+	}
+
+	public String getSelectorDescription() {
+		return selectorDescription;
+	}
+
+	public void setSelectorDescription(String selectorDescription) {
+		this.selectorDescription = selectorDescription;
+	}
+
+	public String getSelectorContent() {
+		return selectorContent;
+	}
+
+	public void setSelectorContent(String selectorContent) {
+		this.selectorContent = selectorContent;
+	}
+
+	public String getSelectorPubDate() {
+		return selectorPubDate;
+	}
+
+	public void setSelectorPubDate(String selectorPubDate) {
+		this.selectorPubDate = selectorPubDate;
+	}
+
+	public boolean getSelectorTitleMeta() {
+		return selectorTitleMeta;
+	}
+
+	public void setSelectorTitleMeta(boolean selectorTitleMeta) {
+		this.selectorTitleMeta = selectorTitleMeta;
+	}
+
+	public boolean getSelectorDescriptionMeta() {
+		return selectorDescriptionMeta;
+	}
+
+	public void setSelectorDescriptionMeta(boolean selectorDescriptionMeta) {
+		this.selectorDescriptionMeta = selectorDescriptionMeta;
+	}
+
+	public boolean getSelectorContentMeta() {
+		return selectorContentMeta;
+	}
+
+	public void setSelectorContentMeta(boolean selectorContentMeta) {
+		this.selectorContentMeta = selectorContentMeta;
+	}
+
+	public boolean getSelectorPubDateMeta() {
+		return selectorPubDateMeta;
+	}
+
+	public void setSelectorPubDateMeta(boolean selectorPubDateMeta) {
+		this.selectorPubDateMeta = selectorPubDateMeta;
+	}
+	
+	
 }
