@@ -25,7 +25,8 @@ public class SchedulerService {
 	private NewsCheckService newsCheckService;
 
 	@Autowired
-	public SchedulerService(FeedService service, TaskScheduler scheduler, NewsCheckService newsCheckService) {
+	public SchedulerService(FeedService service, TaskScheduler scheduler,
+			NewsCheckService newsCheckService) {
 		this.scheduler = scheduler;
 		this.serviceFeed = service;
 		this.newsCheckService = newsCheckService;
@@ -43,8 +44,11 @@ public class SchedulerService {
 															// tras planificar
 		for (Feed feed : listFeeds) {
 			if (feed.isAccepted() & feed.isActived()) {
-				TaskContainer task = new TaskContainer(feed, serviceFeed, this, newsCheckService);
-				ScheduledFuture<?> futureTask = scheduler.scheduleWithFixedDelay(task, startTime, MIN_MILIS * feed.getMinRefresh());
+				TaskContainer task = new TaskContainer(feed, serviceFeed, this,
+						newsCheckService);
+				ScheduledFuture<?> futureTask = scheduler
+						.scheduleWithFixedDelay(task, startTime, MIN_MILIS
+								* feed.getMinRefresh());
 				startTime.setTime(startTime.getTime() + 1000 * 30);// Vamos
 																	// espacioandolas
 																	// cada 2
@@ -55,27 +59,42 @@ public class SchedulerService {
 	}
 
 	public void removeFeedTask(Feed feed) {
-		ScheduledFuture<?> futureTask = tasks.get(feed.getCode());
-		futureTask.cancel(true);
-		tasks.remove(feed.getCode());
+		if (tasks.containsKey(feed.getCode())) {
+			ScheduledFuture<?> futureTask = tasks.get(feed.getCode());
+			futureTask.cancel(true);
+			tasks.remove(feed.getCode());
+		}
 	}
 
 	public void updateFeedTask(Feed feed) {
-		ScheduledFuture<?> futureTask = tasks.get(feed.getCode());
-		futureTask.cancel(true);
-		TaskContainer task = new TaskContainer(feed, serviceFeed, this, newsCheckService);
-		futureTask = scheduler.scheduleWithFixedDelay(task, MIN_MILIS * feed.getMinRefresh());
-		tasks.put(feed.getCode(), futureTask);
+		if (tasks.containsKey(feed.getCode())) {
+			ScheduledFuture<?> futureTask = tasks.get(feed.getCode());
+			futureTask.cancel(true);
+			TaskContainer task = new TaskContainer(feed, serviceFeed, this,
+					newsCheckService);
+			futureTask = scheduler.scheduleWithFixedDelay(task, MIN_MILIS
+					* feed.getMinRefresh());
+			tasks.put(feed.getCode(), futureTask);
+		} else if (feed.isActived() && feed.isAccepted()) {
+			TaskContainer task = new TaskContainer(feed, serviceFeed, this,
+					newsCheckService);
+			ScheduledFuture<?> futureTask = scheduler.scheduleWithFixedDelay(task, MIN_MILIS
+					* feed.getMinRefresh());
+			tasks.put(feed.getCode(), futureTask);
+		}
 	}
 
 	public void addFeedTask(Feed feed) {
-		TaskContainer task = new TaskContainer(feed, serviceFeed, this, newsCheckService);
-		ScheduledFuture<?> futureTask = scheduler.scheduleWithFixedDelay(task, MIN_MILIS * feed.getMinRefresh());
+		TaskContainer task = new TaskContainer(feed, serviceFeed, this,
+				newsCheckService);
+		ScheduledFuture<?> futureTask = scheduler.scheduleWithFixedDelay(task,
+				MIN_MILIS * feed.getMinRefresh());
 		tasks.put(feed.getCode(), futureTask);
 	}
 
 	public void startTask(Feed feed) {
-		TaskContainer task = new TaskContainer(feed, serviceFeed, this, newsCheckService);
+		TaskContainer task = new TaskContainer(feed, serviceFeed, this,
+				newsCheckService);
 		Date startTime = new Date();
 		startTime.setTime(startTime.getTime() + 1000 * 5); // Iniciar en 5
 															// segundos

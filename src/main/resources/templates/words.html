@@ -22,7 +22,6 @@
 					<tr>
 						<th class="mdl-data-table__cell--non-numeric">Titulo</th>
 						<th class="mdl-data-table__cell--non-numeric">Tipo</th>
-						<th class="mdl-data-table__cell--non-numeric">Palabras</th>
 						<th>Editar</th>
 						<th>Borrar</th>
 					</tr>
@@ -33,8 +32,6 @@
 							th:text="${word.title}">Alerta de fiebre</td>
 						<td class="mdl-data-table__cell--non-numeric"
 							th:text="${word.type}"></td>
-						<td class="mdl-data-table__cell--non-numeric"
-							th:text="${word.words}">Pescados manolo</td>
 						<td><a href="#"
 							th:href="@{/admin/words/get/{id}/edit(id=${word.id})}"><i
 								class="mdl-color-text--blue-grey-400 material-icons"

@@ -84,6 +84,11 @@ public class FeedAdminController extends BaseController {
         }
 		Feed feedP = new Feed(feed);
 		feedP = serviceFeed.createFeed(feedP);
+		if (feedP.getCode()!=null) {
+			this.putInfoMessage("Sitio creado correctamente");
+		} else {
+			this.putErrorMessage("Ha ocurrido un error, vuelva a intentarlo más tarde.");
+		}
 		return "redirect:/admin/feeds/get/"+feedP.getCode()+"/edit";
 	}
 	
@@ -98,9 +103,15 @@ public class FeedAdminController extends BaseController {
 		if (bindingResult.hasErrors()) {
 	        return "newsFeed";
 	    }
+		int version = feedP.getVersion();
 		feedP.changeValues(feed);
-		serviceFeed.updateFeed(feedP);
+		feedP = serviceFeed.updateFeed(feedP);
 		model.addAttribute(new FeedForm(feedP));
+		if (version < feedP.getVersion()) {
+			this.putInfoMessage("Sitio actualizado correctamente");
+		} else {
+			this.putErrorMessage("Ha ocurrido un error, vuelva a intentarlo más tarde.");
+		}
 		return "feedForm";
 	}
 	

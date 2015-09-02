@@ -80,9 +80,11 @@ public class NewsCheckServiceImpl implements NewsCheckService {
 			Map<News, List<String>> mapNewsDetect = new HashedMap();
 			// Comprobamos todos los terminos y los almacenamos
 			for (News news : listNews) {
-				for (String word : alerta.getWords().split(",")) {
-					if (news.getContent().toLowerCase()
-							.contains(word.toLowerCase())) {
+				List<String> terminos = Lists.newArrayList(alerta.getWords().split(","));
+				terminos.add(alerta.getTitle());
+				String contentInLowerCase = news.getContent().toLowerCase();
+				for (String word : terminos) {
+					if (contentInLowerCase.contains(" " + word.toLowerCase() + " ")) {
 						if (mapNewsDetect.containsKey(news)) {
 							mapNewsDetect.get(news).add(word);
 						} else {

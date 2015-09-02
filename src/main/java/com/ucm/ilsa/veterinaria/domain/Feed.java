@@ -64,7 +64,7 @@ public class Feed extends BaseEntity {
 	private Integer numNewNews;
 	private Timestamp ultimaRecuperacion;
 	private boolean actived = false;
-	private boolean accepted = false;
+	private boolean accepted = true;
 	private String comment;
 	private Integer minRefresh;
 	private String selectorTitle;
@@ -110,7 +110,8 @@ public class Feed extends BaseEntity {
 		this.selectorTitleMeta = feed.getSelectorTitleMeta();
 		this.selectorPubDate = feed.getSelectorPubDate();
 		this.selectorPubDateMeta = feed.getSelectorPubDateMeta();
-				
+		this.accepted = feed.isAccepted();
+		this.actived = feed.isActived();
 	}
 
 	public void changeValues(FeedForm feed) {
@@ -134,6 +135,8 @@ public class Feed extends BaseEntity {
 		this.selectorTitleMeta = feed.getSelectorTitleMeta();
 		this.selectorPubDate = feed.getSelectorPubDate();
 		this.selectorPubDateMeta = feed.getSelectorPubDateMeta();
+		this.accepted = feed.isAccepted();
+		this.actived = feed.isActived();
 	}
 
 	public String getCode() {

@@ -33,6 +33,22 @@
 							class="mdl-switch__label">&iquest;Es un sitio con RSS?</span>
 						</label>
 					</div>
+					<div class="mdl-cell mdl-cell--3-col">
+						<label class="mdl-switch mdl-js-switch mdl-js-ripple-effect"
+							for="actived"> <input type="checkbox"
+							class="mdl-switch__input" id="actived" name="actived"
+							th:checked="*{actived}" th:field="*{actived}" /> <span
+							class="mdl-switch__label">&iquest;Está aceptado?</span>
+						</label>
+					</div>
+					<div class="mdl-cell mdl-cell--3-col">
+						<label class="mdl-switch mdl-js-switch mdl-js-ripple-effect"
+							for="accepted"> <input type="checkbox"
+							class="mdl-switch__input" id="accepted" name="accepted"
+							th:checked="*{accepted}" th:field="*{accepted}" /> <span
+							class="mdl-switch__label">&iquest;Está activado?</span>
+						</label>
+					</div>
 					<div
 						class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
 						<input class="mdl-textfield__input" type="text" th:field="*{name}" />
@@ -206,8 +222,8 @@
 										</div></td>
 									<td><label
 										class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect"
-										for="checkbox-1"> <input type="checkbox"
-											id="checkbox-1" class="mdl-checkbox__input"
+										for="checkbox-2"> <input type="checkbox"
+											id="checkbox-2" class="mdl-checkbox__input"
 											th:checked="*{selectorDescriptionMeta}"
 											th:field="*{selectorDescriptionMeta}" /> <span
 											class="mdl-checkbox__label">Si</span>
@@ -224,8 +240,8 @@
 										</div></td>
 									<td><label
 										class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect"
-										for="checkbox-1"> <input type="checkbox"
-											id="checkbox-1" class="mdl-checkbox__input"
+										for="checkbox-3"> <input type="checkbox"
+											id="checkbox-3" class="mdl-checkbox__input"
 											th:checked="*{selectorContentMeta}"
 											th:field="*{selectorContentMeta}" /> <span
 											class="mdl-checkbox__label">Si</span>
@@ -243,8 +259,8 @@
 										</div></td>
 									<td><label
 										class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect"
-										for="checkbox-1"> <input type="checkbox"
-											id="checkbox-1" class="mdl-checkbox__input"
+										for="checkbox-4"> <input type="checkbox"
+											id="checkbox-4" class="mdl-checkbox__input"
 											th:checked="*{selectorPubDateMeta}"
 											th:field="*{selectorPubDateMeta}" /> <span
 											class="mdl-checkbox__label">Si</span>
@@ -369,6 +385,32 @@
 							});
 			/*]]>*/
 		</script>
+		<script th:inline="javascript">
+				/*<![CDATA[*/
+				$(document).ready(
+						function() {
+							componentHandler.upgradeAllRegistered();
+							var mesInfo = /*[[${info}]]*/[];
+							var mesError = /*[[${error}]]*/[];
+							var notification = document
+									.querySelector('.mdl-js-snackbar');
+							for (var i = 0; i < mesInfo.length; i++) {
+								notification.MaterialSnackbar.showSnackbar({
+									message : mesInfo[i],
+									cssColor : 'mdl-color--green',
+									timeout : 3000
+								});
+							}
+							for (var i = 0; i < mesError.length; i++) {
+								notification.MaterialSnackbar.showSnackbar({
+									message : mesInfo[i],
+									cssColor : 'mdl-color--red',
+									timeout : 3000
+								});
+							}
+						});
+				/*]]>*/
+			</script>
 	</div>
 </body>
 </html>

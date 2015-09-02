@@ -119,6 +119,32 @@
 		</div>
 		</main>
 		<footer th:include="base :: footer"> </footer>
+		<script th:inline="javascript">
+				/*<![CDATA[*/
+				$(document).ready(
+						function() {
+							componentHandler.upgradeAllRegistered();
+							var mesInfo = /*[[${info}]]*/[];
+							var mesError = /*[[${error}]]*/[];
+							var notification = document
+									.querySelector('.mdl-js-snackbar');
+							for (var i = 0; i < mesInfo.length; i++) {
+								notification.MaterialSnackbar.showSnackbar({
+									message : mesInfo[i],
+									cssColor : 'mdl-color--green',
+									timeout : 3000
+								});
+							}
+							for (var i = 0; i < mesError.length; i++) {
+								notification.MaterialSnackbar.showSnackbar({
+									message : mesInfo[i],
+									cssColor : 'mdl-color--red',
+									timeout : 3000
+								});
+							}
+						});
+				/*]]>*/
+			</script>
 		<script type="text/javascript">
 			$(".confirm").click(function(e) {
 				var notification = document.querySelector('.mdl-js-snackbar');

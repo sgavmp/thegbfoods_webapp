@@ -19,6 +19,8 @@ public class FeedForm {
 	private Language languaje = Language.SPANISH;
 	private boolean isRSS = true;
 	private WebLevel type = WebLevel.yellow;
+	private boolean actived = false;
+	private boolean accepted = true;
 	private Integer minRefresh = 120;
 	private String selectorTitle;
 	private String selectorDescription;
@@ -62,7 +64,8 @@ public class FeedForm {
 		this.selectorTitleMeta = feed.getSelectorTitleMeta();
 		this.selectorPubDate = feed.getSelectorPubDate();
 		this.selectorPubDateMeta = feed.getSelectorPubDateMeta();
-				
+		this.accepted = feed.isAccepted();
+		this.actived = feed.isActived();
 	}
 
 	public String getName() {
@@ -227,6 +230,30 @@ public class FeedForm {
 
 	public void setRSS(boolean isRSS) {
 		this.isRSS = isRSS;
+	}
+
+	public boolean isActived() {
+		return actived;
+	}
+	
+	public boolean getActived() {
+		return actived;
+	}
+
+	public void setActived(boolean actived) {
+		this.actived = actived;
+	}
+
+	public boolean isAccepted() {
+		return accepted;
+	}
+	
+	public boolean getAccepted() {
+		return accepted;
+	}
+
+	public void setAccepted(boolean accepted) {
+		this.accepted = accepted;
 	}
 
 }
