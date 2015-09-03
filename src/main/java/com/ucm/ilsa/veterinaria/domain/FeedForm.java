@@ -244,5 +244,5 @@ public class FeedForm {
 	public void setCharSet(CharsetEnum charSet) {
 		this.charSet = charSet;
 	}
-	
+
 }

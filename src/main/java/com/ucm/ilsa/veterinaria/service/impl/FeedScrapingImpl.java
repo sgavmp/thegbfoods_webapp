@@ -42,7 +42,8 @@ import com.ucm.ilsa.veterinaria.service.FeedScraping;
 @Repository
 public class FeedScrapingImpl implements FeedScraping {
 
-	private final static Logger LOGGER = Logger.getLogger(FeedScrapingImpl.class);
+	private final static Logger LOGGER = Logger
+			.getLogger(FeedScrapingImpl.class);
 
 	private FeedRepository repositoryFeed;
 
@@ -94,7 +95,8 @@ public class FeedScrapingImpl implements FeedScraping {
 				URL url = new URL(feed.getUrlNews());
 				URLConnection conn = url.openConnection();
 				SyndFeedInput input = new SyndFeedInput();
-				SyndFeed newsList = input.build(new XmlReader(conn.getInputStream()));
+				SyndFeed newsList = input.build(new XmlReader(conn
+						.getInputStream()));
 				boolean isFirst = true;
 				String lastNews = null;
 				Integer num = 0;
@@ -104,7 +106,9 @@ public class FeedScrapingImpl implements FeedScraping {
 					if (feed.getLastNewsLink() != null) {
 						// En caso de coincidencia (es decir que ya esta en el
 						// sistema) devolvemos la lista (puede estar vacia)
-						if (!feed.getLastNewsLink().isEmpty() && feed.getLastNewsLink().equals(news.getLink())) {
+						if (!feed.getLastNewsLink().isEmpty()
+								&& feed.getLastNewsLink()
+										.equals(news.getLink())) {
 							break;
 						} else if (isFirst) {
 							lastNews = news.getLink();
@@ -128,13 +132,16 @@ public class FeedScrapingImpl implements FeedScraping {
 			}
 			return listNews;
 		} catch (MalformedURLException e) {
-			LOGGER.error("Error al generar a la URL. Mas Info-> " + e.getMessage());
+			LOGGER.error("Error al generar a la URL. Mas Info-> "
+					+ e.getMessage());
 			return null;
 		} catch (IOException e) {
-			LOGGER.error("No se ha podido acceder a la URL. Mas Info-> " + e.getMessage());
+			LOGGER.error("No se ha podido acceder a la URL. Mas Info-> "
+					+ e.getMessage());
 			return null;
 		} catch (IllegalArgumentException | FeedException e) {
-			LOGGER.error("Error al obtener la informacion RSS. Mas Info-> " + e.getMessage());
+			LOGGER.error("Error al obtener la informacion RSS. Mas Info-> "
+					+ e.getMessage());
 			return null;
 		}
 	}
@@ -166,7 +173,8 @@ public class FeedScrapingImpl implements FeedScraping {
 			}
 			return listNews;
 		} catch (IOException e) {
-			LOGGER.error("No se ha podido acceder a la URL. Mas Info-> " + e.getMessage());
+			LOGGER.error("No se ha podido acceder a la URL. Mas Info-> "
+					+ e.getMessage());
 			return null;
 		}
 	}
@@ -179,7 +187,8 @@ public class FeedScrapingImpl implements FeedScraping {
 				URL url = new URL(feed.getUrlNews());
 				URLConnection conn = url.openConnection();
 				SyndFeedInput input = new SyndFeedInput();
-				SyndFeed newsList = input.build(new XmlReader(conn.getInputStream()));
+				SyndFeed newsList = input.build(new XmlReader(conn
+						.getInputStream()));
 				for (SyndEntry news : newsList.getEntries()) {
 					listNews.add(getNewsWithRSS(new Feed(feed), news));
 					break;
@@ -187,13 +196,16 @@ public class FeedScrapingImpl implements FeedScraping {
 			}
 			return listNews.get(0);
 		} catch (MalformedURLException e) {
-			LOGGER.error("Error al generar a la URL. Mas Info-> " + e.getMessage());
+			LOGGER.error("Error al generar a la URL. Mas Info-> "
+					+ e.getMessage());
 			return null;
 		} catch (IOException e) {
-			LOGGER.error("No se ha podido acceder a la URL. Mas Info-> " + e.getMessage());
+			LOGGER.error("No se ha podido acceder a la URL. Mas Info-> "
+					+ e.getMessage());
 			return null;
 		} catch (IllegalArgumentException | FeedException e) {
-			LOGGER.error("Error al obtener la informacion RSS. Mas Info-> " + e.getMessage());
+			LOGGER.error("Error al obtener la informacion RSS. Mas Info-> "
+					+ e.getMessage());
 			return null;
 		}
 	}
@@ -202,7 +214,7 @@ public class FeedScrapingImpl implements FeedScraping {
 		try {
 			List<News> listNews = new ArrayList<News>();
 			if (feed.getUrlNews() != null) {
-				Document doc = Jsoup.connect(feed.getUrlNews()).get();
+				Document doc = Jsoup.connect(feed.getUrlNews()).timeout(20000).get();
 				Elements newsLinks = doc.select(feed.getNewsLink());
 				for (Element link : newsLinks) {
 					// Enlace de la noticia
@@ -211,7 +223,8 @@ public class FeedScrapingImpl implements FeedScraping {
 						if (!linkNews.isEmpty()) {
 							// Titutlo de la noticia
 							String title = link.text();
-							listNews.add(getNewsWithOutRSS(new Feed(feed), linkNews, title));
+							listNews.add(getNewsWithOutRSS(new Feed(feed),
+									linkNews, title));
 							break;
 						}
 					}
@@ -219,85 +232,136 @@ public class FeedScrapingImpl implements FeedScraping {
 			}
 			return listNews.get(0);
 		} catch (IOException e) {
-			LOGGER.error("No se ha podido acceder a la URL. Mas Info-> " + e.getMessage());
+			LOGGER.error("No se ha podido acceder a la URL. Mas Info-> "
+					+ e.getMessage());
 			return null;
 		}
 	}
 
 	public News getNewsWithRSS(Feed feed, SyndEntry news) {
-		try {
-			NewsBuilder temp = new NewsBuilder(feed);
-			temp.setTitle(news.getTitle());
-			temp.setUrl(news.getLink());
-			temp.setDescription(news.getDescription().getValue());
-			temp.setPubDate(news.getPublishedDate());
-			String content = "";
-
-			for (SyndContent part : news.getContents()) {
-				content += part.getValue();
-			}
-			if (!content.equals("")) {
-				temp.setContent(content);
-			}
-			Document doc = Jsoup.connect(news.getLink()).get();
-			if (feed.getSelectorContent()!=null) {
-				if (!feed.getSelectorContent().isEmpty()) {
-					temp.setContent(feed.getSelectorContentMeta()?doc.select(feed.getSelectorContent()).attr("content"):doc.select(feed.getSelectorContent()).text());
-				}
-			}
-			if (feed.getSelectorContent()!=null) {
-				if (!feed.getSelectorContent().isEmpty()) {
-					temp.setDescription(feed.getSelectorContentMeta()?doc.select(feed.getSelectorContent()).attr("content"):doc.select(feed.getSelectorContent()).text());
-				}
-			}
-			if (feed.getSelectorContent()!=null) {
-				if (!feed.getSelectorContent().isEmpty()) {
-					temp.setPubDate(feed.getSelectorContentMeta()?doc.select(feed.getSelectorContent()).attr("content"):doc.select(feed.getSelectorContent()).text());
-				}
-			}
-			if (feed.getSelectorContent()!=null) {
-				if (!feed.getSelectorContent().isEmpty()) {
-					temp.setTitle(feed.getSelectorContentMeta()?doc.select(feed.getSelectorContent()).attr("content"):doc.select(feed.getSelectorContent()).text());
-				}
-			}
-			return temp.build();
-		} catch (IOException e) {
-			LOGGER.info("Error al acceder a la direccion URL: " + news.getLink());
-			return null;
+		String url = news.getLink().contains(feed.getUrlSite())?news.getLink():feed.getUrlSite().concat(news.getLink());
+		NewsBuilder temp = new NewsBuilder(feed);
+		temp.setTitle(news.getTitle());
+		temp.setUrl(url);
+		temp.setDescription(news.getDescription().getValue());
+		temp.setPubDate(news.getPublishedDate());
+		String content = "";
+		for (SyndContent part : news.getContents()) {
+			content += part.getValue();
 		}
+		if (!content.equals("")) {
+			temp.setContent(content);
+		}
+		Document newsPage = null;
+		Integer count = 0;
+		while (true) {
+			try {
+				if (feed.getCharSet().equals(CharsetEnum.UTF8)) {// Codificacion
+																	// por
+																	// defecto
+					newsPage = Jsoup.connect(url)
+							.userAgent("Mozilla").timeout(10000).get();
+				} else {
+					newsPage = Jsoup.parse(
+							new URL(url).openStream(), feed
+									.getCharSet().getValue(), url);
+				}
+				break;
+			} catch (IOException e) {// En caso de error intentamos tres veces
+				count++;
+				LOGGER.info("Error al acceder a la direccion URL: "
+						+ url + " intento " + count + "/3");
+				if (count == 3)
+					return null;
+			}
+		}
+		if (feed.getSelectorContent() != null) {
+			if (!feed.getSelectorContent().isEmpty()) {
+				temp.setContent(feed.getSelectorContentMeta() ? newsPage
+						.select(feed.getSelectorContent()).attr("content")
+						: newsPage.select(feed.getSelectorContent()).text());
+			}
+		}
+		if (feed.getSelectorDescription() != null) {
+			if (!feed.getSelectorDescription().isEmpty()) {
+				temp.setDescription(feed.getSelectorDescriptionMeta() ? newsPage
+						.select(feed.getSelectorDescription()).attr("content")
+						: newsPage.select(feed.getSelectorDescription()).text());
+			}
+		}
+		if (feed.getSelectorPubDate() != null) {
+			if (!feed.getSelectorPubDate().isEmpty()) {
+				temp.setPubDate(feed.getSelectorPubDateMeta() ? newsPage
+						.select(feed.getSelectorPubDate()).attr("content")
+						: newsPage.select(feed.getSelectorPubDate()).text());
+			}
+		}
+		if (feed.getSelectorTitle() != null) {
+			if (!feed.getSelectorTitle().isEmpty()) {
+				temp.setTitle(feed.getSelectorTitleMeta() ? newsPage.select(
+						feed.getSelectorTitle()).attr("content") : newsPage
+						.select(feed.getSelectorTitle()).text());
+			}
+		}
+		return temp.build();
 
 	}
 
 	public News getNewsWithOutRSS(Feed feed, String linkNews, String title) {
-			Document newsPage = null;
-			Integer count=0;
-			while(true) {
-				try {
-					if (feed.getCharSet().equals(CharsetEnum.UTF8)) {//Codificacion por defecto
-						newsPage = Jsoup.connect(linkNews).userAgent("Mozilla").timeout(10000).get();
-					} else {
-						newsPage = Jsoup.parse(new URL(linkNews).openStream(),feed.getCharSet().getValue(),linkNews);
-					}
-					break;
-				} catch (IOException e) {//En caso de error intentamos tres veces
-					count++;
-					LOGGER.info("Error al acceder a la direccion URL: " + linkNews + " intento " + count +"/3");
-					if (count==3)
-						return null;
+		Document newsPage = null;
+		Integer count = 0;
+		while (true) {
+			try {
+				if (feed.getCharSet().equals(CharsetEnum.UTF8)) {// Codificacion
+																	// por
+																	// defecto
+					newsPage = Jsoup.connect(linkNews).userAgent("Mozilla")
+							.timeout(10000).get();
+				} else {
+					newsPage = Jsoup.parse(new URL(linkNews).openStream(), feed
+							.getCharSet().getValue(), linkNews);
 				}
+				break;
+			} catch (IOException e) {// En caso de error intentamos tres veces
+				count++;
+				LOGGER.info("Error al acceder a la direccion URL: " + linkNews
+						+ " intento " + count + "/3");
+				if (count == 3)
+					return null;
 			}
-			NewsBuilder temp = new NewsBuilder(feed);
-			temp.setUrl(linkNews);
-			temp.setTitle(title);
-			for (PairValues attribute : feed.getSelectorHtml()) {
-				temp.setValueOf(attribute.getKey(),
-						newsPage.select(attribute.getValue()).text());
+		}
+		NewsBuilder temp = new NewsBuilder(feed);
+		temp.setUrl(linkNews);
+		temp.setTitle(title);
+		if (feed.getSelectorContent() != null) {
+			if (!feed.getSelectorContent().isEmpty()) {
+				temp.setContent(feed.getSelectorContentMeta() ? newsPage
+						.select(feed.getSelectorContent()).attr("content")
+						: newsPage.select(feed.getSelectorContent()).text());
 			}
-			for (PairValues attribute : feed.getSelectorMeta()) {
-				temp.setValueOf(attribute.getKey(),
-						newsPage.select(attribute.getValue()).attr("content"));
+		}
+		if (feed.getSelectorDescription() != null) {
+			if (!feed.getSelectorDescription().isEmpty()) {
+				temp.setDescription(feed.getSelectorDescriptionMeta() ? newsPage
+						.select(feed.getSelectorDescription()).attr("content")
+						: newsPage.select(feed.getSelectorDescription()).text());
 			}
-			return temp.build();
+		}
+		if (feed.getSelectorPubDate() != null) {
+			if (!feed.getSelectorPubDate().isEmpty()) {
+				temp.setPubDate(feed.getSelectorPubDateMeta() ? newsPage
+						.select(feed.getSelectorPubDate()).attr("content")
+						: newsPage.select(feed.getSelectorPubDate()).text());
+			}
+		}
+		if (feed.getSelectorTitle() != null) {
+			if (!feed.getSelectorTitle().isEmpty()) {
+				temp.setTitle(feed.getSelectorTitleMeta() ? newsPage.select(
+						feed.getSelectorTitle()).attr("content") : newsPage
+						.select(feed.getSelectorTitle()).text());
+			}
+		}
+		return temp.build();
 	}
 
 }

@@ -220,3 +220,7 @@ _:-ms-input-placeholder, :root .demo-graph {
 	vertical-align: middle;
 	margin: 0;
 }
+
+.mdl-card {
+	min-height: 0px !important;
+}

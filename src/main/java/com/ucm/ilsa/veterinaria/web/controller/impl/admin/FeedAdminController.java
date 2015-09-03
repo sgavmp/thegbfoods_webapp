@@ -133,48 +133,6 @@ public class FeedAdminController extends BaseController {
 		return news;
 	}
 	
-	@RequestMapping(value="/get/{codeName}/test", method=RequestMethod.POST, params={"addHtml"})
-	public String addHtmlSelectorTest(Model model, @ModelAttribute(value="feed") FeedForm feed) {
-		feed.getSelectorHtml().add(new PairValues());
-		//model.addAttribute(feed);
-		return "comprobarForm";
-	}
-	
-	@RequestMapping(value="/get/{codeName}/test", method=RequestMethod.POST, params={"removeHtml"})
-	public String removeHtmlSelectorTest(Model model, @ModelAttribute(value="feed") FeedForm feed, @RequestParam("removeHtml")Integer index) {
-		feed.getSelectorHtml().remove(index.intValue());
-		//model.addAttribute(feed);
-		return "comprobarForm";
-	}
-	
-	@RequestMapping(value={"/get/{codeName}/edit","/create"}, method=RequestMethod.POST, params={"addHtml"})
-	public String addHtmlSelector(Model model, @ModelAttribute(value="feed") FeedForm feed) {
-		feed.getSelectorHtml().add(new PairValues());
-		//model.addAttribute(feed);
-		return "feedForm";
-	}
-	
-	@RequestMapping(value={"/get/{codeName}/edit","/create"}, method=RequestMethod.POST, params={"removeHtml"})
-	public String removeHtmlSelector(Model model, @ModelAttribute(value="feed") FeedForm feed, @RequestParam("removeHtml")Integer index) {
-		feed.getSelectorHtml().remove(index.intValue());
-		//model.addAttribute(feed);
-		return "feedForm";
-	}
-	
-	@RequestMapping(value={"/get/{codeName}/edit","/create"}, method=RequestMethod.POST, params={"addMeta"})
-	public String addMetaSelector(Model model, @ModelAttribute(value="feed") FeedForm feed) {
-		feed.getSelectorMeta().add(new PairValues());
-		//model.addAttribute(feed);
-		return "feedForm";
-	}
-	
-	@RequestMapping(value={"/get/{codeName}/edit","/create"}, method=RequestMethod.POST, params={"removeMeta"})
-	public String removeMetaSelector(Model model, @ModelAttribute(value="feed") FeedForm feed, @RequestParam("removeMeta")Integer index) {
-		feed.getSelectorMeta().remove(index.intValue());
-		//model.addAttribute(feed);
-		return "feedForm";
-	}
-	
 	@RequestMapping(value={"/get/{codeName}/edit","/create"}, method=RequestMethod.POST, params={"addPage"})
 	public String addPageNews(Model model, @ModelAttribute(value="feed") FeedForm feed) {
 		feed.getUrlPages().add(new String());

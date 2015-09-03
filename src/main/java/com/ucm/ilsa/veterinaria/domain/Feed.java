@@ -347,6 +347,6 @@ public class Feed extends BaseEntity {
 
 	public void setCharSet(CharsetEnum charSet) {
 		this.charSet = charSet;
-	}
+	}	
 	
 }

@@ -46,10 +46,15 @@ public class MainController extends BaseController {
 		this.menu = "Resumen";
 	}
 	
+	@ModelAttribute("alertsUncheck")
+	public List<AlertDetect> getAllAlertsUnchecked() {
+		return service.getAllAlertUnchecked();
+	}
+	
 	@ModelAttribute("alertsActivateToday")
 	public List<AlertDetect> getAllAlertsToday() {
 		Date now = new Date(System.currentTimeMillis());
-		Date today = new Date(now.getYear(),now.getMonth()-1,now.getDate());
+		Date today = new Date(now.getYear(),now.getMonth(),now.getDate());
 		List<AlertDetect> lista = service.getAlertDetectActivatedAfter(today);
 		return lista;
 	}

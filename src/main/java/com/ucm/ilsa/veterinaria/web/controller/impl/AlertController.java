@@ -52,6 +52,12 @@ public class AlertController extends BaseController {
 		putInfoMessage("Alerta revisada");
 		return "redirect:/alerts";
 	}
+	
+	@RequestMapping("/get/{idAlert}")
+	public String getAlert(Model model, @PathVariable ("idAlert") AlertDetect alert) {
+		model.addAttribute("alert", alert);
+		return "oneAlert";
+	}
 
 	@RequestMapping("**")
 	public String getAllAlerts() {

@@ -55,9 +55,13 @@ public class NewsBuilder {
 		return this;
 	}
 
-	public NewsBuilder setPubDate(String date) throws ParseException {
+	public NewsBuilder setPubDate(String date) {
+		try {
 		this.news.setPubDate(new SimpleDateFormat(dateFormat, this.locale)
 				.parse(date));
+		} catch (ParseException ex) {
+			this.news.setPubDate(new Date(System.currentTimeMillis()));
+		}
 		return this;
 	}
 
