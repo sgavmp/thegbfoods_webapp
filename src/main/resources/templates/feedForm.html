@@ -94,92 +94,21 @@
 							th:text="*{isRSS}?'Url del RSS de noticias':'Url de la primera p&aacute;gina de noticias'">
 						</label>
 					</div>
-					<div class="html">
-						<div
-							class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-							<input class="mdl-textfield__input" type="text"
-								th:field="*{newsLink}" /> <label class="mdl-textfield__label"
-								for="newsLink">Clase CSS para seleccionar las noticias</label>
-						</div>
+					<div
+						class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+						<input class="mdl-textfield__input" type="text"
+							th:field="*{newsLink}" /> <label class="mdl-textfield__label"
+							for="newsLink">Clase CSS para seleccionar las noticias</label>
 					</div>
-					<div class="html row">
-						<div class="input-field col s12">
-							<table>
-								<thead>
-									<tr>
-										<th>Url a las p&aacute;ginas adicionales de noticias</th>
-										<th>
-											<button class="btn" type="submit" name="addPage">A&ntilde;adir
-												p&aacute;gina</button>
-										</th>
-									</tr>
-								</thead>
-								<tbody>
-									<tr th:each="row,rowStat : *{urlPages}">
-										<td><input type="text"
-											th:field="*{urlPages[__${rowStat.index}__]}" /></td>
-										<td>
-											<button th:value="${rowStat.index}" class="btn" type="submit"
-												name="removePage">Remove row</button>
-										</td>
-									</tr>
-								</tbody>
-							</table>
-						</div>
-					</div>
-					<div class="row">
-						<div class="input-field col s12">
-							<table>
-								<thead>
-									<tr>
-										<th>Selectores de partes HTML</th>
-										<th>
-											<button class="btn" type="submit" name="addHtml">A&ntilde;adir
-												selector</button>
-										</th>
-									</tr>
-								</thead>
-								<tbody>
-									<tr th:each="row,rowStat : *{selectorHtml}">
-										<td><input type="text"
-											th:field="*{selectorHtml[__${rowStat.index}__].key}" /></td>
-										<td><input type="text"
-											th:field="*{selectorHtml[__${rowStat.index}__].value}" /></td>
-										<td>
-											<button th:value="${rowStat.index}" class="btn" type="submit"
-												name="removeHtml">Remove row</button>
-										</td>
-									</tr>
-								</tbody>
-							</table>
-						</div>
-					</div>
-					<div class="row">
-						<div class="input-field col s12">
-							<table>
-								<thead>
-									<tr>
-										<th>Selectores de metadatos</th>
-										<th>
-											<button class="btn" type="submit" name="addMeta">A&ntilde;adir
-												selector</button>
-										</th>
-									</tr>
-								</thead>
-								<tbody>
-									<tr th:each="row,rowStat : *{selectorMeta}">
-										<td><input type="text"
-											th:field="*{selectorMeta[__${rowStat.index}__].key}" /></td>
-										<td><input type="text"
-											th:field="*{selectorMeta[__${rowStat.index}__].value}" /></td>
-										<td>
-											<button class="btn" th:value="${rowStat.index}" type="submit"
-												name="removeMeta">Remove row</button>
-										</td>
-									</tr>
-								</tbody>
-							</table>
-						</div>
+					<div
+						class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+						<select class="mdl-textfield__input" th:field="*{charSet}">
+							<option value="" disabled="disabled" selected="selected">Codificación</option>
+							<option
+								th:each="charSet : ${T(com.ucm.ilsa.veterinaria.domain.CharsetEnum).values()}"
+								th:value="${charSet}" th:text="${charSet}">Wireframe</option>
+						</select> <label class="mdl-textfield__label">Codificacion del
+							Sitio</label>
 					</div>
 					<div class="doc-page">
 						<div class="snippet-padding"></div>
@@ -291,7 +220,7 @@
 			<div class="modal__dialog">
 				<div class="modal__content">
 					<div id="contenido" style="visibility: hidden;">
-						<h1 id="testTitle">Titulo</h1>
+						<h3 id="testTitle">Titulo</h3>
 						<h5 id="testDate">Fecha</h5>
 						<p id="testContent">Contenido</p>
 						<p id="testUrl">Url</p>
@@ -309,8 +238,8 @@
 			</div>
 		</div>
 		<script th:src="@{/static/js/material.modal.js}"
-				src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
-		
+			src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+
 		<script th:inline="javascript">
 			/*<![CDATA[*/
 			$(document)
@@ -329,14 +258,10 @@
 												function() {
 													if (!$("#rss").is(
 															":checked")) {
-														$(".rss").hide();
-														$(".html").show();
 														$("#labelUrl")
 																.html(
 																		"Url de la primera p&aacute;gina de noticias");
 													} else {
-														$(".rss").show();
-														$(".html").hide();
 														$("#labelUrl")
 																.html(
 																		"Url del RSS de noticias");
@@ -348,11 +273,24 @@
 								$("#test")
 										.click(
 												function(event) {
+													$(
+													"#contenido")
+													.css(
+															"visibility",
+															"hidden")
+											$(
+													"#testLoad")
+													.css(
+															"visibility",
+															"visible")
 													$form = $(this).parents(
 															"form");
-													$.post(
-																	$form.attr("action"),
-																	$form.serialize()
+													$
+															.post(
+																	$form
+																			.attr("action"),
+																	$form
+																			.serialize()
 																			+ "&testFeed=",
 																	function(
 																			data) {
@@ -377,8 +315,16 @@
 																				"#testDate")
 																				.html(
 																						date);
-																		$("#contenido").css("visibility", "visible")
-																		$("#testLoad").css("visibility", "hidden")
+																		$(
+																				"#contenido")
+																				.css(
+																						"visibility",
+																						"visible")
+																		$(
+																				"#testLoad")
+																				.css(
+																						"visibility",
+																						"hidden")
 																	});
 													return false;
 												});
@@ -386,31 +332,29 @@
 			/*]]>*/
 		</script>
 		<script th:inline="javascript">
-				/*<![CDATA[*/
-				$(document).ready(
-						function() {
-							componentHandler.upgradeAllRegistered();
-							var mesInfo = /*[[${info}]]*/[];
-							var mesError = /*[[${error}]]*/[];
-							var notification = document
-									.querySelector('.mdl-js-snackbar');
-							for (var i = 0; i < mesInfo.length; i++) {
-								notification.MaterialSnackbar.showSnackbar({
-									message : mesInfo[i],
-									cssColor : 'mdl-color--green',
-									timeout : 3000
-								});
-							}
-							for (var i = 0; i < mesError.length; i++) {
-								notification.MaterialSnackbar.showSnackbar({
-									message : mesInfo[i],
-									cssColor : 'mdl-color--red',
-									timeout : 3000
-								});
-							}
-						});
-				/*]]>*/
-			</script>
+			/*<![CDATA[*/
+			$(document).ready(function() {
+				componentHandler.upgradeAllRegistered();
+				var mesInfo = /*[[${info}]]*/[];
+				var mesError = /*[[${error}]]*/[];
+				var notification = document.querySelector('.mdl-js-snackbar');
+				for (var i = 0; i < mesInfo.length; i++) {
+					notification.MaterialSnackbar.showSnackbar({
+						message : mesInfo[i],
+						cssColor : 'mdl-color--green',
+						timeout : 3000
+					});
+				}
+				for (var i = 0; i < mesError.length; i++) {
+					notification.MaterialSnackbar.showSnackbar({
+						message : mesInfo[i],
+						cssColor : 'mdl-color--red',
+						timeout : 3000
+					});
+				}
+			});
+			/*]]>*/
+		</script>
 	</div>
 </body>
 </html>

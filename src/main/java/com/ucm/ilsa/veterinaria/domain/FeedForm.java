@@ -13,7 +13,6 @@ public class FeedForm {
 	@URL
 	@NotEmpty
 	private String url;//Url del sitio
-	private List<PairValues> selectorHtml,selectorMeta;
 	private String dateFormat;
 	//Por defecto Spanish
 	private Language languaje = Language.SPANISH;
@@ -30,6 +29,7 @@ public class FeedForm {
 	private boolean selectorDescriptionMeta;
 	private boolean selectorContentMeta;
 	private boolean selectorPubDateMeta;
+	private CharsetEnum charSet = CharsetEnum.UTF8;
 	
 	@URL
 	private String urlNews;//Url de la pagina de noticias o de rss
@@ -38,8 +38,6 @@ public class FeedForm {
 	private String newsLink;
 	
 	public FeedForm() {
-		this.selectorHtml = new ArrayList<PairValues>();
-		this.selectorMeta = new ArrayList<PairValues>();
 		this.urlPages = new ArrayList<String>();
 	}
 	
@@ -47,8 +45,6 @@ public class FeedForm {
 		this.name=feed.getName();
 		this.dateFormat=feed.getDateFormat();
 		this.languaje=feed.getLanguaje();
-		this.selectorHtml=feed.getSelectorHtml();
-		this.selectorMeta=feed.getSelectorMeta();
 		this.urlPages=feed.getUrlPages();
 		this.url=feed.getUrlSite();
 		this.urlNews=feed.getUrlNews();
@@ -66,6 +62,7 @@ public class FeedForm {
 		this.selectorPubDateMeta = feed.getSelectorPubDateMeta();
 		this.accepted = feed.isAccepted();
 		this.actived = feed.isActived();
+		this.charSet = feed.getCharSet();
 	}
 
 	public String getName() {
@@ -82,22 +79,6 @@ public class FeedForm {
 
 	public void setUrl(String url) {
 		this.url = url;
-	}
-
-	public List<PairValues> getSelectorHtml() {
-		return selectorHtml;
-	}
-
-	public void setSelectorHtml(List<PairValues> selectorHtml) {
-		this.selectorHtml = selectorHtml;
-	}
-
-	public List<PairValues> getSelectorMeta() {
-		return selectorMeta;
-	}
-
-	public void setSelectorMeta(List<PairValues> selectorMeta) {
-		this.selectorMeta = selectorMeta;
 	}
 
 	public String getDateFormat() {
@@ -256,4 +237,12 @@ public class FeedForm {
 		this.accepted = accepted;
 	}
 
+	public CharsetEnum getCharSet() {
+		return charSet;
+	}
+
+	public void setCharSet(CharsetEnum charSet) {
+		this.charSet = charSet;
+	}
+	
 }

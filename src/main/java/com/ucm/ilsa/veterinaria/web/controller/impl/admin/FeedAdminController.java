@@ -192,6 +192,8 @@ public class FeedAdminController extends BaseController {
 	@RequestMapping(value={"/get/{codeName}/edit","/create"}, method=RequestMethod.POST, params={"testFeed"})
 	public @ResponseBody News testFeed(Model model, @ModelAttribute(value="feed") FeedForm feed) {
 		News news = serviceFeed.testFeed(feed);
+		if (news.getContent().length()>500)
+			news.setContent(news.getContent().substring(0, 500).concat("..."));
 		//model.addAttribute(feed);
 		return news;
 	}

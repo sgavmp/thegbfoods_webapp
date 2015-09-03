@@ -1,5 +1,7 @@
 package com.ucm.ilsa.veterinaria.domain;
 
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
@@ -26,6 +28,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Version;
 
+import org.apache.commons.lang.CharSet;
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -43,14 +46,6 @@ public class Feed extends BaseEntity {
 	private String name;
 	@Lob
 	private String urlSite;
-	@ElementCollection(fetch = FetchType.EAGER)
-	@CollectionTable(name = "feed_selector_hmtl", joinColumns = @JoinColumn(name = "SITE_ID"))
-	@OrderColumn
-	private List<PairValues> selectorHtml;
-	@ElementCollection(fetch = FetchType.EAGER)
-	@CollectionTable(name = "feed_selector_meta", joinColumns = @JoinColumn(name = "SITE_ID"))
-	@OrderColumn
-	private List<PairValues> selectorMeta;
 	private String dateFormat;
 	@Enumerated(EnumType.STRING)
 	private Language languaje;
@@ -62,6 +57,7 @@ public class Feed extends BaseEntity {
 	@Enumerated(EnumType.ORDINAL)
 	private WebLevel type;
 	private Integer numNewNews;
+	private Date dateFirstNews;
 	private Timestamp ultimaRecuperacion;
 	private boolean actived = false;
 	private boolean accepted = true;
@@ -75,6 +71,8 @@ public class Feed extends BaseEntity {
 	private boolean selectorDescriptionMeta;
 	private boolean selectorContentMeta;
 	private boolean selectorPubDateMeta;
+	@Enumerated(EnumType.STRING)
+	private CharsetEnum charSet = CharsetEnum.UTF8;
 
 	// Solo sitios sin RSS
 	@ElementCollection(fetch = FetchType.EAGER)
@@ -85,16 +83,12 @@ public class Feed extends BaseEntity {
 	private String newsLink;
 
 	public Feed() {
-		this.selectorHtml = new ArrayList<PairValues>();
-		this.selectorMeta = new ArrayList<PairValues>();
 	}
 
 	public Feed(FeedForm feed) {
 		this.name = feed.getName();
 		this.dateFormat = feed.getDateFormat();
 		this.languaje = feed.getLanguaje();
-		this.selectorHtml = feed.getSelectorHtml();
-		this.selectorMeta = feed.getSelectorMeta();
 		this.isRSS = feed.getIsRSS();
 		this.urlSite = feed.getUrl();
 		this.urlNews = feed.getUrlNews();
@@ -112,14 +106,13 @@ public class Feed extends BaseEntity {
 		this.selectorPubDateMeta = feed.getSelectorPubDateMeta();
 		this.accepted = feed.isAccepted();
 		this.actived = feed.isActived();
+		this.charSet = feed.getCharSet();
 	}
 
 	public void changeValues(FeedForm feed) {
 		this.name = feed.getName();
 		this.dateFormat = feed.getDateFormat();
 		this.languaje = feed.getLanguaje();
-		this.selectorHtml = feed.getSelectorHtml();
-		this.selectorMeta = feed.getSelectorMeta();
 		this.urlSite = feed.getUrl();
 		this.urlNews = feed.getUrlNews();
 		this.urlPages = feed.getUrlPages();
@@ -137,6 +130,7 @@ public class Feed extends BaseEntity {
 		this.selectorPubDateMeta = feed.getSelectorPubDateMeta();
 		this.accepted = feed.isAccepted();
 		this.actived = feed.isActived();
+		this.charSet = feed.getCharSet();
 	}
 
 	public String getCode() {
@@ -169,22 +163,6 @@ public class Feed extends BaseEntity {
 
 	public void setUrlSite(String urlSite) {
 		this.urlSite = urlSite;
-	}
-
-	public List<PairValues> getSelectorHtml() {
-		return selectorHtml;
-	}
-
-	public void setSelectorHtml(List<PairValues> selectorHtml) {
-		this.selectorHtml = selectorHtml;
-	}
-
-	public List<PairValues> getSelectorMeta() {
-		return selectorMeta;
-	}
-
-	public void setSelectorMeta(List<PairValues> selectorMeta) {
-		this.selectorMeta = selectorMeta;
 	}
 
 	public String getDateFormat() {
@@ -354,6 +332,21 @@ public class Feed extends BaseEntity {
 	public void setSelectorPubDateMeta(boolean selectorPubDateMeta) {
 		this.selectorPubDateMeta = selectorPubDateMeta;
 	}
-	
+
+	public Date getDateFirstNews() {
+		return dateFirstNews;
+	}
+
+	public void setDateFirstNews(Date dateFirstNews) {
+		this.dateFirstNews = dateFirstNews;
+	}
+
+	public CharsetEnum getCharSet() {
+		return charSet;
+	}
+
+	public void setCharSet(CharsetEnum charSet) {
+		this.charSet = charSet;
+	}
 	
 }

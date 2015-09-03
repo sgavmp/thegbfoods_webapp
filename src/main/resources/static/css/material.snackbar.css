@@ -82,7 +82,7 @@
 	background: transparent;
 	border: none;
 	border-radius: 2px!default;
-	color: unquote("rgb(#424242)");
+	color: #424242;
 	display: table-cell;
 	text-transform: uppercase;
 	min-width: 64px!default;
