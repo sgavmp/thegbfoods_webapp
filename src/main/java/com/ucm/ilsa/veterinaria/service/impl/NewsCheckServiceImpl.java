@@ -69,6 +69,8 @@ public class NewsCheckServiceImpl implements NewsCheckService {
 	}
 
 	public void checkNews(List<News> listNews, Feed feed) {
+		LOGGER.info("Iniciada comprobacion de alerta de cercania y palabras de filtro para el sitio: "
+				+ feed.getName());
 		Integer newsNum = listNews.size();
 		Integer alertDetectNum = 0;
 		List<Location> lugares = placeAlertService.getAllLocations();
@@ -111,10 +113,13 @@ public class NewsCheckServiceImpl implements NewsCheckService {
 								.setNewsDetect(new ArrayList<NewsDetect>());
 				}
 				for (News news : mapNewsDetect.keySet()) {
+					if (repositoryNewsDetect.findFirstByAlertDetectAndLink(alertDetectActive, news.getUrl())!=null) {
+						continue;
+					}
 					List<String> wordsDetect = mapNewsDetect.get(news);
 					NewsDetect newsDetect = new NewsDetect();
 					newsDetect.setDatePub(news.getPubDate());
-					newsDetect.setAlert_detect(alertDetectActive);
+					newsDetect.setAlertDetect(alertDetectActive);
 					newsDetect.setLink(news.getUrl());
 					newsDetect.setSite(feed);
 					newsDetect.setTitle(news.getTitle());
@@ -159,9 +164,11 @@ public class NewsCheckServiceImpl implements NewsCheckService {
 						}
 						newsDetect.setLocations(puntos);
 					}
-					repositoryNewsDetect.save(newsDetect);
-					alertDetectNum++;
-					alertDetectActive.getNewsDetect().add(newsDetect);
+					if (repositoryNewsDetect.findFirstByAlertDetectAndLink(alertDetectActive, newsDetect.getLink())==null) {
+						repositoryNewsDetect.save(newsDetect);
+						alertDetectNum++;
+						alertDetectActive.getNewsDetect().add(newsDetect);
+					}
 				}
 				repository.save(alertDetectActive);
 			}
@@ -175,9 +182,6 @@ public class NewsCheckServiceImpl implements NewsCheckService {
 			statistics = new Statistics(today, alertDetectNum, newsNum);
 		}
 		statisticsRepository.save(statistics);
-		LOGGER.info("Iniciada comprobacion de alerta de cercania y palabras de filtro para el sitio: "
-				+ feed.getName());
-
 	}
 
 	// public List<AlertDetect> detectAlert(Feed feed,

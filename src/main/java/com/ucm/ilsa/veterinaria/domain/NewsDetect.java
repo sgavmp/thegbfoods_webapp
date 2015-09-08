@@ -52,7 +52,7 @@ public class NewsDetect extends BaseEntity {
 	private List<PointLocation> locations;
 	@ManyToOne(fetch=FetchType.EAGER)
 	@JoinColumn(name="alert_detect_id")
-	private AlertDetect alert_detect;
+	private AlertDetect alertDetect;
 	
 	
 	public Long getId() {
@@ -97,11 +97,11 @@ public class NewsDetect extends BaseEntity {
 	public void setDatePub(Date datePub) {
 		this.datePub = datePub;
 	}
-	public AlertDetect getAlert_detect() {
-		return alert_detect;
+	public AlertDetect getAlertDetect() {
+		return alertDetect;
 	}
-	public void setAlert_detect(AlertDetect alert_detect) {
-		this.alert_detect = alert_detect;
+	public void setAlertDetect(AlertDetect alertDetect) {
+		this.alertDetect = alertDetect;
 	}
 
 	public Map<CountryCode,List<Location>> getCountryWithLocations() {

@@ -121,9 +121,7 @@ public class FeedScrapingImpl implements FeedScraping {
 						lastNews = news.getLink();
 						isFirst = false;
 					}
-					if (repositoryNewsDetect.findBySiteAndLink(feed, news.getLink())!=null) { //Comprobamos que no existe la combinación
-						listNews.add(getNewsWithRSS(feed, news));
-					}
+					listNews.add(getNewsWithRSS(feed, news));
 				}
 				if (feed.getDateFirstNews()==null) {
 					feed.setDateFirstNews(newsList.getEntries().get(newsList.getEntries().size()-1).getPublishedDate());
@@ -181,10 +179,7 @@ public class FeedScrapingImpl implements FeedScraping {
 						lastNews = linkNews;
 						isFirst = false;
 					}
-					
-					if (repositoryNewsDetect.findBySiteAndLink(feed, linkNews)!=null) { //Comprobamos que no existe la combinación
-						listNews.add(news);
-					}
+					listNews.add(news);
 				}
 				if (feed.getDateFirstNews()==null) {
 					if (news!=null)

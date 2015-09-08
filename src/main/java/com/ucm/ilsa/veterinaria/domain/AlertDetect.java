@@ -38,7 +38,7 @@ public class AlertDetect extends BaseEntity {
 	@ManyToOne
 	@JoinColumn(name = "alertId")
 	private Alert alert;
-	@OneToMany(mappedBy="alert_detect",fetch = FetchType.EAGER)
+	@OneToMany(mappedBy="alertDetect",fetch = FetchType.EAGER)
 	private List<NewsDetect> newsDetect;
 	@Enumerated(EnumType.ORDINAL)
 	private AlertLevel level = AlertLevel.yellow;
