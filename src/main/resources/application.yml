@@ -5,7 +5,8 @@ spring:
     active: production
   
 ---
-
+logging:
+  config: classpath:logback-production.xml
 spring:
   profiles: production
   datasource:
@@ -22,6 +23,8 @@ spring:
 name: production
 
 ---
+logging:
+  config: classpath:logback-local.xml
 
 spring:
   profiles: local

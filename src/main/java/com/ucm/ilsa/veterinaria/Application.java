@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executor;
 
+import org.apache.log4j.Logger;
 import org.springframework.aop.interceptor.AsyncUncaughtExceptionHandler;
 import org.springframework.aop.interceptor.SimpleAsyncUncaughtExceptionHandler;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,11 +27,15 @@ import com.ucm.ilsa.veterinaria.domain.AlertDetect;
 import com.ucm.ilsa.veterinaria.domain.NewsDetect;
 import com.ucm.ilsa.veterinaria.repository.AlertDetectRepository;
 import com.ucm.ilsa.veterinaria.repository.NewsDetectRepository;
+import com.ucm.ilsa.veterinaria.service.impl.FeedScrapingImpl;
 
 @SpringBootApplication
 @ComponentScan("com.ucm.ilsa.veterinaria")
 @EnableAsync
 public class Application extends SpringBootServletInitializer implements AsyncConfigurer, CommandLineRunner {
+	
+	private final static Logger LOGGER = Logger
+			.getLogger(Application.class);
 	
 	@Autowired
 	Environment env;
@@ -41,7 +46,7 @@ public class Application extends SpringBootServletInitializer implements AsyncCo
     
     @Override
     public void run(String... args) throws Exception {
-    	System.out.println("Deploy on " + env.getProperty("name"));
+    	LOGGER.info("Deploy on " + env.getProperty("name"));
     }
 	
     @Bean

@@ -29,7 +29,6 @@ import com.bericotech.clavin.resolver.ResolvedLocation;
 import com.google.common.collect.Lists;
 
 @Entity
-@Table(uniqueConstraints={@UniqueConstraint(columnNames={"alert_detect_id","link"})})
 public class NewsDetect extends BaseEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+	<appender name="consoleAppender" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<Pattern>.%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg %n
+			</Pattern>
+		</encoder>
+		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+			<level>TRACE</level>
+		</filter>
+	</appender>
+
+  	 <appender name="db" class="ch.qos.logback.classic.db.DBAppender">
+        <connectionSource
+            class="ch.qos.logback.core.db.DriverManagerConnectionSource">
+            <driverClass>com.mysql.jdbc.Driver</driverClass>
+            <url>jdbc:mysql://localhost:3306/veterinaria</url>
+            <user>root</user>
+            <password>root</password> <!-- no password -->
+        </connectionSource>
+        <!-- <connectionSource class="ch.qos.logback.core.db.JNDIConnectionSource"> -->
+      		<!-- please note the "java:comp/env/" prefix -->
+      		<!--<jndiLocation>java:comp/env/jdbc/veterinaria> -->
+    	<!--</connectionSource> -->
+    </appender>	
+
+	<logger name="com.ucm.ilsa.veterinaria" additivity="false">
+	    <level value="DEBUG" />
+		<appender-ref ref="db"/>
+		<appender-ref ref="consoleAppender" />
+	</logger>
+
+	<root>
+		<level value="WARN" />
+		<appender-ref ref="consoleAppender" />
+	</root>
+</configuration>

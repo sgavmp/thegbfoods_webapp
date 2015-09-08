@@ -37,6 +37,7 @@ import com.ucm.ilsa.veterinaria.domain.News;
 import com.ucm.ilsa.veterinaria.domain.PairValues;
 import com.ucm.ilsa.veterinaria.domain.builder.NewsBuilder;
 import com.ucm.ilsa.veterinaria.repository.FeedRepository;
+import com.ucm.ilsa.veterinaria.repository.NewsDetectRepository;
 import com.ucm.ilsa.veterinaria.service.FeedScraping;
 
 @Repository
@@ -46,10 +47,13 @@ public class FeedScrapingImpl implements FeedScraping {
 			.getLogger(FeedScrapingImpl.class);
 
 	private FeedRepository repositoryFeed;
+	
+	private NewsDetectRepository repositoryNewsDetect;
 
 	@Autowired
-	public FeedScrapingImpl(FeedRepository repositoryFeed) {
+	public FeedScrapingImpl(FeedRepository repositoryFeed, NewsDetectRepository repositoryNewsDetect) {
 		this.repositoryFeed = repositoryFeed;
+		this.repositoryNewsDetect = repositoryNewsDetect;
 	}
 
 	@Override
@@ -62,7 +66,7 @@ public class FeedScrapingImpl implements FeedScraping {
 		}
 		feed = repositoryFeed.findOne(feed.getCode());
 		feed.setUltimaRecuperacion(new Timestamp(System.currentTimeMillis()));
-		feed.setNumNewNews(newsList.size());
+		feed.setNumNewNews(newsList!=null?newsList.size():0);
 		repositoryFeed.save(feed);
 		return newsList;
 	}
@@ -99,7 +103,6 @@ public class FeedScrapingImpl implements FeedScraping {
 						.getInputStream()));
 				boolean isFirst = true;
 				String lastNews = null;
-				Integer num = 0;
 				for (SyndEntry news : newsList.getEntries()) {
 					// Vamos comprobando el link de la entrada con el enlace de
 					// la ultima noticia almacenada del feed
@@ -112,18 +115,18 @@ public class FeedScrapingImpl implements FeedScraping {
 							break;
 						} else if (isFirst) {
 							lastNews = news.getLink();
-							feed.setDateFirstNews(news.getPublishedDate());
 							isFirst = false;
 						}
 					} else if (isFirst) {
 						lastNews = news.getLink();
-						feed.setDateFirstNews(news.getPublishedDate());
 						isFirst = false;
 					}
-					listNews.add(getNewsWithRSS(feed, news));
-					num++;
-					if (num > 50) // Limite de 50 noticias con RSS
-						break;
+					if (repositoryNewsDetect.findBySiteAndLink(feed, news.getLink())!=null) { //Comprobamos que no existe la combinación
+						listNews.add(getNewsWithRSS(feed, news));
+					}
+				}
+				if (feed.getDateFirstNews()==null) {
+					feed.setDateFirstNews(newsList.getEntries().get(newsList.getEntries().size()-1).getPublishedDate());
 				}
 				if (lastNews != null) {
 					feed.setLastNewsLink(lastNews);
@@ -152,23 +155,44 @@ public class FeedScrapingImpl implements FeedScraping {
 			if (feed.getUrlNews() != null) {
 				Document doc = Jsoup.connect(feed.getUrlNews()).get();
 				Elements newsLinks = doc.select(feed.getNewsLink());
+				boolean isFirst = true;
+				String lastNews = null;
+				News news = null;
 				for (Element link : newsLinks) {
 					// Enlace de la noticia
 					String linkNews = link.absUrl("href");
 					// Titutlo de la noticia
 					String title = link.text();
-					listNews.add(getNewsWithOutRSS(feed, linkNews, title));
-				}
-				for (String otraPag : feed.getUrlPages()) {
-					doc = Jsoup.connect(otraPag).get();
-					newsLinks = doc.select(feed.getNewsLink());
-					for (Element link : newsLinks) {
-						// Enlace de la noticia
-						String linkNews = link.absUrl("href");
-						// Titutlo de la noticia
-						String title = link.text();
-						listNews.add(getNewsWithOutRSS(feed, linkNews, title));
+					news = getNewsWithOutRSS(feed, linkNews, title);
+					// Vamos comprobando el link de la entrada con el enlace de
+					// la ultima noticia almacenada del feed
+					if (feed.getLastNewsLink() != null) {
+						// En caso de coincidencia (es decir que ya esta en el
+						// sistema) devolvemos la lista (puede estar vacia)
+						if (!feed.getLastNewsLink().isEmpty()
+								&& feed.getLastNewsLink()
+										.equals(linkNews)) {
+							break;
+						} else if (isFirst) {
+							lastNews = linkNews;
+							isFirst = false;
+						}
+					} else if (isFirst) {
+						lastNews = linkNews;
+						isFirst = false;
 					}
+					
+					if (repositoryNewsDetect.findBySiteAndLink(feed, linkNews)!=null) { //Comprobamos que no existe la combinación
+						listNews.add(news);
+					}
+				}
+				if (feed.getDateFirstNews()==null) {
+					if (news!=null)
+							feed.setDateFirstNews(news.getPubDate());
+				}
+				if (lastNews != null) {
+					feed.setLastNewsLink(lastNews);
+					repositoryFeed.save(feed);
 				}
 			}
 			return listNews;
