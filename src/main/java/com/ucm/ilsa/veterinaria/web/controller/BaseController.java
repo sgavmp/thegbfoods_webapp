@@ -23,8 +23,6 @@ import com.ucm.ilsa.veterinaria.util.MD5Util;
 
 public abstract class BaseController {
 	
-	private static List<String> info = new ArrayList<String>();
-	private static List<String> error = new ArrayList<String>();
 	//Indica al template el menu que tiene que activar
 	protected String menu="";
 	
@@ -51,33 +49,6 @@ public abstract class BaseController {
 	@ModelAttribute("menu")
 	public String getMenuActive() {
 		return menu;
-	}
-	
-	@ModelAttribute("info")
-	public List<String> getInfoMessage() {
-		List<String> copy = Lists.newArrayList(info);
-		info.clear();
-		return copy;
-	}
-	
-	@ModelAttribute("error")
-	public List<String> getErrorMessage() {
-		List<String> copy = Lists.newArrayList(error);		
-		error.clear();
-		return copy;
-	}
-	
-	public BaseController() {
-		this.info = new ArrayList<String>();
-		this.error = new ArrayList<String>();
-	}
-	
-	public static void putInfoMessage(String message) {
-		info.add(message);
-	}
-	
-	public static void putErrorMessage(String message) {
-		error.add(message);
 	}
 
 }

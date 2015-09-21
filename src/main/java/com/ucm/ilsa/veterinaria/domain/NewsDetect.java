@@ -107,7 +107,7 @@ public class NewsDetect extends BaseEntity {
 	public Map<CountryCode,List<Location>> getCountryWithLocations() {
 		Map<CountryCode,List<Location>> mapa = new HashMap<CountryCode, List<Location>>();
 		for (Location loc : locationsNear) {
-			List<Location> lista = mapa.getOrDefault(loc.getCountry(), new ArrayList<Location>());
+			List<Location> lista = mapa.containsKey(loc.getCountry())? mapa.get(loc.getCountry()) : new ArrayList<Location>();
 			lista.add(loc);
 			mapa.put(loc.getCountry(), lista);
 		}

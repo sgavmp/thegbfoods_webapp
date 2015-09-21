@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.HandlerMapping;
 import org.webjars.WebJarAssetLocator;
 
+import com.google.common.collect.Lists;
 import com.neovisionaries.i18n.CountryCode;
 import com.ucm.ilsa.veterinaria.domain.AlertDetect;
 import com.ucm.ilsa.veterinaria.domain.Location;

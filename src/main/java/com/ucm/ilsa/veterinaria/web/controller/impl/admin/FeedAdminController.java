@@ -16,7 +16,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.google.common.collect.Lists;
 import com.rometools.rome.io.impl.FeedParsers;
 import com.ucm.ilsa.veterinaria.domain.Feed;
 import com.ucm.ilsa.veterinaria.domain.FeedForm;
@@ -33,7 +35,7 @@ import com.ucm.ilsa.veterinaria.web.controller.BaseController;
 @Controller
 @RequestMapping("/admin/feeds")
 public class FeedAdminController extends BaseController {
-
+	
 	@Autowired
 	private FeedService serviceFeed;	
 	
@@ -55,11 +57,11 @@ public class FeedAdminController extends BaseController {
 	}
 	
 	@RequestMapping("/get/{codeName}/update")
-	public String updateNewsByFeed(Model model, @PathVariable ("codeName") Feed feed) {
+	public String updateNewsByFeed(Model model, RedirectAttributes redirectAttributes, @PathVariable ("codeName") Feed feed) {
 		List<News> newsListAdd = serviceFeed.scrapFeed(feed);
 		model.addAttribute(feed);
 		model.addAttribute(newsListAdd);
-		putInfoMessage("Actualizando fuente");
+		redirectAttributes.addFlashAttribute("info","Actualizando fuente");
 		return "redirect:/feeds/get/{codeName}";
 	}
 	
@@ -78,16 +80,16 @@ public class FeedAdminController extends BaseController {
 	}
 	
 	@RequestMapping(value="/create", method=RequestMethod.POST)
-	public String formNewFeed(Model model, @Valid FeedForm feed,BindingResult result) {
+	public String formNewFeed(Model model, RedirectAttributes redirectAttributes, @Valid FeedForm feed,BindingResult result) {
         if (result.hasErrors()) {
             return "feedForm";
         }
 		Feed feedP = new Feed(feed);
 		feedP = serviceFeed.createFeed(feedP);
 		if (feedP.getCode()!=null) {
-			this.putInfoMessage("Sitio creado correctamente");
+			redirectAttributes.addFlashAttribute("info","Sitio creado correctamente");
 		} else {
-			this.putErrorMessage("Ha ocurrido un error, vuelva a intentarlo más tarde.");
+			redirectAttributes.addFlashAttribute("error","Ha ocurrido un error, vuelva a intentarlo más tarde.");
 		}
 		return "redirect:/admin/feeds/get/"+feedP.getCode()+"/edit";
 	}
@@ -99,7 +101,7 @@ public class FeedAdminController extends BaseController {
 	}
 	
 	@RequestMapping(value="/get/{codeName}/edit", method=RequestMethod.POST)
-	public String saveFormEditFeed(Model model, @PathVariable ("codeName") Feed feedP, @ModelAttribute(value="feed") FeedForm feed, BindingResult bindingResult) {
+	public String saveFormEditFeed(Model model, RedirectAttributes redirectAttributes, @PathVariable ("codeName") Feed feedP, @ModelAttribute(value="feed") FeedForm feed, BindingResult bindingResult) {
 		if (bindingResult.hasErrors()) {
 	        return "newsFeed";
 	    }
@@ -108,9 +110,9 @@ public class FeedAdminController extends BaseController {
 		feedP = serviceFeed.updateFeed(feedP);
 		model.addAttribute(new FeedForm(feedP));
 		if (version < feedP.getVersion()) {
-			this.putInfoMessage("Sitio actualizado correctamente");
+			redirectAttributes.addFlashAttribute("info","Sitio actualizado correctamente");
 		} else {
-			this.putErrorMessage("Ha ocurrido un error, vuelva a intentarlo más tarde.");
+			redirectAttributes.addFlashAttribute("error","Ha ocurrido un error, vuelva a intentarlo más tarde.");
 		}
 		return "feedForm";
 	}
@@ -157,11 +159,11 @@ public class FeedAdminController extends BaseController {
 	}
 
 	@RequestMapping("/get/{codeName}/remove")
-	public String removeFeed(@PathVariable ("codeName") Feed feed) {
+	public String removeFeed(Model model, RedirectAttributes redirectAttributes, @PathVariable ("codeName") Feed feed) {
 		if (this.serviceFeed.removeFeed(feed)) {
-			this.putInfoMessage("Se ha borrado correctamente la fuente " + feed.getName());
+			redirectAttributes.addFlashAttribute("info","Se ha borrado correctamente la fuente " + feed.getName());
 		} else {
-			this.putErrorMessage("No se ha borrado la fuente " + feed.getName());
+			model.addAttribute("error","No se ha borrado la fuente " + feed.getName());
 			return "oneFeed";
 		}
 		return "redirect:/feeds";

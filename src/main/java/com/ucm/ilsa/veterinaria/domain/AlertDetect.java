@@ -122,7 +122,7 @@ public class AlertDetect extends BaseEntity {
 		Date end = new Date(today.getYear(),today.getMonth(),today.getDate()+1);
 		int count = 0;
 		for (NewsDetect news : newsDetect) {
-			if (news.getDatePub().before(end) && ( news.getDatePub().after(start) || news.getDatePub().equals(start)))
+			if (news.getDatePub().before(end) && ( news.getDatePub().after(start) || news.getDatePub().compareTo(start)==0))
 				count++;
 		}
 		return count;

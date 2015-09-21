@@ -107,7 +107,15 @@ public class AlertDetectServiceImpl {
 		repository.save(alert);
 	}
 	
+	public boolean removeAlert(AlertDetect alert) {
+		if (alert.getNewsDetect().size()==0) {
+			repository.delete(alert);
+			return true;
+		}
+		return false;
+	}
+	
 	public List<AlertDetect> getAlertDetectActivatedAfter(Date date) {
-		return repository.readAllByCheckIsFalseAndNewsDetectDatePubAfterOrderByCreateDateDesc(date);
+		return repository.readAllByCheckIsFalseAndNewsDetectDatePubGreaterThanEqualOrderByCreateDateDesc(date);
 	}
 }

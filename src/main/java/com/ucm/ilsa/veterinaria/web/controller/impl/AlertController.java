@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.google.common.collect.Lists;
 import com.neovisionaries.i18n.CountryCode;
 import com.ucm.ilsa.veterinaria.domain.AlertDetect;
 import com.ucm.ilsa.veterinaria.domain.Location;
@@ -44,13 +45,6 @@ public class AlertController extends BaseController {
 	@ModelAttribute("alertsCheck")
 	public List<AlertDetect> getAllAlertsChecked() {
 		return service.getAllAlertChecked();
-	}
-	
-	@RequestMapping("/get/{idAlert}/check")
-	public String checkAlert(Model model, @PathVariable ("idAlert") AlertDetect alert) {
-		service.checkAlert(alert);
-		putInfoMessage("Alerta revisada");
-		return "redirect:/alerts";
 	}
 	
 	@RequestMapping("/get/{idAlert}")

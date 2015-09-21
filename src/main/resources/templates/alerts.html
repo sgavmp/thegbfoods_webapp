@@ -20,7 +20,7 @@
 			<div th:if="${#lists.isEmpty(alertsUncheck)}" class="watermark">
 				<h1>No hay alertas activas de los ultimos 30 días</h1>
 			</div>
-			<div th:each="alert : ${alertsUncheck}"
+			<div th:include="resume :: card-alert" th:with="numAlert=${alert.getNewsDetect().size()}" th:each="alert : ${alertsUncheck}"
 				class="mdl-cell mdl-cell--3-col mdl-cell--4-col-tablet mdl-cell--4-col-phone mdl-card mdl-shadow--3dp">
 				<div class="mdl-card__title mdl-color--red-200">
 					<h2 class="mdl-card__title-text" th:inline="text">[[${alert.alert.title}]]</h2>
@@ -30,7 +30,7 @@
 					el ultimo mes se han detectado 20 posibles alertas de las cuales 10
 					fueron verificadas.</div>
 				<div class="mdl-card__actions mdl-card--border">
-					<a
+					<a th:href="@{/alerts/get/{id}(id=${alert.id})}"
 						class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">Ver
 						mas detalles</a>
 				</div>

@@ -144,26 +144,25 @@
 				src="https://storage.googleapis.com/code.getmdl.io/1.0.4/material.min.js"></script>
 			<script th:src="@{/static/js/material.snackbar.js}"
 				src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
-		</footer>
-		<script th:inline="javascript">
+			<script th:inline="javascript">
 				/*<![CDATA[*/
 				$(document).ready(
 						function() {
 							componentHandler.upgradeAllRegistered();
-							var mesInfo = /*[[${info}]]*/[];
-							var mesError = /*[[${error}]]*/[];
+							var mesInfo = [[${info}]];
+							var mesError = [[${error}]];
 							var notification = document
 									.querySelector('.mdl-js-snackbar');
-							for (var i = 0; i < mesInfo.length; i++) {
+							if (mesInfo!=null) {
 								notification.MaterialSnackbar.showSnackbar({
-									message : mesInfo[i],
+									message : mesInfo,
 									cssColor : 'mdl-color--green',
 									timeout : 3000
 								});
-							}
-							for (var i = 0; i < mesError.length; i++) {
+						}
+							if (mesError!=null) {
 								notification.MaterialSnackbar.showSnackbar({
-									message : mesInfo[i],
+									message : mesError,
 									cssColor : 'mdl-color--red',
 									timeout : 3000
 								});
@@ -171,6 +170,7 @@
 						});
 				/*]]>*/
 			</script>
+		</footer>
 	</div>
 </body>
 </html>

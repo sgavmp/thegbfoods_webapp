@@ -1,5 +1,7 @@
 package com.ucm.ilsa.veterinaria.web.controller.impl.admin;
 
+import java.util.List;
+
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,7 +11,9 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.google.common.collect.Lists;
 import com.ucm.ilsa.veterinaria.domain.Alert;
 import com.ucm.ilsa.veterinaria.service.impl.AlertServiceImpl;
 import com.ucm.ilsa.veterinaria.web.controller.BaseController;
@@ -33,12 +37,12 @@ public class WordFilterController extends BaseController {
 	}
 	
 	@RequestMapping(value="/create", method=RequestMethod.POST)
-	public String createLocation(Model model, Alert wordFilter,BindingResult result) {
+	public String createLocation(Model model, RedirectAttributes redirectAttributes, Alert wordFilter,BindingResult result) {
         if (result.hasErrors()) {
             return "words";
         }
 		wordService.create(wordFilter);
-		putInfoMessage("Se ha a&ntilde;adido correctamente el filtro");
+		redirectAttributes.addFlashAttribute("info","Se ha a&ntilde;adido correctamente el filtro");
 		return "redirect:/admin/words";
 	}
 	
@@ -50,13 +54,13 @@ public class WordFilterController extends BaseController {
 	}
 	
 	@RequestMapping(value="/get/{id}/edit", method=RequestMethod.POST)
-	public String updateLocation(Model model, Alert wordFilter, @PathVariable ("id") Alert before,BindingResult result) {
+	public String updateLocation(Model model, RedirectAttributes redirectAttributes, Alert wordFilter, @PathVariable ("id") Alert before,BindingResult result) {
         if (result.hasErrors()) {
-        	putErrorMessage("Hay un error en el formulario");
+        	model.addAttribute("error","Hay un error en el formulario");
             return "words";
         }
 		wordService.create(wordFilter);
-		putInfoMessage("Se ha actualizado correctamente el filtro.");
+		redirectAttributes.addFlashAttribute("info","Se ha actualizado correctamente el filtro.");
 		return "redirect:/admin/words";
 	}
 	

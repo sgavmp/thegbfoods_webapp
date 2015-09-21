@@ -269,7 +269,7 @@ public class NewsCheckServiceImpl implements NewsCheckService {
 		// Contamos las apariciones de cada pais
 		for (ResolvedLocation loc : locations) {
 			CountryCode code = loc.getGeoname().getPrimaryCountryCode();
-			Integer num = countCountry.getOrDefault(code, 0) + 1;
+			Integer num = countCountry.containsKey(code)? countCountry.get(code) + 1 : 1;
 			countCountry.put(code, num);
 			if (maxCount < num) {
 				maxCount = num;
