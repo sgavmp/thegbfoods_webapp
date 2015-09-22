@@ -30,7 +30,7 @@ public class TaskContainer implements Runnable {
 
 	@Override
 	public void run() {
-		LOGGER.info("Inicia tarea planificada para el sitio: " + feed.getCode());
+		LOGGER.info("Inicia tarea planificada para el sitio: " + feed.getName());
 		Feed feedComp = null;
 		// Obtenemos el sitio de la base de datos por si se hubiese modificado o
 		// borrado
@@ -44,7 +44,7 @@ public class TaskContainer implements Runnable {
 			LOGGER.info("Finalizada tarea planificada para el sitio: " + feed.getCode());
 		} else {
 			schedulerService.removeFeedTask(feed);
-			LOGGER.info("El sitio " + feed.getCode() + " ha sido borrado mientras se obtenian nuevos datos.");
+			LOGGER.info("El sitio " + feed.getName() + " ha sido borrado mientras se obtenian nuevos datos.");
 		}
 
 	}

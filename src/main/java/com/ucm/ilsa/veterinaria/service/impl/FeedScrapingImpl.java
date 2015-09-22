@@ -68,6 +68,7 @@ public class FeedScrapingImpl implements FeedScraping {
 		feed.setUltimaRecuperacion(new Timestamp(System.currentTimeMillis()));
 		feed.setNumNewNews(newsList!=null?newsList.size():0);
 		repositoryFeed.save(feed);
+		LOGGER.info("Noticias recuperadas del sitio " + feed.getName());
 		return newsList;
 	}
 

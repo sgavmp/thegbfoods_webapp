@@ -130,7 +130,8 @@ public class NewsCheckServiceImpl implements NewsCheckService {
 						try {
 							locationsAp = parser.parse(news.getContent());
 						} catch (Exception e) {
-							e.printStackTrace();
+							LOGGER.info("Se ha producido un error al obtener las localizaciones de la noticia");
+							LOGGER.debug(e.getMessage());
 						}
 						// Si la alerta es de Nivel 2 o 3 se detecta los
 						// proveedores por el pais
@@ -320,7 +321,8 @@ public class NewsCheckServiceImpl implements NewsCheckService {
 				if (locations.size() > 0)
 					map.put(news, locations);
 			} catch (Exception ex) {
-				LOGGER.error(ex.getMessage());
+				LOGGER.info("Se ha producido un error al obtener las localizaciones de la noticia");
+				LOGGER.debug(ex.getMessage());
 			}
 			map.put(news, new ArrayList<ResolvedLocation>());
 		}
