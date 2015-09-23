@@ -118,4 +118,8 @@ public class AlertDetectServiceImpl {
 	public List<AlertDetect> getAlertDetectActivatedAfter(Date date) {
 		return repository.readAllByCheckIsFalseAndNewsDetectDatePubGreaterThanEqualOrderByCreateDateDesc(date);
 	}
+	
+	public List<AlertDetect> getAlertDetectSite(Feed feed) {
+		return repository.readAllDistinctByNewsDetectSiteAndCheckIsFalse(feed);
+	}
 }

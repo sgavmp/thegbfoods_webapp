@@ -1,5 +1,7 @@
 package com.ucm.ilsa.veterinaria.domain;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
@@ -348,5 +350,13 @@ public class Feed extends BaseEntity {
 	public void setCharSet(CharsetEnum charSet) {
 		this.charSet = charSet;
 	}	
+	
+	public boolean linkIsFromSite(String link) throws MalformedURLException {
+		URL lasNews = new URL(this.lastNewsLink);
+		URL site = new URL(this.urlSite);
+		URL newsLink = new URL(this.urlNews);
+		URL linkURL = new URL(link);
+		return lasNews.getHost().equals(linkURL.getHost()) || site.getHost().equals(linkURL.getHost()) || newsLink.getHost().equals(linkURL.getHost());
+	}
 	
 }

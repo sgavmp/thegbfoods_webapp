@@ -12,4 +12,5 @@ public interface FeedScraping {
 	public List<News> scrapNews(Feed feed);
 	public List<News> scrapNewsWithOutEvent(Feed feed);
 	public News scrapOneNews(FeedForm feed);
+	public News getNewsFromSite(String link, Feed feed);
 }

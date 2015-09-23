@@ -32,9 +32,11 @@ import com.ucm.ilsa.veterinaria.domain.AlertDetect;
 import com.ucm.ilsa.veterinaria.domain.Feed;
 import com.ucm.ilsa.veterinaria.domain.FeedForm;
 import com.ucm.ilsa.veterinaria.domain.News;
+import com.ucm.ilsa.veterinaria.domain.NewsDetect;
 import com.ucm.ilsa.veterinaria.domain.PairValues;
 import com.ucm.ilsa.veterinaria.domain.builder.NewsBuilder;
 import com.ucm.ilsa.veterinaria.repository.FeedRepository;
+import com.ucm.ilsa.veterinaria.repository.NewsDetectRepository;
 import com.ucm.ilsa.veterinaria.scheduler.SchedulerService;
 import com.ucm.ilsa.veterinaria.service.FeedScraping;
 import com.ucm.ilsa.veterinaria.service.FeedService;
@@ -49,6 +51,8 @@ public class FeedServiceImpl implements FeedService {
 	private FeedScraping scrapingFeed;
 	@Autowired
 	private NewsCheckService newsCheckService;
+	@Autowired
+	private NewsDetectRepository newsDetectRepository;
 	
 	private SchedulerService schedulerService;
 
@@ -101,6 +105,14 @@ public class FeedServiceImpl implements FeedService {
 		this.schedulerService = schedulerService;
 	}
 	
+	public List<NewsDetect> findAllDistinctNewsDetectByFeedOrderByDatePub(Feed feed) {
+		return newsDetectRepository.findAllDistinctBySiteOrderByDatePubDesc(feed);
+	}
 	
+	public List<AlertDetect> checkNewsLinkOnFeed(String link, Feed feed) {
+		News news = scrapingFeed.getNewsFromSite(link, feed);
+		List<AlertDetect> alertasDetectadas = newsCheckService.checkNews(news, feed);
+		return alertasDetectadas;
+	}
 
 }

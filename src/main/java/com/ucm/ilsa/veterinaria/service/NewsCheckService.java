@@ -10,7 +10,6 @@ import com.ucm.ilsa.veterinaria.domain.News;
 
 public interface NewsCheckService {
 	public void checkNews(List<News> listNews, Feed feed);
-//	public List<AlertDetect> detectAlert(Feed feed,
-//			Map<News, List<ResolvedLocation>> locations);
 	public Map<News, List<ResolvedLocation>> getLocations(List<News> listNews);
+	public List<AlertDetect> checkNews(News news, Feed feed);
 }

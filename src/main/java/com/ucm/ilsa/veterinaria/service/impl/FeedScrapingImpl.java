@@ -384,4 +384,9 @@ public class FeedScrapingImpl implements FeedScraping {
 		return temp.build();
 	}
 
+	@Override
+	public News getNewsFromSite(String link, Feed feed) {
+		return getNewsWithOutRSS(feed, link, link);
+	}
+
 }

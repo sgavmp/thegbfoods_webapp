@@ -80,7 +80,7 @@
 					src="http://www.gravatar.com/avatar/205e460b479e2e5b48aec07710c08d50"
 					class="demo-avatar"></img>
 				<div class="demo-avatar-dropdown">
-					<span>hello@example.com</span>
+					<span sec:authentication="principal.email">hello@example.com</span>
 					<div class="mdl-layout-spacer"></div>
 					<button id="accbtn"
 						class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon">

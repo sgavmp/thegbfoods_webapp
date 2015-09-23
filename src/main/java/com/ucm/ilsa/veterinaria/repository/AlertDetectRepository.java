@@ -17,4 +17,5 @@ public interface AlertDetectRepository extends CrudRepository<AlertDetect, Long>
 	public List<AlertDetect> readAllByCheckIsFalseOrderByCreateDateDesc();
 	public AlertDetect findByCheckIsFalseAndAlertOrderByCreateDateDesc(Alert alert);
 	public List<AlertDetect> readAllByCheckIsFalseAndNewsDetectDatePubGreaterThanEqualOrderByCreateDateDesc(Date date);
+	public List<AlertDetect> readAllDistinctByNewsDetectSiteAndCheckIsFalse(Feed Site);
 }
