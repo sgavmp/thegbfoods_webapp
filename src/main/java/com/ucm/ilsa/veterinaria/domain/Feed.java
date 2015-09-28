@@ -75,6 +75,8 @@ public class Feed extends BaseEntity {
 	private boolean selectorPubDateMeta;
 	@Enumerated(EnumType.STRING)
 	private CharsetEnum charSet = CharsetEnum.UTF8;
+	@Enumerated(EnumType.ORDINAL)
+	private UpdateStateEnum state = UpdateStateEnum.WAIT;
 
 	// Solo sitios sin RSS
 	@ElementCollection(fetch = FetchType.EAGER)
@@ -357,6 +359,14 @@ public class Feed extends BaseEntity {
 		URL newsLink = new URL(this.urlNews);
 		URL linkURL = new URL(link);
 		return lasNews.getHost().equals(linkURL.getHost()) || site.getHost().equals(linkURL.getHost()) || newsLink.getHost().equals(linkURL.getHost());
+	}
+
+	public UpdateStateEnum getState() {
+		return state;
+	}
+
+	public void setState(UpdateStateEnum state) {
+		this.state = state;
 	}
 	
 }

@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.ucm.ilsa.veterinaria.domain.Feed;
 import com.ucm.ilsa.veterinaria.domain.News;
+import com.ucm.ilsa.veterinaria.domain.UpdateStateEnum;
 import com.ucm.ilsa.veterinaria.service.FeedService;
 import com.ucm.ilsa.veterinaria.service.NewsCheckService;
 
@@ -36,12 +37,13 @@ public class TaskContainer implements Runnable {
 		// borrado
 		feedComp = service.getFeedByCodeName(feed.getCode());
 		if (feedComp != null) {
-			feed = feedComp;
+			feed = service.setSateOfFeed(feedComp, UpdateStateEnum.GET_NEWS);
 			List<News> listNews = service.scrapFeed(feed);
 			if (listNews != null) {
 				newsCheckService.checkNews(listNews, feed);
 			}
-			LOGGER.info("Finalizada tarea planificada para el sitio: " + feed.getCode());
+			LOGGER.info("Finalizada tarea planificada para el sitio: " + feed.getName());
+			feed = service.setSateOfFeed(feed, UpdateStateEnum.WAIT);
 		} else {
 			schedulerService.removeFeedTask(feed);
 			LOGGER.info("El sitio " + feed.getName() + " ha sido borrado mientras se obtenian nuevos datos.");

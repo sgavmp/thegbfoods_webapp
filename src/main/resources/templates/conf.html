@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="es" xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
+<head th:include="base :: head">
+</head>
+<body>
+	<div
+		class="demo-layout mdl-layout mdl-js-layout mdl-layout--fixed-drawer mdl-layout--fixed-header">
+		<header
+			class="demo-header mdl-layout__header mdl-color--white mdl-color--grey-100 mdl-color-text--grey-600"
+			th:replace="base :: menu-superior"> </header>
+		<div
+			class="demo-drawer mdl-layout__drawer mdl-color--primary mdl-color-text--blue-grey-50"
+			th:include="base :: menu-izquierdo"></div>
+		<main
+			class="mdl-layout__content mdl-color--grey-100 mdl-typography--text-center">
+		<div class="doc-page mdl-grid">
+			<div class="mdl-cell mdl-cell--2-col"></div>
+			<div
+				class="mdl-cell mdl-cell--8-col mdl-color--white mdl-shadow--2dp">
+				<div
+					class="mdl-cell mdl-cell--12-col mdl-cell--12-col-desktop mdl-typography--display-1-color-contrast"
+					th:inline="text">Modificar Configuración</div>
+				<form action="#"
+					th:action="@{/admin/configuracion}"
+					val:validate="${conf}" th:object="${conf}" method="post">
+
+					<input type="hidden" th:name="${_csrf.parameterName}"
+						th:value="${_csrf.token}" /> <input type="hidden"
+						th:field="*{id}" />
+					<div class="mdl-cell mdl-cell--3-col">
+						<label class="mdl-cell mdl-cell--10-col mdl-cell--10-col-desktop mdl-textfield mdl-switch mdl-js-switch mdl-js-ripple-effect"
+							for="rss"> <input type="checkbox"
+							class="mdl-switch__input" id="usarPalabrasAlerta" name="isusarPalabrasAlerta"
+							th:checked="*{isusarPalabrasAlerta}" th:field="*{isusarPalabrasAlerta}" /> <span
+							class="mdl-switch__label">&iquest;Es un sitio con RSS?</span>
+						</label>
+					</div>
+					<div
+						class="mdl-cell mdl-cell--10-col mdl-cell--10-col-desktop mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+						<label class="mdl-textfield__label" for="palabrasAlerta">Introduce
+							las palabras de filtro para las alertas separadas por coma.</label>
+						<textarea class="mdl-textfield__input" rows="6" type="text"
+							th:field="*{palabrasAlerta}"></textarea>
+					</div>
+					<div
+						class="mdl-cell mdl-cell--10-col mdl-cell--10-col-desktop mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+						<label class="mdl-textfield__label" for="paabrasLugar">Introduce
+							las palabras predecesoras de lugares separadas por coma. Ademas se tienen en cuenta 
+							el comienzo de parrafos y lineas. (Aun no implementado)</label>
+						<textarea class="mdl-textfield__input" rows="6" type="text"
+							th:field="*{paabrasLugar}"></textarea>
+					</div>
+					<div class="mdl-grid">
+						<div class="mdl-cell mdl-cell--1-col"></div>
+						<div class="mdl-cell mdl-cell--10-col">
+							<button class="mdl-button mdl-js-button mdl-color--primary"
+								type="submit">Guardar</button>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+		</main>
+		<footer th:include="base :: footer"> </footer>
+	</div>
+</body>
+</html>

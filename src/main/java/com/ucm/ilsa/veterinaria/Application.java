@@ -24,8 +24,10 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 
 import com.ucm.ilsa.veterinaria.domain.Alert;
 import com.ucm.ilsa.veterinaria.domain.AlertDetect;
+import com.ucm.ilsa.veterinaria.domain.Configuracion;
 import com.ucm.ilsa.veterinaria.domain.NewsDetect;
 import com.ucm.ilsa.veterinaria.repository.AlertDetectRepository;
+import com.ucm.ilsa.veterinaria.repository.ConfiguracionRepository;
 import com.ucm.ilsa.veterinaria.repository.NewsDetectRepository;
 import com.ucm.ilsa.veterinaria.service.impl.FeedScrapingImpl;
 
@@ -40,6 +42,9 @@ public class Application extends SpringBootServletInitializer implements AsyncCo
 	@Autowired
 	Environment env;
 	
+	@Autowired
+	ConfiguracionRepository configuracionRepository;
+	
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args);
     }
@@ -47,6 +52,10 @@ public class Application extends SpringBootServletInitializer implements AsyncCo
     @Override
     public void run(String... args) throws Exception {
     	LOGGER.info("Deploy on " + env.getProperty("name"));
+    	if (!configuracionRepository.exists("conf")) {
+    		LOGGER.info("No existe una configuración inicial, se inciará una en la base de datos.");
+    		configuracionRepository.save(new Configuracion());
+    	}
     }
 	
     @Bean

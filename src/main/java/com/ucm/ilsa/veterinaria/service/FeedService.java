@@ -7,6 +7,7 @@ import com.ucm.ilsa.veterinaria.domain.Feed;
 import com.ucm.ilsa.veterinaria.domain.FeedForm;
 import com.ucm.ilsa.veterinaria.domain.News;
 import com.ucm.ilsa.veterinaria.domain.NewsDetect;
+import com.ucm.ilsa.veterinaria.domain.UpdateStateEnum;
 import com.ucm.ilsa.veterinaria.scheduler.SchedulerService;
 
 public interface FeedService {
@@ -20,5 +21,6 @@ public interface FeedService {
 	public News testFeed(FeedForm feed);
 	public List<NewsDetect> findAllDistinctNewsDetectByFeedOrderByDatePub(Feed feed);
 	public List<AlertDetect> checkNewsLinkOnFeed(String link, Feed feed);
+	public Feed setSateOfFeed(Feed feed, UpdateStateEnum state);
 
 }

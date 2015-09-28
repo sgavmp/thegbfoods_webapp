@@ -34,6 +34,7 @@ import com.ucm.ilsa.veterinaria.domain.FeedForm;
 import com.ucm.ilsa.veterinaria.domain.News;
 import com.ucm.ilsa.veterinaria.domain.NewsDetect;
 import com.ucm.ilsa.veterinaria.domain.PairValues;
+import com.ucm.ilsa.veterinaria.domain.UpdateStateEnum;
 import com.ucm.ilsa.veterinaria.domain.builder.NewsBuilder;
 import com.ucm.ilsa.veterinaria.repository.FeedRepository;
 import com.ucm.ilsa.veterinaria.repository.NewsDetectRepository;
@@ -113,6 +114,13 @@ public class FeedServiceImpl implements FeedService {
 		News news = scrapingFeed.getNewsFromSite(link, feed);
 		List<AlertDetect> alertasDetectadas = newsCheckService.checkNews(news, feed);
 		return alertasDetectadas;
+	}
+	
+	public Feed setSateOfFeed(Feed feed, UpdateStateEnum state) {
+		feed = repositoryFeed.findOne(feed.getCode());
+		feed.setState(state);
+		Feed feedU = repositoryFeed.save(feed);
+		return feedU;
 	}
 
 }
