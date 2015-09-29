@@ -36,13 +36,13 @@ public class Configuracion {
 	public void setId(String id) {
 		this.id = id;
 	}
-	public boolean isUsarPalabrasAlerta() {
+	public boolean getUsarPalabrasAlerta() {
 		return usarPalabrasAlerta;
 	}
 	public void setUsarPalabrasAlerta(boolean usarPalabrasAlerta) {
 		this.usarPalabrasAlerta = usarPalabrasAlerta;
 	}
-	public boolean isUsarPalabrasLugar() {
+	public boolean getUsarPalabrasLugar() {
 		return usarPalabrasLugar;
 	}
 	public void setUsarPalabrasLugar(boolean usarPalabrasLugar) {

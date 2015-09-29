@@ -57,7 +57,6 @@ public class NewsCheckServiceImpl implements NewsCheckService {
 	@Autowired
 	private StatisticsRepository statisticsRepository;
 
-	@Autowired
 	private ConfiguracionRepository configuracionRepository;
 
 	@Autowired
@@ -67,7 +66,9 @@ public class NewsCheckServiceImpl implements NewsCheckService {
 
 	private final static Logger LOGGER = Logger.getLogger(NewsCheckServiceImpl.class);
 
-	public NewsCheckServiceImpl() throws ClavinException {
+	@Autowired
+	public NewsCheckServiceImpl(ConfiguracionRepository configuracionRepository) throws ClavinException {
+		this.configuracionRepository = configuracionRepository;
 		Configuracion configuracion = configuracionRepository.findOne("conf");
 		ClassLoader classLoader = getClass().getClassLoader();
 		String path = classLoader.getResource("IndexDirectory").getFile();
@@ -87,7 +88,7 @@ public class NewsCheckServiceImpl implements NewsCheckService {
 		feed = service.setSateOfFeed(feed, UpdateStateEnum.DETECT_ALERTS);
 		Configuracion configuracion = configuracionRepository.findOne("conf");
 		Map<News, List<String>> mapNewsDetectPreliminar = new HashedMap();
-		if (configuracion.getPalabrasAlerta().length() > 0 && configuracion.isUsarPalabrasAlerta()) {// Solo se filtra
+		if (configuracion.getPalabrasAlerta().length() > 0 && configuracion.getUsarPalabrasAlerta()) {// Solo se filtra
 																// por los
 																// terminos de
 																// alerta
@@ -182,7 +183,7 @@ public class NewsCheckServiceImpl implements NewsCheckService {
 					if (alerta.getType() != AlertLevel.blue) {
 						List<ResolvedLocation> locationsAp = null;
 						try {
-							locationsAp = parser.parse(news.getContent(),configuracion.isUsarPalabrasLugar());
+							locationsAp = parser.parse(news.getContent(),configuracion.getUsarPalabrasLugar());
 						} catch (Exception e) {
 							LOGGER.info("Se ha producido un error al obtener las localizaciones de la noticia");
 							LOGGER.debug(e.getMessage());
@@ -273,7 +274,7 @@ public class NewsCheckServiceImpl implements NewsCheckService {
 				if (alerta.getType() != AlertLevel.blue) {
 					List<ResolvedLocation> locationsAp = null;
 					try {
-						locationsAp = parser.parse(news.getContent(),configuracion.isUsarPalabrasLugar());
+						locationsAp = parser.parse(news.getContent(),configuracion.getUsarPalabrasLugar());
 					} catch (Exception e) {
 						LOGGER.info("Se ha producido un error al obtener las localizaciones de la noticia");
 						LOGGER.debug(e.getMessage());
@@ -364,7 +365,7 @@ public class NewsCheckServiceImpl implements NewsCheckService {
 		Configuracion configuracion = configuracionRepository.findOne("conf");
 		for (News news : listNews) {
 			try {
-				List<ResolvedLocation> locations = parser.parse(news.getContent(),configuracion.isUsarPalabrasLugar());
+				List<ResolvedLocation> locations = parser.parse(news.getContent(),configuracion.getUsarPalabrasLugar());
 				if (locations.size() > 0)
 					map.put(news, locations);
 			} catch (Exception ex) {
