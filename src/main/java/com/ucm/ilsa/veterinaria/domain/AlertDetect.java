@@ -37,7 +37,7 @@ public class AlertDetect extends BaseEntity {
 	private Long id;
 	@ManyToOne
 	@JoinColumn(name = "alertId")
-	private Alert alert;
+	private AlertAbstract alert;
 	@OneToMany(mappedBy="alertDetect",fetch = FetchType.EAGER)
 	private List<NewsDetect> newsDetect;
 	@Enumerated(EnumType.ORDINAL)
@@ -73,11 +73,11 @@ public class AlertDetect extends BaseEntity {
 		this.id = id;
 	}
 
-	public Alert getAlert() {
+	public AlertAbstract getAlert() {
 		return alert;
 	}
 
-	public void setAlert(Alert alert) {
+	public void setAlert(AlertAbstract alert) {
 		this.alert = alert;
 	}
 

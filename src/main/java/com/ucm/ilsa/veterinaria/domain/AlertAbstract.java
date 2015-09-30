@@ -1,5 +1,6 @@
 package com.ucm.ilsa.veterinaria.domain;
 
+import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
@@ -12,7 +13,7 @@ import javax.validation.constraints.NotNull;
 
 import org.hibernate.annotations.GenericGenerator;
 
-@MappedSuperclass
+@Entity
 @Inheritance(strategy=InheritanceType.TABLE_PER_CLASS)
 public abstract class AlertAbstract extends BaseEntity {
 

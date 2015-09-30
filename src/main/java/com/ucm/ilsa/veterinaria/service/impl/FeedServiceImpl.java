@@ -41,7 +41,7 @@ import com.ucm.ilsa.veterinaria.repository.NewsDetectRepository;
 import com.ucm.ilsa.veterinaria.scheduler.SchedulerService;
 import com.ucm.ilsa.veterinaria.service.FeedScraping;
 import com.ucm.ilsa.veterinaria.service.FeedService;
-import com.ucm.ilsa.veterinaria.service.NewsCheckService;
+import com.ucm.ilsa.veterinaria.service.NewsCheckFeedService;
 
 @Service
 public class FeedServiceImpl implements FeedService {
@@ -51,7 +51,7 @@ public class FeedServiceImpl implements FeedService {
 	@Autowired
 	private FeedScraping scrapingFeed;
 	@Autowired
-	private NewsCheckService newsCheckService;
+	private NewsCheckFeedService newsCheckService;
 	@Autowired
 	private NewsDetectRepository newsDetectRepository;
 	

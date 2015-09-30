@@ -6,23 +6,26 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.ucm.ilsa.veterinaria.domain.Feed;
+import com.ucm.ilsa.veterinaria.domain.FeedRisk;
 import com.ucm.ilsa.veterinaria.domain.News;
 import com.ucm.ilsa.veterinaria.domain.UpdateStateEnum;
+import com.ucm.ilsa.veterinaria.service.FeedRiskService;
 import com.ucm.ilsa.veterinaria.service.FeedService;
-import com.ucm.ilsa.veterinaria.service.NewsCheckService;
+import com.ucm.ilsa.veterinaria.service.NewsCheckFeedRiskService;
+import com.ucm.ilsa.veterinaria.service.NewsCheckFeedService;
 
-public class TaskContainer implements Runnable {
+public class RiskTaskContainer implements Runnable {
 
-	private final static Logger LOGGER = Logger.getLogger(TaskContainer.class);
+	private final static Logger LOGGER = Logger.getLogger(RiskTaskContainer.class);
 
-	private FeedService service;
-	private Feed feed;
+	private FeedRiskService service;
+	private FeedRisk feed;
 	@Autowired
 	private SchedulerService schedulerService;
 	@Autowired
-	private NewsCheckService newsCheckService;
+	private NewsCheckFeedRiskService newsCheckService;
 
-	public TaskContainer(Feed feed, FeedService service, SchedulerService schedulerService, NewsCheckService newsCheckService) {
+	public RiskTaskContainer(FeedRisk feed, FeedRiskService service, SchedulerService schedulerService, NewsCheckFeedRiskService newsCheckService) {
 		this.feed = feed;
 		this.service = service;
 		this.schedulerService = schedulerService;
@@ -32,7 +35,7 @@ public class TaskContainer implements Runnable {
 	@Override
 	public void run() {
 		LOGGER.info("Inicia tarea planificada para el sitio: " + feed.getName());
-		Feed feedComp = null;
+		FeedRisk feedComp = null;
 		// Obtenemos el sitio de la base de datos por si se hubiese modificado o
 		// borrado
 		feedComp = service.getFeedByCodeName(feed.getCode());
@@ -55,7 +58,7 @@ public class TaskContainer implements Runnable {
 		this.schedulerService = schedulerService;
 	}
 
-	public void setNewsCheckService(NewsCheckService newsCheckService) {
+	public void setNewsCheckService(NewsCheckFeedRiskService newsCheckService) {
 		this.newsCheckService = newsCheckService;
 	}
 

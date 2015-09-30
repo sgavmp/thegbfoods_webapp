@@ -10,6 +10,7 @@ import javax.persistence.CollectionTable;
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
@@ -24,7 +25,7 @@ import javax.persistence.OrderColumn;
 
 import org.hibernate.annotations.GenericGenerator;
 
-@MappedSuperclass
+@Entity
 @Inheritance(strategy=InheritanceType.TABLE_PER_CLASS)
 public abstract class SiteAbstract extends BaseEntity {
 

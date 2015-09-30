@@ -7,8 +7,9 @@ import com.bericotech.clavin.resolver.ResolvedLocation;
 import com.ucm.ilsa.veterinaria.domain.AlertDetect;
 import com.ucm.ilsa.veterinaria.domain.Feed;
 import com.ucm.ilsa.veterinaria.domain.News;
+import com.ucm.ilsa.veterinaria.domain.SiteAbstract;
 
-public interface NewsCheckService {
+public interface NewsCheckFeedService {
 	public void checkNews(List<News> listNews, Feed feed);
 	public Map<News, List<ResolvedLocation>> getLocations(List<News> listNews);
 	public List<AlertDetect> checkNews(News news, Feed feed);

@@ -35,7 +35,7 @@ public class NewsDetect extends BaseEntity {
 	private Long id;
 	@ManyToOne
 	@JoinColumn(name="siteCodeName")
-	private Feed site;
+	private SiteAbstract site;
 	@Lob
 	private String title;
 	@Lob
@@ -73,10 +73,10 @@ public class NewsDetect extends BaseEntity {
 	public void setLocationsNear(List<Location> locationsNear) {
 		this.locationsNear = locationsNear;
 	}
-	public Feed getSite() {
+	public SiteAbstract getSite() {
 		return site;
 	}
-	public void setSite(Feed site) {
+	public void setSite(SiteAbstract site) {
 		this.site = site;
 	}
 	public String getTitle() {

@@ -30,7 +30,7 @@ import com.ucm.ilsa.veterinaria.domain.WebLevel;
 import com.ucm.ilsa.veterinaria.scheduler.SchedulerService;
 import com.ucm.ilsa.veterinaria.domain.Location;
 import com.ucm.ilsa.veterinaria.service.FeedService;
-import com.ucm.ilsa.veterinaria.service.NewsCheckService;
+import com.ucm.ilsa.veterinaria.service.NewsCheckFeedService;
 import com.ucm.ilsa.veterinaria.service.impl.PlaceAlertServiceImpl;
 import com.ucm.ilsa.veterinaria.web.controller.BaseController;
 
