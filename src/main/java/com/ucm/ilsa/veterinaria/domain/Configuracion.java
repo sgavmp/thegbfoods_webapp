@@ -9,11 +9,12 @@ public class Configuracion {
 	@Id
 	private String id = "conf";
 	@Lob
-	private String palabrasAlerta;
+	private String palabrasAlerta = "";
 	@Lob
-	private String paabrasLugar;
+	private String paabrasLugar = "(^|\\s|\\,|\\.|\\-)(\\s*)(at|in|on|of|from|and|the|en|de)*(\\s)(?-i)([A-Z]\\w+)";
 	private boolean usarPalabrasAlerta = false;
 	private boolean usarPalabrasLugar = false;
+	private Double radiusNear = (double) 10;
 	
 	public Configuracion() {
 		super();
@@ -47,6 +48,12 @@ public class Configuracion {
 	}
 	public void setUsarPalabrasLugar(boolean usarPalabrasLugar) {
 		this.usarPalabrasLugar = usarPalabrasLugar;
+	}
+	public Double getRadiusNear() {
+		return radiusNear;
+	}
+	public void setRadiusNear(Double radiusNear) {
+		this.radiusNear = radiusNear;
 	}
 	
 }

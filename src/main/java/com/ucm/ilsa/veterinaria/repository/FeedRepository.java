@@ -6,6 +6,6 @@ import org.springframework.stereotype.Repository;
 import com.ucm.ilsa.veterinaria.domain.Feed;
 
 @Repository
-public interface FeedRepository extends CrudRepository<Feed, String> {
+public interface FeedRepository extends CrudRepository<Feed, Long> {
 
 }

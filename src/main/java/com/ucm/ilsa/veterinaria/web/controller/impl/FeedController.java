@@ -19,13 +19,13 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.google.common.collect.Lists;
-import com.ucm.ilsa.veterinaria.domain.AlertDetect;
+import com.ucm.ilsa.veterinaria.domain.Alert;
 import com.ucm.ilsa.veterinaria.domain.Feed;
 import com.ucm.ilsa.veterinaria.domain.FeedForm;
 import com.ucm.ilsa.veterinaria.domain.News;
 import com.ucm.ilsa.veterinaria.domain.NewsDetect;
 import com.ucm.ilsa.veterinaria.service.FeedService;
-import com.ucm.ilsa.veterinaria.service.impl.AlertDetectServiceImpl;
+import com.ucm.ilsa.veterinaria.service.impl.AlertServiceImpl;
 import com.ucm.ilsa.veterinaria.web.controller.BaseController;
 
 @Controller
@@ -39,7 +39,7 @@ public class FeedController extends BaseController {
 	@Autowired
 	private FeedService serviceFeed;
 	@Autowired
-	private AlertDetectServiceImpl serviceAlert;
+	private AlertServiceImpl serviceAlert;
 	
 	
 	@ModelAttribute("feeds")
@@ -55,8 +55,8 @@ public class FeedController extends BaseController {
 	@RequestMapping("/get/{codeName}")
 	public String getAllNewsByFeed(Model model, @PathVariable ("codeName") Feed feed) {
 		model.addAttribute(feed);
-		List<AlertDetect> alertas = serviceAlert.getAlertDetectSite(feed);
-		for (AlertDetect alerta : alertas) {
+		List<Alert> alertas = serviceAlert.getAlertDetectSite(feed);
+		for (Alert alerta : alertas) {
 			Iterator<NewsDetect> iterator = alerta.getNewsDetect().iterator();
 			while(iterator.hasNext()) {
 				NewsDetect news = iterator.next();

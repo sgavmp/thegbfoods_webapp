@@ -41,7 +41,7 @@ public class FeedForm {
 		this.urlPages = new ArrayList<String>();
 	}
 	
-	public FeedForm(Feed feed) {
+	public FeedForm(SiteAbstract feed) {
 		this.name=feed.getName();
 		this.dateFormat=feed.getDateFormat();
 		this.languaje=feed.getLanguaje();

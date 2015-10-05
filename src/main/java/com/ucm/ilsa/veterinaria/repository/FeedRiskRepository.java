@@ -7,6 +7,6 @@ import com.ucm.ilsa.veterinaria.domain.Feed;
 import com.ucm.ilsa.veterinaria.domain.FeedRisk;
 
 @Repository
-public interface FeedRiskRepository extends CrudRepository<FeedRisk, String> {
+public interface FeedRiskRepository extends CrudRepository<FeedRisk, Long> {
 
 }

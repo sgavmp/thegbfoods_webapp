@@ -15,6 +15,7 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
@@ -29,10 +30,8 @@ import org.hibernate.annotations.GenericGenerator;
 @Inheritance(strategy=InheritanceType.TABLE_PER_CLASS)
 public abstract class SiteAbstract extends BaseEntity {
 
-	@Id
-	@GeneratedValue(generator = "system-uuid")
-	@GenericGenerator(name = "system-uuid", strategy = "uuid")
-	private String code;
+	@Id @GeneratedValue(strategy=GenerationType.TABLE)
+	private Long id;
 	private String name;
 	@Lob
 	private String urlSite;
@@ -124,13 +123,22 @@ public abstract class SiteAbstract extends BaseEntity {
 		this.actived = feed.isActived();
 		this.charSet = feed.getCharSet();
 	}
+	
 
-	public String getCode() {
-		return code;
+	public Long getId() {
+		return id;
 	}
 
-	public void setCode(String code) {
-		this.code = code;
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public Long getCode() {
+		return id;
+	}
+
+	public void setCode(Long code) {
+		this.id = code;
 	}
 
 	public WebLevel getType() {

@@ -1,7 +1,5 @@
 package com.ucm.ilsa.veterinaria;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.Executor;
 
 import org.apache.log4j.Logger;
@@ -22,14 +20,8 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 
-import com.ucm.ilsa.veterinaria.domain.Alert;
-import com.ucm.ilsa.veterinaria.domain.AlertDetect;
 import com.ucm.ilsa.veterinaria.domain.Configuracion;
-import com.ucm.ilsa.veterinaria.domain.NewsDetect;
-import com.ucm.ilsa.veterinaria.repository.AlertDetectRepository;
 import com.ucm.ilsa.veterinaria.repository.ConfiguracionRepository;
-import com.ucm.ilsa.veterinaria.repository.NewsDetectRepository;
-import com.ucm.ilsa.veterinaria.service.impl.FeedScrapingImpl;
 
 @SpringBootApplication
 @ComponentScan("com.ucm.ilsa.veterinaria")

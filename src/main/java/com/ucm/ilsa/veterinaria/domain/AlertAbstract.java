@@ -1,33 +1,37 @@
 package com.ucm.ilsa.veterinaria.domain;
 
+import java.util.List;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.Lob;
 import javax.persistence.MappedSuperclass;
+import javax.persistence.OneToMany;
 import javax.validation.constraints.NotNull;
 
 import org.hibernate.annotations.GenericGenerator;
 
 @Entity
-@Inheritance(strategy=InheritanceType.TABLE_PER_CLASS)
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public abstract class AlertAbstract extends BaseEntity {
 
-	@Id
-	@GeneratedValue(generator = "system-uuid")
-	@GenericGenerator(name = "system-uuid", strategy = "uuid")
-	private String id;
+	@Id @GeneratedValue(strategy=GenerationType.TABLE)
+	private Long id;
 	@NotNull
 	private String title;
 	@NotNull
 	@Lob
 	private String words;
-	@Enumerated(EnumType.ORDINAL)
-	private AlertLevel type;
+	@OneToMany(mappedBy = "alertDetect", fetch = FetchType.EAGER, cascade=CascadeType.ALL)
+	protected List<NewsDetect> newsDetect;
 
 	public AlertAbstract() {
 		this.words = "";
@@ -36,12 +40,13 @@ public abstract class AlertAbstract extends BaseEntity {
 	public AlertAbstract(String word) {
 		this.words = word;
 	}
+	
 
-	public String getId() {
+	public Long getId() {
 		return id;
 	}
 
-	public void setId(String id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 
@@ -61,12 +66,12 @@ public abstract class AlertAbstract extends BaseEntity {
 		this.title = title;
 	}
 
-	public AlertLevel getType() {
-		return type;
+	public List<NewsDetect> getNewsDetect() {
+		return newsDetect;
 	}
 
-	public void setType(AlertLevel type) {
-		this.type = type;
+	public void setNewsDetect(List<NewsDetect> newsDetect) {
+		this.newsDetect = newsDetect;
 	}
 	
 }

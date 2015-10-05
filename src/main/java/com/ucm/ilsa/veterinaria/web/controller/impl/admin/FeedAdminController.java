@@ -1,7 +1,6 @@
 package com.ucm.ilsa.veterinaria.web.controller.impl.admin;
 
 import java.net.MalformedURLException;
-import java.util.Date;
 import java.util.List;
 
 import javax.validation.Valid;
@@ -18,20 +17,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.google.common.collect.Lists;
-import com.rometools.rome.io.impl.FeedParsers;
-import com.ucm.ilsa.veterinaria.domain.AlertDetect;
+import com.ucm.ilsa.veterinaria.domain.Alert;
 import com.ucm.ilsa.veterinaria.domain.Feed;
 import com.ucm.ilsa.veterinaria.domain.FeedForm;
 import com.ucm.ilsa.veterinaria.domain.Language;
 import com.ucm.ilsa.veterinaria.domain.News;
-import com.ucm.ilsa.veterinaria.domain.PairValues;
 import com.ucm.ilsa.veterinaria.domain.WebLevel;
 import com.ucm.ilsa.veterinaria.scheduler.SchedulerService;
-import com.ucm.ilsa.veterinaria.domain.Location;
 import com.ucm.ilsa.veterinaria.service.FeedService;
-import com.ucm.ilsa.veterinaria.service.NewsCheckFeedService;
-import com.ucm.ilsa.veterinaria.service.impl.PlaceAlertServiceImpl;
 import com.ucm.ilsa.veterinaria.web.controller.BaseController;
 
 @Controller
@@ -180,7 +173,7 @@ public class FeedAdminController extends BaseController {
 				if (!feed.linkIsFromSite(link)) {
 					redirectAttributes.addFlashAttribute("error", "La noticia introducida no pertenece a este sitio.");
 				} else {
-				List<AlertDetect> alertas = serviceFeed.checkNewsLinkOnFeed(link, feed);
+				List<Alert> alertas = serviceFeed.checkNewsLinkOnFeed(link, feed);
 				model.addAttribute(feed);
 				model.addAttribute("alertasDetectadas", alertas);
 				return "oneFeed";

@@ -16,14 +16,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.google.common.collect.Lists;
 import com.neovisionaries.i18n.CountryCode;
-import com.ucm.ilsa.veterinaria.domain.AlertDetect;
 import com.ucm.ilsa.veterinaria.domain.Location;
 import com.ucm.ilsa.veterinaria.domain.News;
 import com.ucm.ilsa.veterinaria.domain.NewsDetect;
 import com.ucm.ilsa.veterinaria.domain.Risk;
 import com.ucm.ilsa.veterinaria.domain.Statistics;
 import com.ucm.ilsa.veterinaria.repository.StatisticsRepository;
-import com.ucm.ilsa.veterinaria.service.impl.AlertDetectServiceImpl;
+import com.ucm.ilsa.veterinaria.service.impl.AlertServiceImpl;
+import com.ucm.ilsa.veterinaria.service.impl.RiskServiceImpl;
 import com.ucm.ilsa.veterinaria.web.controller.BaseController;
 
 @Controller
@@ -31,7 +31,7 @@ import com.ucm.ilsa.veterinaria.web.controller.BaseController;
 public class RiskController extends BaseController {
 	
 	@Autowired
-	private AlertDetectServiceImpl service;
+	private RiskServiceImpl service;
 	
 	
 	public RiskController() {
@@ -39,8 +39,8 @@ public class RiskController extends BaseController {
 	}
 	
 	@ModelAttribute("risks")
-	public List<AlertDetect> getAllAlertsChecked() {
-		return service.getAllAlertChecked();
+	public List<Risk> getAllRisk() {
+		return service.getAllAlertActive();
 	}
 	
 	@RequestMapping("/get/{idAlert}")
@@ -50,7 +50,7 @@ public class RiskController extends BaseController {
 	}
 
 	@RequestMapping("**")
-	public String getAllAlerts() {
+	public String getMainRisks() {
 		return "alerts";
 	}
 	

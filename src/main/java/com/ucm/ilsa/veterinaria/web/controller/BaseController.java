@@ -15,7 +15,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
 
 import com.google.common.collect.Lists;
-import com.ucm.ilsa.veterinaria.domain.AlertDetect;
 import com.ucm.ilsa.veterinaria.domain.Statistics;
 import com.ucm.ilsa.veterinaria.domain.UserDetailsImpl;
 import com.ucm.ilsa.veterinaria.repository.StatisticsRepository;

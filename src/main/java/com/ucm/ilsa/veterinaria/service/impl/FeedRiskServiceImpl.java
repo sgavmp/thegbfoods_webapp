@@ -28,13 +28,13 @@ import com.rometools.rome.feed.synd.SyndFeed;
 import com.rometools.rome.io.FeedException;
 import com.rometools.rome.io.SyndFeedInput;
 import com.rometools.rome.io.XmlReader;
-import com.ucm.ilsa.veterinaria.domain.AlertDetect;
+import com.ucm.ilsa.veterinaria.domain.AlertAbstract;
 import com.ucm.ilsa.veterinaria.domain.Feed;
 import com.ucm.ilsa.veterinaria.domain.FeedForm;
 import com.ucm.ilsa.veterinaria.domain.FeedRisk;
 import com.ucm.ilsa.veterinaria.domain.News;
 import com.ucm.ilsa.veterinaria.domain.NewsDetect;
-import com.ucm.ilsa.veterinaria.domain.PairValues;
+import com.ucm.ilsa.veterinaria.domain.Risk;
 import com.ucm.ilsa.veterinaria.domain.UpdateStateEnum;
 import com.ucm.ilsa.veterinaria.domain.builder.NewsBuilder;
 import com.ucm.ilsa.veterinaria.repository.FeedRiskRepository;
@@ -44,6 +44,7 @@ import com.ucm.ilsa.veterinaria.scheduler.SchedulerService;
 import com.ucm.ilsa.veterinaria.service.FeedRiskService;
 import com.ucm.ilsa.veterinaria.service.FeedScraping;
 import com.ucm.ilsa.veterinaria.service.FeedService;
+import com.ucm.ilsa.veterinaria.service.NewsCheckFeedRiskService;
 import com.ucm.ilsa.veterinaria.service.NewsCheckFeedService;
 
 @Service
@@ -54,7 +55,7 @@ public class FeedRiskServiceImpl implements FeedRiskService {
 	@Autowired
 	private FeedScraping scrapingFeed;
 	@Autowired
-	private NewsCheckFeedService newsCheckService;
+	private NewsCheckFeedRiskService newsCheckService;
 	@Autowired
 	private NewsDetectRepository newsDetectRepository;
 	
@@ -62,8 +63,7 @@ public class FeedRiskServiceImpl implements FeedRiskService {
 
 	@Override
 	public List<News> scrapFeed(FeedRisk feed) {
-		//TODO
-		return null;
+		return scrapingFeed.scrapNews(feed);
 	}
 	
 	public News testFeed(FeedForm feed) {
@@ -77,7 +77,7 @@ public class FeedRiskServiceImpl implements FeedRiskService {
 	}
 
 	@Override
-	public FeedRisk getFeedByCodeName(String codeName) {
+	public FeedRisk getFeedByCodeName(Long codeName) {
 		return repositoryFeed.findOne(codeName);
 	}
 
@@ -111,17 +111,13 @@ public class FeedRiskServiceImpl implements FeedRiskService {
 	}
 	
 	public List<NewsDetect> findAllDistinctNewsDetectByFeedOrderByDatePub(FeedRisk feed) {
-		//TODO
-//		return newsDetectRepository.findAllDistinctBySiteOrderByDatePubDesc(feed);
-		return null;
+		return newsDetectRepository.findAllDistinctBySiteOrderByDatePubDesc(feed);
 	}
 	
-	public List<AlertDetect> checkNewsLinkOnFeed(String link, FeedRisk feed) {
-		//TODO
-//		News news = scrapingFeed.getNewsFromSite(link, feed);
-//		List<AlertDetect> alertasDetectadas = newsCheckService.checkNews(news, feed);
-//		return alertasDetectadas;
-		return null;
+	public List<Risk> checkNewsLinkOnFeed(String link, FeedRisk feed) {
+		News news = scrapingFeed.getNewsFromSite(link, feed);
+		List<Risk> alertasDetectadas = newsCheckService.checkNews(news, feed);
+		return alertasDetectadas;
 	}
 	
 	public FeedRisk setSateOfFeed(FeedRisk feed, UpdateStateEnum state) {

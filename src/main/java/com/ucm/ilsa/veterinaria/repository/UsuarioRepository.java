@@ -4,7 +4,6 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
 import com.ucm.ilsa.veterinaria.domain.Alert;
-import com.ucm.ilsa.veterinaria.domain.AlertDetect;
 import com.ucm.ilsa.veterinaria.domain.Usuario;
 
 @Repository

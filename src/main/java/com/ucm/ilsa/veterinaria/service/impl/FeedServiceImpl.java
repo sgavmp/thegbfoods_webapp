@@ -28,12 +28,11 @@ import com.rometools.rome.feed.synd.SyndFeed;
 import com.rometools.rome.io.FeedException;
 import com.rometools.rome.io.SyndFeedInput;
 import com.rometools.rome.io.XmlReader;
-import com.ucm.ilsa.veterinaria.domain.AlertDetect;
+import com.ucm.ilsa.veterinaria.domain.Alert;
 import com.ucm.ilsa.veterinaria.domain.Feed;
 import com.ucm.ilsa.veterinaria.domain.FeedForm;
 import com.ucm.ilsa.veterinaria.domain.News;
 import com.ucm.ilsa.veterinaria.domain.NewsDetect;
-import com.ucm.ilsa.veterinaria.domain.PairValues;
 import com.ucm.ilsa.veterinaria.domain.UpdateStateEnum;
 import com.ucm.ilsa.veterinaria.domain.builder.NewsBuilder;
 import com.ucm.ilsa.veterinaria.repository.FeedRepository;
@@ -73,7 +72,7 @@ public class FeedServiceImpl implements FeedService {
 	}
 
 	@Override
-	public Feed getFeedByCodeName(String codeName) {
+	public Feed getFeedByCodeName(Long codeName) {
 		return repositoryFeed.findOne(codeName);
 	}
 
@@ -110,9 +109,9 @@ public class FeedServiceImpl implements FeedService {
 		return newsDetectRepository.findAllDistinctBySiteOrderByDatePubDesc(feed);
 	}
 	
-	public List<AlertDetect> checkNewsLinkOnFeed(String link, Feed feed) {
+	public List<Alert> checkNewsLinkOnFeed(String link, Feed feed) {
 		News news = scrapingFeed.getNewsFromSite(link, feed);
-		List<AlertDetect> alertasDetectadas = newsCheckService.checkNews(news, feed);
+		List<Alert> alertasDetectadas = newsCheckService.checkNews(news, feed);
 		return alertasDetectadas;
 	}
 	

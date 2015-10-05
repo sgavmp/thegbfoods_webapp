@@ -2,6 +2,7 @@ package com.ucm.ilsa.veterinaria.domain;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 import com.bericotech.clavin.gazetteer.CountryCode;
@@ -10,25 +11,29 @@ import com.bericotech.clavin.gazetteer.CountryCode;
 public class Location extends BaseEntity {
 
 	@Id
-	@GeneratedValue
-	private Integer id;
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 	private String name;
 	private Double latitude;
 	private Double longitude;
-	private Integer distance = 10;// KM
 	private CountryCode country;
 
 	public Location() {
 
 	}
+	
 
-	public Integer getId() {
+	public Long getId() {
 		return id;
 	}
 
-	public void setId(Integer id) {
+
+
+	public void setId(Long id) {
 		this.id = id;
 	}
+
+
 
 	public String getName() {
 		return name;
@@ -54,16 +59,8 @@ public class Location extends BaseEntity {
 		this.longitude = longitude;
 	}
 
-	public Integer getDistance() {
-		return distance;
-	}
-
-	public void setDistance(Integer distance) {
-		this.distance = distance;
-	}
-
-	public boolean isNearOf(Double latitude, Double longitude) {
-		return (distance(this.latitude,this.longitude,latitude,longitude)<=this.distance);
+	public boolean isNearOf(Double latitude, Double longitude,Double radius) {
+		return (distance(this.latitude,this.longitude,latitude,longitude)<=radius);
 	}
 
 	private double distance(double lat1, double lon1, double lat2, double lon2) {

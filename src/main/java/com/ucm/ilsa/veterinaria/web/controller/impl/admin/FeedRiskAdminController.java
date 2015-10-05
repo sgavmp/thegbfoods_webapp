@@ -1,7 +1,6 @@
 package com.ucm.ilsa.veterinaria.web.controller.impl.admin;
 
 import java.net.MalformedURLException;
-import java.util.Date;
 import java.util.List;
 
 import javax.validation.Valid;
@@ -18,23 +17,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.google.common.collect.Lists;
-import com.rometools.rome.io.impl.FeedParsers;
-import com.ucm.ilsa.veterinaria.domain.AlertDetect;
-import com.ucm.ilsa.veterinaria.domain.Feed;
 import com.ucm.ilsa.veterinaria.domain.FeedForm;
 import com.ucm.ilsa.veterinaria.domain.FeedRisk;
 import com.ucm.ilsa.veterinaria.domain.Language;
 import com.ucm.ilsa.veterinaria.domain.News;
-import com.ucm.ilsa.veterinaria.domain.PairValues;
 import com.ucm.ilsa.veterinaria.domain.Risk;
 import com.ucm.ilsa.veterinaria.domain.WebLevel;
 import com.ucm.ilsa.veterinaria.scheduler.SchedulerService;
-import com.ucm.ilsa.veterinaria.domain.Location;
 import com.ucm.ilsa.veterinaria.service.FeedRiskService;
-import com.ucm.ilsa.veterinaria.service.FeedService;
-import com.ucm.ilsa.veterinaria.service.NewsCheckFeedService;
-import com.ucm.ilsa.veterinaria.service.impl.PlaceAlertServiceImpl;
 import com.ucm.ilsa.veterinaria.web.controller.BaseController;
 
 @Controller
@@ -72,9 +62,7 @@ public class FeedRiskAdminController extends BaseController {
 	
 	@RequestMapping("/get/{codeName}/update/ajax")
 	public @ResponseBody String updateNewsByFeedAjax(Model model, @PathVariable ("codeName") FeedRisk feed) {
-//		serviceFeed.scrapFeed(feed);
-		//TODO
-//		schedulerService.startTask(feed);
+		schedulerService.startTask(feed);
 		return "ok";
 	}
 	
@@ -102,8 +90,7 @@ public class FeedRiskAdminController extends BaseController {
 	
 	@RequestMapping(value="/get/{codeName}/edit", method=RequestMethod.GET)
 	public String formEditFeed(Model model, @PathVariable ("codeName") FeedRisk feedP) {
-//		model.addAttribute("feed", new FeedForm(feedP));
-		//TODO
+		model.addAttribute("feed", new FeedForm(feedP));
 		return "feedForm";
 	}
 	
@@ -115,8 +102,7 @@ public class FeedRiskAdminController extends BaseController {
 		int version = feedP.getVersion();
 		feedP.changeValues(feed);
 		feedP = serviceFeed.updateFeed(feedP);
-//		model.addAttribute(new FeedForm(feedP));
-		//TODO
+		model.addAttribute(new FeedForm(feedP));
 		if (version < feedP.getVersion()) {
 			redirectAttributes.addFlashAttribute("info","Sitio actualizado correctamente");
 		} else {
@@ -131,8 +117,7 @@ public class FeedRiskAdminController extends BaseController {
 			feedP.setUrlNews("");
 			feedP.setRSS(false);
 		}
-//		model.addAttribute("feed", new FeedForm(feedP));
-		//TODO
+		model.addAttribute("feed", new FeedForm(feedP));
 		return "comprobarForm";
 	}
 	
@@ -187,7 +172,7 @@ public class FeedRiskAdminController extends BaseController {
 				if (!feed.linkIsFromSite(link)) {
 					redirectAttributes.addFlashAttribute("error", "La noticia introducida no pertenece a este sitio.");
 				} else {
-				List<AlertDetect> alertas = serviceFeed.checkNewsLinkOnFeed(link, feed);
+				List<Risk> alertas = serviceFeed.checkNewsLinkOnFeed(link, feed);
 				model.addAttribute(feed);
 				model.addAttribute("alertasDetectadas", alertas);
 				return "oneFeed";

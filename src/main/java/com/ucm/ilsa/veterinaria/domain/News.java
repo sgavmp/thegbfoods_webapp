@@ -19,7 +19,7 @@ public class News {
 	private String title;
 	private String description;
 	private String content;
-	private String site;
+	private Long site;
 	private String url;
 	private Date pubDate = new Date(System.currentTimeMillis());
 	private Map<String,String> others;
@@ -52,11 +52,11 @@ public class News {
 		this.content = content;
 	}
 
-	public String getSite() {
+	public Long getSite() {
 		return site;
 	}
 
-	public void setSite(String site) {
+	public void setSite(Long site) {
 		this.site = site;
 	}
 
@@ -93,4 +93,5 @@ public class News {
             }
         };
     }
+	
 }

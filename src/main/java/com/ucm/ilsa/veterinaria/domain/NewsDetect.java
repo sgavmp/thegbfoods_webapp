@@ -30,8 +30,9 @@ import com.google.common.collect.Lists;
 
 @Entity
 public class NewsDetect extends BaseEntity {
+
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	@ManyToOne
 	@JoinColumn(name="siteCodeName")
@@ -44,16 +45,17 @@ public class NewsDetect extends BaseEntity {
 	private Date datePub;
 	@ElementCollection(fetch=FetchType.EAGER)
 	private List<String> wordsDetect;
-	@ManyToMany(fetch=FetchType.EAGER)
+	@ManyToMany(fetch=FetchType.EAGER, cascade=CascadeType.ALL)
 	@JoinColumn(name="alert_detect_id")
 	private List<Location> locationsNear;
 	@ElementCollection(fetch = FetchType.EAGER)
 	@CollectionTable(name = "news_detect_locations", joinColumns = @JoinColumn(name = "NEWS_ID"))
 	private List<PointLocation> locations;
-	@ManyToOne(fetch=FetchType.EAGER)
+	@ManyToOne(fetch=FetchType.EAGER, cascade=CascadeType.ALL)
 	@JoinColumn(name="alert_detect_id")
-	private AlertDetect alertDetect;
-	
+	private AlertAbstract alertDetect;
+	private boolean history = false;
+	private boolean falPositive = false;
 	
 	public Long getId() {
 		return id;
@@ -97,10 +99,10 @@ public class NewsDetect extends BaseEntity {
 	public void setDatePub(Date datePub) {
 		this.datePub = datePub;
 	}
-	public AlertDetect getAlertDetect() {
+	public AlertAbstract getAlertDetect() {
 		return alertDetect;
 	}
-	public void setAlertDetect(AlertDetect alertDetect) {
+	public void setAlertDetect(AlertAbstract alertDetect) {
 		this.alertDetect = alertDetect;
 	}
 
@@ -120,5 +122,20 @@ public class NewsDetect extends BaseEntity {
 		this.locations = locations;
 	}
 	
+	public boolean getHistory() {
+		return history;
+	}
+
+	public void setHistory(boolean isHistory) {
+		this.history = isHistory;
+	}
+	
+	public boolean getFalsePositive() {
+		return falPositive;
+	}
+
+	public void setFalsePositive(boolean isFalsePositive) {
+		this.falPositive = isFalsePositive;
+	}
 	
 }
