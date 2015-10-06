@@ -31,6 +31,8 @@ import com.ucm.ilsa.veterinaria.web.controller.BaseController;
 @RequestMapping("/admin/feeds")
 public class FeedAdminController extends BaseController {
 	
+	private static String FOLDER = "/alerts/";
+	
 	@Autowired
 	private FeedService serviceFeed;	
 	
@@ -77,7 +79,7 @@ public class FeedAdminController extends BaseController {
 	@RequestMapping(value="/create", method=RequestMethod.POST)
 	public String formNewFeed(Model model, RedirectAttributes redirectAttributes, @Valid FeedForm feed,BindingResult result) {
         if (result.hasErrors()) {
-            return "feedForm";
+            return FOLDER + "feedForm";
         }
 		Feed feedP = new Feed(feed);
 		feedP = serviceFeed.createFeed(feedP);
@@ -92,13 +94,13 @@ public class FeedAdminController extends BaseController {
 	@RequestMapping(value="/get/{codeName}/edit", method=RequestMethod.GET)
 	public String formEditFeed(Model model, @PathVariable ("codeName") Feed feedP) {
 		model.addAttribute("feed", new FeedForm(feedP));
-		return "feedForm";
+		return FOLDER + "feedForm";
 	}
 	
 	@RequestMapping(value="/get/{codeName}/edit", method=RequestMethod.POST)
 	public String saveFormEditFeed(Model model, RedirectAttributes redirectAttributes, @PathVariable ("codeName") Feed feedP, @ModelAttribute(value="feed") FeedForm feed, BindingResult bindingResult) {
 		if (bindingResult.hasErrors()) {
-	        return "newsFeed";
+	        return FOLDER + "newsFeed";
 	    }
 		int version = feedP.getVersion();
 		feedP.changeValues(feed);
@@ -109,7 +111,7 @@ public class FeedAdminController extends BaseController {
 		} else {
 			redirectAttributes.addFlashAttribute("error","Ha ocurrido un error, vuelva a intentarlo más tarde.");
 		}
-		return "feedForm";
+		return FOLDER + "feedForm";
 	}
 	
 	@RequestMapping(value="/get/{codeName}/test", method=RequestMethod.GET)
@@ -119,7 +121,7 @@ public class FeedAdminController extends BaseController {
 			feedP.setRSS(false);
 		}
 		model.addAttribute("feed", new FeedForm(feedP));
-		return "comprobarForm";
+		return FOLDER + "comprobarForm";
 	}
 	
 	@RequestMapping(value="/get/{codeName}/test", method=RequestMethod.POST, params={"testFeed"})
@@ -134,7 +136,7 @@ public class FeedAdminController extends BaseController {
 	public String addPageNews(Model model, @ModelAttribute(value="feed") FeedForm feed) {
 		feed.getUrlPages().add(new String());
 		//model.addAttribute(feed);
-		return "feedForm";
+		return FOLDER + "feedForm";
 	}
 	
 	@RequestMapping(value={"/get/{codeName}/edit","/create"}, method=RequestMethod.POST, params={"removePage"})

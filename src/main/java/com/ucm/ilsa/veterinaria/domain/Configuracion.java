@@ -15,6 +15,7 @@ public class Configuracion {
 	private boolean usarPalabrasAlerta = false;
 	private boolean usarPalabrasLugar = false;
 	private Double radiusNear = (double) 10;
+	private Integer dayRisks = 10;
 	
 	public Configuracion() {
 		super();
@@ -55,5 +56,13 @@ public class Configuracion {
 	public void setRadiusNear(Double radiusNear) {
 		this.radiusNear = radiusNear;
 	}
+	public Integer getDayRisks() {
+		return dayRisks;
+	}
+	public void setDayRisks(Integer dayRisks) {
+		this.dayRisks = dayRisks;
+	}
+	
+	
 	
 }

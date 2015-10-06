@@ -31,6 +31,8 @@ import com.ucm.ilsa.veterinaria.web.controller.BaseController;
 @RequestMapping("/admin/risks/feeds")
 public class FeedRiskAdminController extends BaseController {
 	
+	private static String FOLDER = "/risks/";
+	
 	@Autowired
 	private FeedRiskService serviceFeed;	
 	
@@ -70,13 +72,13 @@ public class FeedRiskAdminController extends BaseController {
 	public String formNewFeed(Model model) {
 		model.addAttribute("feed",new FeedForm());
 		model.addAttribute("nuevo",true);
-		return "feedForm";
+		return FOLDER + "feedForm";
 	}
 	
 	@RequestMapping(value="/create", method=RequestMethod.POST)
 	public String formNewFeed(Model model, RedirectAttributes redirectAttributes, @Valid FeedForm feed,BindingResult result) {
         if (result.hasErrors()) {
-            return "feedForm";
+            return FOLDER + "feedForm";
         }
         FeedRisk feedP = new FeedRisk(feed);
 		feedP = serviceFeed.createFeed(feedP);
@@ -91,13 +93,13 @@ public class FeedRiskAdminController extends BaseController {
 	@RequestMapping(value="/get/{codeName}/edit", method=RequestMethod.GET)
 	public String formEditFeed(Model model, @PathVariable ("codeName") FeedRisk feedP) {
 		model.addAttribute("feed", new FeedForm(feedP));
-		return "feedForm";
+		return FOLDER + "feedForm";
 	}
 	
 	@RequestMapping(value="/get/{codeName}/edit", method=RequestMethod.POST)
 	public String saveFormEditFeed(Model model, RedirectAttributes redirectAttributes, @PathVariable ("codeName") FeedRisk feedP, @ModelAttribute(value="feed") FeedForm feed, BindingResult bindingResult) {
 		if (bindingResult.hasErrors()) {
-	        return "newsFeed";
+	        return FOLDER + "newsFeed";
 	    }
 		int version = feedP.getVersion();
 		feedP.changeValues(feed);
@@ -108,7 +110,7 @@ public class FeedRiskAdminController extends BaseController {
 		} else {
 			redirectAttributes.addFlashAttribute("error","Ha ocurrido un error, vuelva a intentarlo más tarde.");
 		}
-		return "feedForm";
+		return FOLDER + "feedForm";
 	}
 	
 	@RequestMapping(value="/get/{codeName}/test", method=RequestMethod.GET)
@@ -118,7 +120,7 @@ public class FeedRiskAdminController extends BaseController {
 			feedP.setRSS(false);
 		}
 		model.addAttribute("feed", new FeedForm(feedP));
-		return "comprobarForm";
+		return FOLDER + "comprobarForm";
 	}
 	
 	@RequestMapping(value="/get/{codeName}/test", method=RequestMethod.POST, params={"testFeed"})
@@ -133,14 +135,14 @@ public class FeedRiskAdminController extends BaseController {
 	public String addPageNews(Model model, @ModelAttribute(value="feed") FeedForm feed) {
 		feed.getUrlPages().add(new String());
 		//model.addAttribute(feed);
-		return "feedForm";
+		return FOLDER + "feedForm";
 	}
 	
 	@RequestMapping(value={"/get/{codeName}/edit","/create"}, method=RequestMethod.POST, params={"removePage"})
 	public String removePageNews(Model model, @ModelAttribute(value="feed") FeedForm feed, @RequestParam("removePage")Integer index) {
 		feed.getUrlPages().remove(index.intValue());
 		//model.addAttribute(feed);
-		return "feedForm";
+		return FOLDER + "feedForm";
 	}
 	
 	@RequestMapping(value={"/get/{codeName}/edit","/create"}, method=RequestMethod.POST, params={"testFeed"})
@@ -158,7 +160,7 @@ public class FeedRiskAdminController extends BaseController {
 			redirectAttributes.addFlashAttribute("info","Se ha borrado correctamente la fuente " + feed.getName());
 		} else {
 			model.addAttribute("error","No se ha borrado la fuente " + feed.getName());
-			return "oneFeed";
+			return FOLDER + "oneFeed";
 		}
 		return "redirect:/feeds";
 	}
@@ -175,7 +177,7 @@ public class FeedRiskAdminController extends BaseController {
 				List<Risk> alertas = serviceFeed.checkNewsLinkOnFeed(link, feed);
 				model.addAttribute(feed);
 				model.addAttribute("alertasDetectadas", alertas);
-				return "oneFeed";
+				return FOLDER + "oneFeed";
 				}
 			} catch (MalformedURLException e) {
 				redirectAttributes.addFlashAttribute("error", "No es una URL valida.");

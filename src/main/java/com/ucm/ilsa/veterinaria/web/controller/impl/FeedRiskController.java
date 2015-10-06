@@ -36,6 +36,8 @@ import com.ucm.ilsa.veterinaria.web.controller.BaseController;
 @RequestMapping("/risks/feeds")
 public class FeedRiskController extends BaseController {
 	
+	private static String FOLDER = "/risks/";
+	
 	public FeedRiskController() {
 		this.menu="Sitios de Riesgos Futuros";
 	}
@@ -53,7 +55,7 @@ public class FeedRiskController extends BaseController {
 
 	@RequestMapping("**")
 	public String getAllAlerts() {
-		return "feeds";
+		return FOLDER + "feeds";
 	}
 	
 	@RequestMapping("/get/{codeName}")
@@ -70,7 +72,7 @@ public class FeedRiskController extends BaseController {
 			}
 		}
 		model.addAttribute("alertas", alertas);
-		return "oneFeed";
+		return FOLDER + "oneFeed";
 	}
 	
 }

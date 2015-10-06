@@ -17,6 +17,8 @@ import com.ucm.ilsa.veterinaria.web.controller.BaseController;
 @RequestMapping("/alerts")
 public class AlertController extends BaseController {
 	
+	private static String FOLDER = "/alerts/";
+	
 	@Autowired
 	private AlertServiceImpl service;
 	
@@ -37,12 +39,12 @@ public class AlertController extends BaseController {
 	@RequestMapping("/get/{idAlert}")
 	public String getAlert(Model model, @PathVariable ("idAlert") Alert alert) {
 		model.addAttribute("alert", alert);
-		return "oneAlert";
+		return FOLDER + "oneAlert";
 	}
 
 	@RequestMapping("**")
 	public String getAllAlerts() {
-		return "alerts";
+		return FOLDER + "alerts";
 	}
 	
 }

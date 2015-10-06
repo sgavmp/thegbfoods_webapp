@@ -30,6 +30,8 @@ import com.ucm.ilsa.veterinaria.web.controller.BaseController;
 @RequestMapping("/risks")
 public class RiskController extends BaseController {
 	
+	private static String FOLDER = "/risks/";
+	
 	@Autowired
 	private RiskServiceImpl service;
 	
@@ -46,12 +48,12 @@ public class RiskController extends BaseController {
 	@RequestMapping("/get/{idAlert}")
 	public String getAlert(Model model, @PathVariable ("idAlert") Risk alert) {
 		model.addAttribute("alert", alert);
-		return "oneAlert";
+		return FOLDER + "oneAlert";
 	}
 
 	@RequestMapping("**")
 	public String getMainRisks() {
-		return "alerts";
+		return FOLDER + "alerts";
 	}
 	
 }

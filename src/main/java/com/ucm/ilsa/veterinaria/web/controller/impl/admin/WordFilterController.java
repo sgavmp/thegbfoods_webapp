@@ -22,6 +22,8 @@ import com.ucm.ilsa.veterinaria.web.controller.BaseController;
 @RequestMapping("/admin/words")
 public class WordFilterController extends BaseController {
 	
+	private static String FOLDER = "/alerts/";
+	
 	@Autowired
 	private AlertServiceImpl wordService;
 	
@@ -33,13 +35,13 @@ public class WordFilterController extends BaseController {
 	public String getAllLocations(Model model) {
 		model.addAttribute("allWords", wordService.getAllAlert());
 		model.addAttribute("term", new Alert());
-		return "words";
+		return FOLDER + "words";
 	}
 	
 	@RequestMapping(value="/create", method=RequestMethod.POST)
 	public String createLocation(Model model, RedirectAttributes redirectAttributes, Alert wordFilter,BindingResult result) {
         if (result.hasErrors()) {
-            return "words";
+            return FOLDER + "words";
         }
 		wordService.create(wordFilter);
 		redirectAttributes.addFlashAttribute("info","Se ha a&ntilde;adido correctamente el filtro");
@@ -50,14 +52,14 @@ public class WordFilterController extends BaseController {
 	public String getFormUpdateLocation(Model model, @PathVariable ("id") Alert word) {
 		model.addAttribute("allWords", wordService.getAllAlert());
 		model.addAttribute("term",word);
-		return "words";
+		return FOLDER + "words";
 	}
 	
 	@RequestMapping(value="/get/{id}/edit", method=RequestMethod.POST)
 	public String updateLocation(Model model, RedirectAttributes redirectAttributes, Alert wordFilter, @PathVariable ("id") Alert before,BindingResult result) {
         if (result.hasErrors()) {
         	model.addAttribute("error","Hay un error en el formulario");
-            return "words";
+            return FOLDER + "words";
         }
 		wordService.create(wordFilter);
 		redirectAttributes.addFlashAttribute("info","Se ha actualizado correctamente el filtro.");

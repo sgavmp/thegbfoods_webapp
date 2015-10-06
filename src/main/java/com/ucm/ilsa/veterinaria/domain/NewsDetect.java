@@ -35,93 +35,113 @@ public class NewsDetect extends BaseEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	@ManyToOne
-	@JoinColumn(name="siteCodeName")
+	@JoinColumn(name = "siteCodeName")
 	private SiteAbstract site;
 	@Lob
 	private String title;
 	@Lob
-	@Column(name="link")
+	@Column(name = "link")
 	private String link;
 	private Date datePub;
-	@ElementCollection(fetch=FetchType.EAGER)
+	@ElementCollection(fetch = FetchType.EAGER)
 	private List<String> wordsDetect;
-	@ManyToMany(fetch=FetchType.EAGER, cascade=CascadeType.ALL)
-	@JoinColumn(name="alert_detect_id")
+	@ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+	@JoinColumn(name = "alert_detect_id")
 	private List<Location> locationsNear;
 	@ElementCollection(fetch = FetchType.EAGER)
-	@CollectionTable(name = "news_detect_locations", joinColumns = @JoinColumn(name = "NEWS_ID"))
+	@CollectionTable(name = "news_detect_locations", joinColumns = @JoinColumn(name = "NEWS_ID") )
 	private List<PointLocation> locations;
-	@ManyToOne(fetch=FetchType.EAGER, cascade=CascadeType.ALL)
-	@JoinColumn(name="alert_detect_id")
+	@ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+	@JoinColumn(name = "alert_detect_id")
 	private AlertAbstract alertDetect;
 	private boolean history = false;
 	private boolean falPositive = false;
-	
+
 	public Long getId() {
 		return id;
 	}
+
 	public void setId(Long id) {
 		this.id = id;
 	}
+
 	public List<String> getWordsDetect() {
 		return wordsDetect;
 	}
+
 	public void setWordsDetect(List<String> wordsDetect) {
 		this.wordsDetect = wordsDetect;
 	}
+
 	public List<Location> getLocationsNear() {
 		return locationsNear;
 	}
+
 	public void setLocationsNear(List<Location> locationsNear) {
 		this.locationsNear = locationsNear;
 	}
+
 	public SiteAbstract getSite() {
 		return site;
 	}
+
 	public void setSite(SiteAbstract site) {
 		this.site = site;
 	}
+
 	public String getTitle() {
 		return title;
 	}
+
 	public void setTitle(String title) {
 		this.title = title;
 	}
+
 	public String getLink() {
 		return link;
 	}
+
 	public void setLink(String link) {
 		this.link = link;
 	}
+
 	public Date getDatePub() {
 		return datePub;
 	}
+
 	public void setDatePub(Date datePub) {
 		this.datePub = datePub;
 	}
+
 	public AlertAbstract getAlertDetect() {
 		return alertDetect;
 	}
+
 	public void setAlertDetect(AlertAbstract alertDetect) {
 		this.alertDetect = alertDetect;
 	}
 
-	public Map<CountryCode,List<Location>> getCountryWithLocations() {
-		Map<CountryCode,List<Location>> mapa = new HashMap<CountryCode, List<Location>>();
-		for (Location loc : locationsNear) {
-			List<Location> lista = mapa.containsKey(loc.getCountry())? mapa.get(loc.getCountry()) : new ArrayList<Location>();
-			lista.add(loc);
-			mapa.put(loc.getCountry(), lista);
+	public Map<CountryCode, List<Location>> getCountryWithLocations() {
+		Map<CountryCode, List<Location>> mapa = new HashMap<CountryCode, List<Location>>();
+		if (locationsNear != null) {
+			for (Location loc : locationsNear) {
+				List<Location> lista = mapa.containsKey(loc.getCountry()) ? mapa.get(loc.getCountry())
+						: new ArrayList<Location>();
+				lista.add(loc);
+				mapa.put(loc.getCountry(), lista);
+			}
 		}
 		return mapa;
 	}
+
 	public List<PointLocation> getLocations() {
 		return locations;
 	}
+
 	public void setLocations(List<PointLocation> locations) {
 		this.locations = locations;
 	}
-	
+
 	public boolean getHistory() {
 		return history;
 	}
@@ -129,7 +149,7 @@ public class NewsDetect extends BaseEntity {
 	public void setHistory(boolean isHistory) {
 		this.history = isHistory;
 	}
-	
+
 	public boolean getFalsePositive() {
 		return falPositive;
 	}
@@ -137,5 +157,5 @@ public class NewsDetect extends BaseEntity {
 	public void setFalsePositive(boolean isFalsePositive) {
 		this.falPositive = isFalsePositive;
 	}
-	
+
 }

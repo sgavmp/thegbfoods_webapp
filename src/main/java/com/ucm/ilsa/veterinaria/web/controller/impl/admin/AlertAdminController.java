@@ -19,6 +19,8 @@ import com.ucm.ilsa.veterinaria.web.controller.BaseController;
 @RequestMapping("/admin/alerts")
 public class AlertAdminController extends BaseController {
 	
+	private static String FOLDER = "/alerts/";
+	
 	@Autowired
 	private AlertServiceImpl service;
 	

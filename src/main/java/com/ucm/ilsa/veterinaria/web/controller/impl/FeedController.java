@@ -32,6 +32,8 @@ import com.ucm.ilsa.veterinaria.web.controller.BaseController;
 @RequestMapping("/feeds")
 public class FeedController extends BaseController {
 	
+	private static String FOLDER = "/alerts/";
+	
 	public FeedController() {
 		this.menu="Sitios";
 	}
@@ -49,7 +51,7 @@ public class FeedController extends BaseController {
 
 	@RequestMapping("**")
 	public String getAllAlerts() {
-		return "feeds";
+		return FOLDER + "feeds";
 	}
 	
 	@RequestMapping("/get/{codeName}")
@@ -66,7 +68,7 @@ public class FeedController extends BaseController {
 			}
 		}
 		model.addAttribute("alertas", alertas);
-		return "oneFeed";
+		return FOLDER + "oneFeed";
 	}
 	
 }

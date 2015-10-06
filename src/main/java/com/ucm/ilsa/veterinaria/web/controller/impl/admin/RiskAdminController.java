@@ -24,6 +24,8 @@ import com.ucm.ilsa.veterinaria.web.controller.BaseController;
 @RequestMapping("/admin/risks")
 public class RiskAdminController extends BaseController {
 	
+	private static String FOLDER = "/risks/";
+	
 	@Autowired
 	private RiskServiceImpl wordService;
 	
@@ -35,41 +37,41 @@ public class RiskAdminController extends BaseController {
 	public String getAllLocations(Model model) {
 		model.addAttribute("allWords", wordService.getAllAlert());
 		model.addAttribute("term", new Alert());
-		return "words";
+		return FOLDER + "words";
 	}
 	
 	@RequestMapping(value="/create", method=RequestMethod.POST)
 	public String createLocation(Model model, RedirectAttributes redirectAttributes, Risk wordFilter,BindingResult result) {
         if (result.hasErrors()) {
-            return "words";
+            return FOLDER + "words";
         }
 		wordService.create(wordFilter);
 		redirectAttributes.addFlashAttribute("info","Se ha a&ntilde;adido correctamente el filtro");
-		return "redirect:/admin/words";
+		return "redirect:/admin/risks/words";
 	}
 	
 	@RequestMapping(value = "/get/{id}/edit", method=RequestMethod.GET)
 	public String getFormUpdateLocation(Model model, @PathVariable ("id") Risk word) {
 		model.addAttribute("allWords", wordService.getAllAlert());
 		model.addAttribute("term",word);
-		return "words";
+		return FOLDER + "words";
 	}
 	
 	@RequestMapping(value="/get/{id}/edit", method=RequestMethod.POST)
 	public String updateLocation(Model model, RedirectAttributes redirectAttributes, Risk wordFilter, @PathVariable ("id") Risk before,BindingResult result) {
         if (result.hasErrors()) {
         	model.addAttribute("error","Hay un error en el formulario");
-            return "words";
+            return FOLDER + "words";
         }
 		wordService.create(wordFilter);
 		redirectAttributes.addFlashAttribute("info","Se ha actualizado correctamente el filtro.");
-		return "redirect:/admin/words";
+		return "redirect:/admin/risks/words";
 	}
 	
 	@RequestMapping(value = "/get/{id}/remove", method=RequestMethod.GET)
 	public String updateNewsByFeed(Model model, @PathVariable ("id") Risk word) {
 		wordService.remove(word);
-		return "redirect:/admin/words";
+		return "redirect:/admin/risks/words";
 	}
 	
 }

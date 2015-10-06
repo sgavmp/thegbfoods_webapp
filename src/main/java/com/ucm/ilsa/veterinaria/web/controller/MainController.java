@@ -9,6 +9,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.convert.support.ConfigurableConversionService;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,11 +24,16 @@ import org.webjars.WebJarAssetLocator;
 import com.google.common.collect.Lists;
 import com.neovisionaries.i18n.CountryCode;
 import com.ucm.ilsa.veterinaria.domain.Alert;
+import com.ucm.ilsa.veterinaria.domain.Configuracion;
 import com.ucm.ilsa.veterinaria.domain.Location;
 import com.ucm.ilsa.veterinaria.domain.NewsDetect;
+import com.ucm.ilsa.veterinaria.domain.Risk;
 import com.ucm.ilsa.veterinaria.domain.Statistics;
+import com.ucm.ilsa.veterinaria.repository.ConfiguracionRepository;
 import com.ucm.ilsa.veterinaria.repository.StatisticsRepository;
 import com.ucm.ilsa.veterinaria.service.impl.AlertServiceImpl;
+import com.ucm.ilsa.veterinaria.service.impl.RiskServiceImpl;
+import com.ucm.ilsa.veterinaria.web.controller.impl.admin.ConfiguracionController;
 
 @Controller
 public class MainController extends BaseController {
@@ -38,9 +44,15 @@ public class MainController extends BaseController {
 
 	@Autowired
 	private AlertServiceImpl service;
+	
+	@Autowired
+	private RiskServiceImpl serviceRisk;
 
 	@Autowired
 	private StatisticsRepository statisticsRepository;
+	
+	@Autowired 
+	private ConfiguracionRepository configuracionRepository;
 
 	public MainController() {
 		this.assetLocator = new WebJarAssetLocator();
@@ -51,12 +63,48 @@ public class MainController extends BaseController {
 	public List<Alert> getAllAlertsUnchecked() {
 		return service.getAllAlertActive();
 	}
+	
+	@ModelAttribute("risksUncheck")
+	public List<Risk> getAllRisksUnchecked() {
+		return serviceRisk.getAllAlertActive();
+	}
 
 	@ModelAttribute("alertsActivateToday")
 	public List<Alert> getAllAlertsToday() {
 		Date now = new Date(System.currentTimeMillis());
 		Date today = new Date(now.getYear(), now.getMonth(), now.getDate());
 		List<Alert> lista = service.getAlertDetectActivatedAfter(today);
+		return lista;
+	}
+	
+	@ModelAttribute("risksActivateInLast")
+	public List<Risk> getAllRiskInLast() {
+		Date now = new Date(System.currentTimeMillis());
+		Configuracion conf = configuracionRepository.findOne("conf");
+		Date date = new Date(now.getYear(), now.getMonth(), now.getDate()-conf.getDayRisks());
+		List<Risk> lista = serviceRisk.getAlertDetectActivatedAfter(date);
+		Risk risk1 = new Risk();
+		risk1.setTitle("Riegos 1");
+		risk1.setNewsDetect(new ArrayList<NewsDetect>());
+		risk1.getNewsDetect().add(new NewsDetect());
+		risk1.getNewsDetect().add(new NewsDetect());
+		risk1.getNewsDetect().add(new NewsDetect());
+		risk1.getNewsDetect().add(new NewsDetect());
+		risk1.getNewsDetect().add(new NewsDetect());
+		risk1.getNewsDetect().add(new NewsDetect());
+		Risk risk2 = new Risk();
+		risk2.setNewsDetect(new ArrayList<NewsDetect>());
+		risk2.setTitle("Riegos 2");
+		risk2.getNewsDetect().add(new NewsDetect());
+		risk2.getNewsDetect().add(new NewsDetect());
+		risk2.getNewsDetect().add(new NewsDetect());
+		Risk risk3 = new Risk();
+		risk3.setTitle("Riegos 3");
+		risk3.setNewsDetect(new ArrayList<NewsDetect>());
+		risk3.getNewsDetect().add(new NewsDetect());
+		lista.add(risk1);
+		lista.add(risk2);
+		lista.add(risk3);
 		return lista;
 	}
 
