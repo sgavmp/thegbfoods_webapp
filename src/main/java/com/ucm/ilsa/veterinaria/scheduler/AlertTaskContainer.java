@@ -35,12 +35,18 @@ public class AlertTaskContainer implements Runnable {
 		Feed feedComp = null;
 		// Obtenemos el sitio de la base de datos por si se hubiese modificado o
 		// borrado
-		feedComp = service.getFeedByCodeName(feed.getCode());
+		feedComp = service.getFeedByCodeName(feed.getId());
 		if (feedComp != null) {
 			feed = service.setSateOfFeed(feedComp, UpdateStateEnum.GET_NEWS);
 			List<News> listNews = service.scrapFeed(feed);
+			feed = service.getFeedByCodeName(feed.getId());
 			if (listNews != null) {
-				newsCheckService.checkNews(listNews, feed);
+				if (!listNews.isEmpty()) {
+					LOGGER.info("Se han recuperado " + listNews.size() + " nuevas noticias del sitio: " + feed.getName());
+					newsCheckService.checkNews(listNews, feed);
+				} else {
+					LOGGER.info("No se han recuperado nuevas noticias del sitio: " + feed.getName());
+				}
 			}
 			LOGGER.info("Finalizada tarea planificada para el sitio: " + feed.getName());
 			feed = service.setSateOfFeed(feed, UpdateStateEnum.WAIT);

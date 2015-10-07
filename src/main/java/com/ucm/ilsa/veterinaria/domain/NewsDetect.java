@@ -1,6 +1,7 @@
 package com.ucm.ilsa.veterinaria.domain;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -26,6 +27,7 @@ import javax.persistence.UniqueConstraint;
 import com.bericotech.clavin.gazetteer.CountryCode;
 import com.bericotech.clavin.gazetteer.GeoName;
 import com.bericotech.clavin.resolver.ResolvedLocation;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.collect.Lists;
 
 @Entity
@@ -45,13 +47,13 @@ public class NewsDetect extends BaseEntity {
 	private Date datePub;
 	@ElementCollection(fetch = FetchType.EAGER)
 	private List<String> wordsDetect;
-	@ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+	@ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
 	@JoinColumn(name = "alert_detect_id")
 	private List<Location> locationsNear;
 	@ElementCollection(fetch = FetchType.EAGER)
 	@CollectionTable(name = "news_detect_locations", joinColumns = @JoinColumn(name = "NEWS_ID") )
 	private List<PointLocation> locations;
-	@ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
 	@JoinColumn(name = "alert_detect_id")
 	private AlertAbstract alertDetect;
 	private boolean history = false;
@@ -113,6 +115,7 @@ public class NewsDetect extends BaseEntity {
 		this.datePub = datePub;
 	}
 
+	@JsonIgnore
 	public AlertAbstract getAlertDetect() {
 		return alertDetect;
 	}
@@ -150,12 +153,40 @@ public class NewsDetect extends BaseEntity {
 		this.history = isHistory;
 	}
 
-	public boolean getFalsePositive() {
+	public boolean getFalPositive() {
 		return falPositive;
 	}
 
-	public void setFalsePositive(boolean isFalsePositive) {
+	public void setFalPositive(boolean isFalsePositive) {
 		this.falPositive = isFalsePositive;
 	}
 
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((id == null) ? 0 : id.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		NewsDetect other = (NewsDetect) obj;
+		if (id == null) {
+			if (other.id != null)
+				return false;
+		} else if (!id.equals(other.id))
+			return false;
+		if (version!=other.getVersion())
+			return false;
+		return true;
+	}
+
+	
 }

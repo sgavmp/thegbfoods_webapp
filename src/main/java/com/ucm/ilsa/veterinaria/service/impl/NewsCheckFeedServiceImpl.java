@@ -242,7 +242,7 @@ public class NewsCheckFeedServiceImpl implements NewsCheckFeedService {
 		Date today = new Date(System.currentTimeMillis());
 		Statistics statistics = statisticsRepository.findOne(today);
 		if (statistics != null) {
-			statistics.increment(alertDetectNum, newsNum);
+			statistics.increment(alertDetectNum, 0);
 		} else {
 			statistics = new Statistics(today, alertDetectNum, newsNum);
 		}

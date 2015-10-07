@@ -23,30 +23,20 @@
 					th:inline="text">[[${term.id==null?'Crear alerta':'Editar
 					alerta'}]]</div>
 				<form action="#"
-					th:action="${term.id==null}?@{/admin/words/create}:@{/admin/words/get/{id}/edit(id=${term.id})}"
+					th:action="${term.id==null}?@{/admin/risks/create}:@{/admin/risks/get/{id}/edit(id=${term.id})}"
 					val:validate="${term}" th:object="${term}" method="post">
 
 					<input type="hidden" th:name="${_csrf.parameterName}"
 						th:value="${_csrf.token}" /> <input type="hidden"
 						th:field="*{id}" />
 					<div
-						class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+						class="mdl-cell mdl-cell--10-col mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
 						<label class="mdl-textfield__label" for="title">Introduce
 							el titulo de la alerta</label> <input class="mdl-textfield__input"
 							type="text" th:field="*{title}" />
 					</div>
 					<div
-						class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-						<select class="mdl-textfield__input" th:field="*{type}">
-							<option value="" disabled="disabled" selected="selected">Selecciona
-								un tipo</option>
-							<option
-								th:each="code : ${T(com.ucm.ilsa.veterinaria.domain.AlertLevel).values()}"
-								th:value="${code}" th:text="${code}"></option>
-						</select> <label class="mdl-textfield__label">Tipo</label>
-					</div>
-					<div
-						class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+						class="mdl-cell mdl-cell--10-col mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
 						<label class="mdl-textfield__label" for="words">Introduce
 							las palabras de filtro para la alerta separadas por coma</label>
 						<textarea class="mdl-textfield__input" rows="6" type="text"
@@ -71,7 +61,6 @@
 				<thead>
 					<tr>
 						<th class="mdl-data-table__cell--non-numeric">Titulo</th>
-						<th class="mdl-data-table__cell--non-numeric">Tipo</th>
 						<th>Editar</th>
 						<th>Borrar</th>
 					</tr>
@@ -79,15 +68,13 @@
 				<tbody>
 					<tr th:each="word : ${allWords}">
 						<td class="mdl-data-table__cell--non-numeric"
-							th:text="${word.title}">Alerta de fiebre</td>
-						<td class="mdl-data-table__cell--non-numeric"
-							th:text="${word.type}"></td>
+							th:inline="text"><a th:href="@{/risks/get/{id}(id=${word.id})}">[[${word.title}]]</a></td>
 						<td><a href="#"
-							th:href="@{/admin/words/get/{id}/edit(id=${word.id})}"><i
+							th:href="@{/admin/risks/get/{id}/edit(id=${word.id})}"><i
 								class="mdl-color-text--blue-grey-400 material-icons"
 								role="presentation">mode-edit</i></a></td>
 						<td><a class="confirm" href="#"
-							th:href="@{/admin/words/get/{id}/remove(id=${word.id})}"><i
+							th:href="@{/admin/risks/get/{id}/remove(id=${word.id})}"><i
 								class="mdl-color-text--blue-grey-400 material-icons confirm"
 								role="presentation">delete</i></a></td>
 					</tr>

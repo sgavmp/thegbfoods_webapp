@@ -22,10 +22,10 @@ public class AlertServiceImpl {
 	private AlertRepository repository;
 	
 	public List<Alert> getAllAlert() {
-		return Lists.newArrayList(repository.findAll());
+		return repository.findAllByOrderByTitleAsc();
 	}
 	
-	public Alert getOneById(String word) {
+	public Alert getOneById(Long word) {
 		return repository.findOne(word);
 	}
 	
@@ -41,7 +41,7 @@ public class AlertServiceImpl {
 		repository.delete(word);
 	}
 	
-	public void remove(String word) {
+	public void remove(Long word) {
 		repository.delete(word);
 	}
 

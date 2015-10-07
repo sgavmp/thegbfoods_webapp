@@ -83,28 +83,11 @@ public class MainController extends BaseController {
 		Configuracion conf = configuracionRepository.findOne("conf");
 		Date date = new Date(now.getYear(), now.getMonth(), now.getDate()-conf.getDayRisks());
 		List<Risk> lista = serviceRisk.getAlertDetectActivatedAfter(date);
-		Risk risk1 = new Risk();
-		risk1.setTitle("Riegos 1");
-		risk1.setNewsDetect(new ArrayList<NewsDetect>());
-		risk1.getNewsDetect().add(new NewsDetect());
-		risk1.getNewsDetect().add(new NewsDetect());
-		risk1.getNewsDetect().add(new NewsDetect());
-		risk1.getNewsDetect().add(new NewsDetect());
-		risk1.getNewsDetect().add(new NewsDetect());
-		risk1.getNewsDetect().add(new NewsDetect());
-		Risk risk2 = new Risk();
-		risk2.setNewsDetect(new ArrayList<NewsDetect>());
-		risk2.setTitle("Riegos 2");
-		risk2.getNewsDetect().add(new NewsDetect());
-		risk2.getNewsDetect().add(new NewsDetect());
-		risk2.getNewsDetect().add(new NewsDetect());
-		Risk risk3 = new Risk();
-		risk3.setTitle("Riegos 3");
-		risk3.setNewsDetect(new ArrayList<NewsDetect>());
-		risk3.getNewsDetect().add(new NewsDetect());
-		lista.add(risk1);
-		lista.add(risk2);
-		lista.add(risk3);
+		for (Risk risk : lista) {
+			for (NewsDetect news : risk.getNewsDetect()) {
+				news.setAlertDetect(null);
+			}
+		}
 		return lista;
 	}
 
@@ -114,7 +97,7 @@ public class MainController extends BaseController {
 		List<Alert> listAlert = service.getAllAlert();
 		for (Alert alert : listAlert) {
 			for (NewsDetect news : alert.getNewsDetect()) {
-				if (!news.getFalsePositive() && !news.getHistory()) {
+				if (!news.getFalPositive() && !news.getHistory()) {
 					for (Location loc : news.getLocationsNear()) {
 						listCountries.put(
 								CountryCode.getByCode(loc.getCountry().name())

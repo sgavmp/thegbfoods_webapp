@@ -73,7 +73,7 @@ public class FeedAdminController extends BaseController {
 	public String formNewFeed(Model model) {
 		model.addAttribute("feed",new FeedForm());
 		model.addAttribute("nuevo",true);
-		return "feedForm";
+		return FOLDER + "feedForm";
 	}
 	
 	@RequestMapping(value="/create", method=RequestMethod.POST)
@@ -83,12 +83,12 @@ public class FeedAdminController extends BaseController {
         }
 		Feed feedP = new Feed(feed);
 		feedP = serviceFeed.createFeed(feedP);
-		if (feedP.getCode()!=null) {
+		if (feedP.getId()!=null) {
 			redirectAttributes.addFlashAttribute("info","Sitio creado correctamente");
 		} else {
 			redirectAttributes.addFlashAttribute("error","Ha ocurrido un error, vuelva a intentarlo más tarde.");
 		}
-		return "redirect:/admin/feeds/get/"+feedP.getCode()+"/edit";
+		return "redirect:/admin/feeds/get/"+feedP.getId()+"/edit";
 	}
 	
 	@RequestMapping(value="/get/{codeName}/edit", method=RequestMethod.GET)
@@ -149,8 +149,10 @@ public class FeedAdminController extends BaseController {
 	@RequestMapping(value={"/get/{codeName}/edit","/create"}, method=RequestMethod.POST, params={"testFeed"})
 	public @ResponseBody News testFeed(Model model, @ModelAttribute(value="feed") FeedForm feed) {
 		News news = serviceFeed.testFeed(feed);
-		if (news.getContent().length()>500)
-			news.setContent(news.getContent().substring(0, 500).concat("..."));
+		if (news!=null) {
+			if (news.getContent().length()>500)
+				news.setContent(news.getContent().substring(0, 500).concat("..."));
+		}
 		//model.addAttribute(feed);
 		return news;
 	}
@@ -183,7 +185,7 @@ public class FeedAdminController extends BaseController {
 			} catch (MalformedURLException e) {
 				redirectAttributes.addFlashAttribute("error", "No es una URL valida.");
 			}
-		return "redirect:/feeds/get/"+feed.getCode();
+		return "redirect:/feeds/get/"+feed.getId();
 	}
 
 }

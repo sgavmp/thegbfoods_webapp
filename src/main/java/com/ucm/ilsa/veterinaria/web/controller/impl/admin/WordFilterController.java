@@ -15,6 +15,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.google.common.collect.Lists;
 import com.ucm.ilsa.veterinaria.domain.Alert;
+import com.ucm.ilsa.veterinaria.domain.NewsDetect;
 import com.ucm.ilsa.veterinaria.service.impl.AlertServiceImpl;
 import com.ucm.ilsa.veterinaria.web.controller.BaseController;
 
@@ -45,8 +46,9 @@ public class WordFilterController extends BaseController {
         }
 		wordService.create(wordFilter);
 		redirectAttributes.addFlashAttribute("info","Se ha a&ntilde;adido correctamente el filtro");
-		return "redirect:/admin/words";
+		return "redirect:/alerts/words";
 	}
+
 	
 	@RequestMapping(value = "/get/{id}/edit", method=RequestMethod.GET)
 	public String getFormUpdateLocation(Model model, @PathVariable ("id") Alert word) {

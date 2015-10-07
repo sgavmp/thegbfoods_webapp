@@ -297,6 +297,9 @@
 																		var response = jQuery
 																				.parseJSON(JSON
 																						.stringify(data));
+																		if (response=="") {
+																			alert("Error al obtener la noticia");
+																		}
 																		var date = new Date(
 																				response.pubDate);
 																		$(

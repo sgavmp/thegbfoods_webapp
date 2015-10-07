@@ -63,14 +63,6 @@
 							lugar</label> <span class="mdl-textfield__error">Input is not a
 							number!</span>
 					</div>
-					<div
-						class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-						<input class="mdl-textfield__input" type="text"
-							pattern="-?[0-9]*(\.[0-9]+)?" th:field="*{distance}" /> <label
-							class="mdl-textfield__label" for="name">Distancia de
-							alerta</label> <span class="mdl-textfield__error">Input is not a
-							number!</span>
-					</div>
 					<div class="mdl-grid">
 						<div class="mdl-cell mdl-cell--1-col"></div>
 						<div class="mdl-cell mdl-cell--10-col">
@@ -92,7 +84,6 @@
 						<th class="mdl-data-table__cell--non-numeric">Nombre</th>
 						<th>Latitud</th>
 						<th>Longitud</th>
-						<th>Distancia (km)</th>
 						<th>Editar</th>
 						<th>Borrar</th>
 					</tr>
@@ -103,7 +94,6 @@
 							th:text="${loc.name}">Pescados manolo</td>
 						<td th:text="${loc.latitude}">4.5234</td>
 						<td th:text="${loc.longitude}">-2.5653</td>
-						<td th:text="${loc.distance}">100km</td>
 						<td><a href="#"
 							th:href="@{/admin/locations/get/{id}/edit(id=${loc.id})}"><i
 								class="mdl-color-text--blue-grey-400 material-icons"

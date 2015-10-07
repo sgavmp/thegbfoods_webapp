@@ -25,7 +25,8 @@
 					<tr>
 						<th class="mdl-data-table__cell--non-numeric">Nombre</th>
 						<th>Tipo</th>
-						<th>Activo</th>
+						<th>Comprobado</th>
+						<th>Activado</th>
 						<th sec:authorize="isAuthenticated()">Editar</th>
 					</tr>
 				</thead>
@@ -33,13 +34,15 @@
 					<tr th:each="feed : ${feeds}">
 						<td class="mdl-data-table__cell--non-numeric"
 							><a href="#"
-							th:href="@{/feeds/get/{code}(code=${feed.code})}" th:text="${feed.name}">Pescados Manolo</a></td>
+							th:href="@{/feeds/get/{id}(id=${feed.id})}" th:text="${feed.name}">Pescados Manolo</a></td>
 						<td class="mdl-data-table__cell--non-numeric"
 							th:text="${feed.type}">Pescados manolo</td>
 						<td class="mdl-data-table__cell--non-numeric"
+							th:text="${feed.accepted}">Pescados manolo</td>
+						<td class="mdl-data-table__cell--non-numeric"
 							th:text="${feed.actived}">Pescados manolo</td>
 						<td sec:authorize="isAuthenticated()"><a href="#"
-							th:href="@{/admin/feeds/get/{code}/edit(code=${feed.code})}"><i
+							th:href="@{/admin/feeds/get/{id}/edit(id=${feed.id})}"><i
 								class="mdl-color-text--blue-grey-400 material-icons"
 								role="presentation">mode-edit</i></a></td>
 					</tr>

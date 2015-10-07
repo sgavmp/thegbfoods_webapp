@@ -60,7 +60,7 @@ public class FeedRiskController extends BaseController {
 	
 	@RequestMapping("/get/{codeName}")
 	public String getAllNewsByFeed(Model model, @PathVariable ("codeName") FeedRisk feed) {
-		model.addAttribute(feed);
+		model.addAttribute("feed",feed);
 		List<Risk> alertas = serviceAlert.getAllAlertActive();
 		for (Risk alerta : alertas) {
 			Iterator<NewsDetect> iterator = alerta.getNewsDetect().iterator();

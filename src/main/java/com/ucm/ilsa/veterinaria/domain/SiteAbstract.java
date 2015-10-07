@@ -133,14 +133,6 @@ public abstract class SiteAbstract extends BaseEntity {
 		this.id = id;
 	}
 
-	public Long getCode() {
-		return id;
-	}
-
-	public void setCode(Long code) {
-		this.id = code;
-	}
-
 	public WebLevel getType() {
 		return type;
 	}

@@ -1,6 +1,11 @@
 package com.ucm.ilsa.veterinaria.domain;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
 import java.util.List;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -25,8 +30,7 @@ public abstract class AlertAbstract extends BaseEntity {
 
 	@Id @GeneratedValue(strategy=GenerationType.TABLE)
 	private Long id;
-	@NotNull
-	private String title;
+	protected String title;
 	@NotNull
 	@Lob
 	private String words;
@@ -72,6 +76,22 @@ public abstract class AlertAbstract extends BaseEntity {
 
 	public void setNewsDetect(List<NewsDetect> newsDetect) {
 		this.newsDetect = newsDetect;
+	}
+	
+	public SortedMap<Date,List<NewsDetect>> getAllNewsDetectOrderByDate() {
+		SortedMap<Date,List<NewsDetect>> alertasPorFecha = new TreeMap<Date, List<NewsDetect>>(Collections.reverseOrder());
+		for (NewsDetect alert : newsDetect) {
+			Date pubDate = alert.getDatePub();
+			Date day = new Date(pubDate.getYear(),pubDate.getMonth(),pubDate.getDate());
+			if (alertasPorFecha.containsKey(day)) {
+				alertasPorFecha.get(day).add(alert);
+			} else {
+				List<NewsDetect> alertas = new ArrayList<NewsDetect>();
+				alertas.add(alert);
+				alertasPorFecha.put(day,alertas);
+			}
+		}
+		return alertasPorFecha;
 	}
 	
 }

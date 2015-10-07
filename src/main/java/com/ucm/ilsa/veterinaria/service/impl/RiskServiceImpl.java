@@ -24,10 +24,10 @@ public class RiskServiceImpl {
 	private RiskRepository repository;
 	
 	public List<Risk> getAllAlert() {
-		return Lists.newArrayList(repository.findAll());
+		return repository.findAllByOrderByTitleAsc();
 	}
 	
-	public Risk getOneById(String word) {
+	public Risk getOneById(Long word) {
 		return repository.findOne(word);
 	}
 	
@@ -43,7 +43,7 @@ public class RiskServiceImpl {
 		repository.delete(word);
 	}
 	
-	public void remove(String word) {
+	public void remove(Long word) {
 		repository.delete(word);
 	}
 	

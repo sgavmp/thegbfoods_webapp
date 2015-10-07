@@ -68,7 +68,7 @@ public class FeedServiceImpl implements FeedService {
 
 	@Override
 	public List<Feed> getAllFeed() {
-		return Lists.newArrayList(repositoryFeed.findAll());
+		return repositoryFeed.findAllByOrderByNameAsc();
 	}
 
 	@Override
@@ -87,7 +87,7 @@ public class FeedServiceImpl implements FeedService {
 	public boolean removeFeed(Feed feed) {
 		schedulerService.removeFeedTask(feed);
 		this.repositoryFeed.delete(feed);
-		return !this.repositoryFeed.exists(feed.getCode());
+		return !this.repositoryFeed.exists(feed.getId());
 	}
 
 	@Override
@@ -116,7 +116,7 @@ public class FeedServiceImpl implements FeedService {
 	}
 	
 	public Feed setSateOfFeed(Feed feed, UpdateStateEnum state) {
-		feed = repositoryFeed.findOne(feed.getCode());
+		feed = repositoryFeed.findOne(feed.getId());
 		feed.setState(state);
 		Feed feedU = repositoryFeed.save(feed);
 		return feedU;

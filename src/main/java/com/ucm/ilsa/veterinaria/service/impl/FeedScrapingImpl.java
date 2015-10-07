@@ -4,10 +4,10 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -36,10 +36,12 @@ import com.ucm.ilsa.veterinaria.domain.FeedForm;
 import com.ucm.ilsa.veterinaria.domain.FeedRisk;
 import com.ucm.ilsa.veterinaria.domain.News;
 import com.ucm.ilsa.veterinaria.domain.SiteAbstract;
+import com.ucm.ilsa.veterinaria.domain.Statistics;
 import com.ucm.ilsa.veterinaria.domain.builder.NewsBuilder;
 import com.ucm.ilsa.veterinaria.repository.FeedRepository;
 import com.ucm.ilsa.veterinaria.repository.FeedRiskRepository;
 import com.ucm.ilsa.veterinaria.repository.NewsDetectRepository;
+import com.ucm.ilsa.veterinaria.repository.StatisticsRepository;
 import com.ucm.ilsa.veterinaria.service.FeedScraping;
 
 @Repository
@@ -50,14 +52,19 @@ public class FeedScrapingImpl implements FeedScraping {
 
 	private FeedRepository repositoryFeed;
 	private FeedRiskRepository repositoryFeedRisk;
-	
+
 	private NewsDetectRepository repositoryNewsDetect;
 
+	private StatisticsRepository statisticsRepository;
+
 	@Autowired
-	public FeedScrapingImpl(FeedRepository repositoryFeed, FeedRiskRepository repositoryFeedRisk, NewsDetectRepository repositoryNewsDetect) {
+	public FeedScrapingImpl(FeedRepository repositoryFeed,
+			FeedRiskRepository repositoryFeedRisk,
+			NewsDetectRepository repositoryNewsDetect, StatisticsRepository statisticsRepository) {
 		this.repositoryFeed = repositoryFeed;
 		this.repositoryFeedRisk = repositoryFeedRisk;
 		this.repositoryNewsDetect = repositoryNewsDetect;
+		this.statisticsRepository = statisticsRepository;
 	}
 
 	@Override
@@ -68,13 +75,26 @@ public class FeedScrapingImpl implements FeedScraping {
 		} else {
 			newsList = scrapingWithOutRSS(feed);
 		}
-		feed = repositoryFeed.findOne(feed.getCode());
-		feed.setUltimaRecuperacion(new Timestamp(System.currentTimeMillis()));
-		feed.setNumNewNews(newsList!=null?newsList.size():0);
 		if (feed instanceof Feed)
-			repositoryFeed.save((Feed)feed);
+			feed = repositoryFeed.findOne(feed.getId());
 		else
-			repositoryFeedRisk.save((FeedRisk)feed);
+			feed = repositoryFeedRisk.findOne(feed.getId());
+		feed.setUltimaRecuperacion(new Timestamp(System.currentTimeMillis()));
+		feed.setNumNewNews(newsList != null ? newsList.size() : 0);
+		if (feed instanceof Feed) {
+			repositoryFeed.save((Feed) feed);
+			if (newsList!=null) {
+				Date today = new Date(System.currentTimeMillis());
+				Statistics statistics = statisticsRepository.findOne(today);
+				if (statistics != null) {
+					statistics.increment(0, newsList.size());
+				} else {
+					statistics = new Statistics(today, 0, newsList.size());
+				}
+				statisticsRepository.save(statistics);
+			}
+		} else
+			repositoryFeedRisk.save((FeedRisk) feed);
 		LOGGER.info("Noticias recuperadas del sitio " + feed.getName());
 		return newsList;
 	}
@@ -131,15 +151,18 @@ public class FeedScrapingImpl implements FeedScraping {
 					}
 					listNews.add(getNewsWithRSS(feed, news));
 				}
-				if (feed.getDateFirstNews()==null) {
-					feed.setDateFirstNews(newsList.getEntries().get(newsList.getEntries().size()-1).getPublishedDate());
+				if (feed.getDateFirstNews() == null) {
+					feed.setDateFirstNews(newsList.getEntries()
+							.get(newsList.getEntries().size() - 1)
+							.getPublishedDate());
 				}
 				if (lastNews != null) {
+					feed = repositoryFeed.findOne(feed.getId());
 					feed.setLastNewsLink(lastNews);
 					if (feed instanceof Feed)
-						repositoryFeed.save((Feed)feed);
+						repositoryFeed.save((Feed) feed);
 					else
-						repositoryFeedRisk.save((FeedRisk)feed);
+						repositoryFeedRisk.save((FeedRisk) feed);
 				}
 			}
 			return listNews;
@@ -179,8 +202,7 @@ public class FeedScrapingImpl implements FeedScraping {
 						// En caso de coincidencia (es decir que ya esta en el
 						// sistema) devolvemos la lista (puede estar vacia)
 						if (!feed.getLastNewsLink().isEmpty()
-								&& feed.getLastNewsLink()
-										.equals(linkNews)) {
+								&& feed.getLastNewsLink().equals(linkNews)) {
 							break;
 						} else if (isFirst) {
 							lastNews = linkNews;
@@ -192,16 +214,16 @@ public class FeedScrapingImpl implements FeedScraping {
 					}
 					listNews.add(news);
 				}
-				if (feed.getDateFirstNews()==null) {
-					if (news!=null)
-							feed.setDateFirstNews(news.getPubDate());
+				if (feed.getDateFirstNews() == null) {
+					if (news != null)
+						feed.setDateFirstNews(news.getPubDate());
 				}
 				if (lastNews != null) {
 					feed.setLastNewsLink(lastNews);
 					if (feed instanceof Feed)
-						repositoryFeed.save((Feed)feed);
+						repositoryFeed.save((Feed) feed);
 					else
-						repositoryFeedRisk.save((FeedRisk)feed);
+						repositoryFeedRisk.save((FeedRisk) feed);
 				}
 			}
 			return listNews;
@@ -247,7 +269,8 @@ public class FeedScrapingImpl implements FeedScraping {
 		try {
 			List<News> listNews = new ArrayList<News>();
 			if (feed.getUrlNews() != null) {
-				Document doc = Jsoup.connect(feed.getUrlNews()).timeout(20000).get();
+				Document doc = Jsoup.connect(feed.getUrlNews()).timeout(20000)
+						.get();
 				Elements newsLinks = doc.select(feed.getNewsLink());
 				for (Element link : newsLinks) {
 					// Enlace de la noticia
@@ -272,7 +295,8 @@ public class FeedScrapingImpl implements FeedScraping {
 	}
 
 	public News getNewsWithRSS(SiteAbstract feed, SyndEntry news) {
-		String url = news.getLink().contains(feed.getUrlSite())?news.getLink():feed.getUrlSite().concat(news.getLink());
+		String url = news.getLink().startsWith("http://") ? news
+				.getLink() : feed.getUrlSite().concat(news.getLink());
 		NewsBuilder temp = new NewsBuilder(feed);
 		temp.setTitle(news.getTitle());
 		temp.setUrl(url);
@@ -292,18 +316,17 @@ public class FeedScrapingImpl implements FeedScraping {
 				if (feed.getCharSet().equals(CharsetEnum.UTF8)) {// Codificacion
 																	// por
 																	// defecto
-					newsPage = Jsoup.connect(url)
-							.userAgent("Mozilla").timeout(10000).get();
+					newsPage = Jsoup.connect(url).userAgent("Mozilla")
+							.timeout(10000).get();
 				} else {
-					newsPage = Jsoup.parse(
-							new URL(url).openStream(), feed
-									.getCharSet().getValue(), url);
+					newsPage = Jsoup.parse(new URL(url).openStream(), feed
+							.getCharSet().getValue(), url);
 				}
 				break;
 			} catch (IOException e) {// En caso de error intentamos tres veces
 				count++;
-				LOGGER.info("Error al acceder a la direccion URL: "
-						+ url + " intento " + count + "/3");
+				LOGGER.info("Error al acceder a la direccion URL: " + url
+						+ " intento " + count + "/3");
 				if (count == 3)
 					return null;
 			}
@@ -340,7 +363,8 @@ public class FeedScrapingImpl implements FeedScraping {
 
 	}
 
-	public News getNewsWithOutRSS(SiteAbstract feed, String linkNews, String title) {
+	public News getNewsWithOutRSS(SiteAbstract feed, String linkNews,
+			String title) {
 		Document newsPage = null;
 		Integer count = 0;
 		while (true) {

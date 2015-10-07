@@ -23,7 +23,7 @@
 					class="mdl-card__actions mdl-card--border">
 					<h5>Comprueba una noticia</h5>
 					<form method="post"
-						th:action="@{/admin/feeds/get/{id}/check(id=${feed.code})}">
+						th:action="@{/admin/feeds/get/{id}/check(id=${feed.id})}">
 						<input type="hidden" th:name="${_csrf.parameterName}"
 							th:value="${_csrf.token}" />
 						<div
@@ -38,7 +38,7 @@
 					</form>
 				</div>
 				<div sec:authorize="isAuthenticated()" class="mdl-card__menu">
-					<a th:href="@{/admin/feeds/get/{id}/edit(id=${feed.code})}"
+					<a th:href="@{/admin/feeds/get/{id}/edit(id=${feed.id})}"
 						class="mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect">
 						<i class="material-icons">create</i>
 					</a>
@@ -47,7 +47,7 @@
 		</div>
 		<a th:if="${alertasDetectadas}"
 			class="mdl-button mdl-js-button mdl-color--primary"
-			th:href="@{/feeds/get/{id}(id=${feed.code})}">Volver</a>
+			th:href="@{/feeds/get/{id}(id=${feed.id})}">Volver</a>
 		<h3 th:if="${alertasDetectadas}">Alertas detectada de la noticia
 			introducida</h3>
 		<div th:if="${alertasDetectadas}"
@@ -55,7 +55,7 @@
 			<div class="mdl-grid">
 				<div class="mdl-cell mdl-cell--12-col mdl-card mdl-shadow--3dp">
 					<div class="mdl-card__title mdl-color--red-200">
-						<a class="mdl-card__title-text mdl-color-text--white" th:href="@{/alerts/get/{id}(id=${alert.id})}" th:inline="text">[[${alert.alert.title}]]</a>
+						<a class="mdl-card__title-text mdl-color-text--white" th:href="@{/risks/get/{id}(id=${alert.id})}" th:inline="text">[[${alert.title}]]</a>
 					</div>
 					<div class="mdl-card__actions mdl-card--border">
 						<div th:each="day : ${alert.getAllNewsDetectOrderByDate()}"
@@ -131,7 +131,7 @@
 			<div class="mdl-grid">
 				<div class="mdl-cell mdl-cell--12-col mdl-card mdl-shadow--3dp">
 					<div class="mdl-card__title mdl-color--red-200">
-						<a class="mdl-card__title-text mdl-color-text--white" th:href="@{/alerts/get/{id}(id=${alert.id})}" th:inline="text">[[${alert.alert.title}]]</a>
+						<a class="mdl-card__title-text mdl-color-text--white" th:href="@{/risks/get/{id}(id=${alert.id})}" th:inline="text">[[${alert.title}]]</a>
 					</div>
 					<div class="mdl-card__actions mdl-card--border">
 						<div th:each="day : ${alert.getAllNewsDetectOrderByDate()}"

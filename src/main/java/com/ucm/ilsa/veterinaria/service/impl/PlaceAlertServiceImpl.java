@@ -16,10 +16,10 @@ public class PlaceAlertServiceImpl {
 	private LocationRepository repository;
 	
 	public List<Location> getAllLocations() {
-		return Lists.newArrayList(repository.findAll());
+		return repository.findAllByOrderByNameAsc();
 	}
 	
-	public Location getOneById(Integer id) {
+	public Location getOneById(Long id) {
 		return repository.findOne(id);
 	}
 	

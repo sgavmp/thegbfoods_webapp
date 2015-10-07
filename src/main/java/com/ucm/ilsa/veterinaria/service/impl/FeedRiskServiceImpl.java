@@ -73,7 +73,7 @@ public class FeedRiskServiceImpl implements FeedRiskService {
 
 	@Override
 	public List<FeedRisk> getAllFeed() {
-		return Lists.newArrayList(repositoryFeed.findAll());
+		return repositoryFeed.findAllByOrderByNameAsc();
 	}
 
 	@Override
@@ -84,21 +84,21 @@ public class FeedRiskServiceImpl implements FeedRiskService {
 	@Override
 	public FeedRisk createFeed(FeedRisk feed) {
 		feed = repositoryFeed.save(feed);
-//		schedulerService.addFeedTask(feed);
+		schedulerService.addFeedTask(feed);
 		return feed;
 	}
 
 	@Override
 	public boolean removeFeed(FeedRisk feed) {
-//		schedulerService.removeFeedTask(feed);
+		schedulerService.removeFeedTask(feed);
 		this.repositoryFeed.delete(feed);
-		return !this.repositoryFeed.exists(feed.getCode());
+		return !this.repositoryFeed.exists(feed.getId());
 	}
 
 	@Override
 	public FeedRisk updateFeed(FeedRisk feed) {
 		FeedRisk feedU = repositoryFeed.save(feed);
-//		schedulerService.updateFeedTask(feed);
+		schedulerService.updateFeedTask(feed);
 		return feedU;
 	}
 
@@ -121,7 +121,7 @@ public class FeedRiskServiceImpl implements FeedRiskService {
 	}
 	
 	public FeedRisk setSateOfFeed(FeedRisk feed, UpdateStateEnum state) {
-		feed = repositoryFeed.findOne(feed.getCode());
+		feed = repositoryFeed.findOne(feed.getId());
 		feed.setState(state);
 		FeedRisk feedU = repositoryFeed.save(feed);
 		return feedU;

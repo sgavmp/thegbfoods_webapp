@@ -34,22 +34,28 @@ public class RiskTaskContainer implements Runnable {
 
 	@Override
 	public void run() {
-		LOGGER.info("Inicia tarea planificada para el sitio: " + feed.getName());
+		LOGGER.info("Inicia tarea planificada para el sitio de riesgos: " + feed.getName());
 		FeedRisk feedComp = null;
 		// Obtenemos el sitio de la base de datos por si se hubiese modificado o
 		// borrado
-		feedComp = service.getFeedByCodeName(feed.getCode());
+		feedComp = service.getFeedByCodeName(feed.getId());
 		if (feedComp != null) {
 			feed = service.setSateOfFeed(feedComp, UpdateStateEnum.GET_NEWS);
 			List<News> listNews = service.scrapFeed(feed);
+			feed = service.getFeedByCodeName(feed.getId());
 			if (listNews != null) {
-				newsCheckService.checkNews(listNews, feed);
+				if (!listNews.isEmpty()) {
+					LOGGER.info("Se han recuperado " + listNews.size() + " nuevas noticias del sitio de riesgos: " + feed.getName());
+					newsCheckService.checkNews(listNews, feed);
+				} else {
+					LOGGER.info("No se han recuperado nuevas noticias del sitio de riesgos: " + feed.getName());
+				}
 			}
-			LOGGER.info("Finalizada tarea planificada para el sitio: " + feed.getName());
+			LOGGER.info("Finalizada tarea planificada para el sitio de riesgos: " + feed.getName());
 			feed = service.setSateOfFeed(feed, UpdateStateEnum.WAIT);
 		} else {
 			schedulerService.removeFeedTask(feed);
-			LOGGER.info("El sitio " + feed.getName() + " ha sido borrado mientras se obtenian nuevos datos.");
+			LOGGER.info("El sitio de riesgos " + feed.getName() + " ha sido borrado mientras se obtenian nuevos datos.");
 		}
 
 	}

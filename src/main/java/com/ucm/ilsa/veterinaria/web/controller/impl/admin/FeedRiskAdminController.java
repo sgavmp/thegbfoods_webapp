@@ -59,7 +59,7 @@ public class FeedRiskAdminController extends BaseController {
 		model.addAttribute(feed);
 		model.addAttribute(newsListAdd);
 		redirectAttributes.addFlashAttribute("info","Actualizando fuente");
-		return "redirect:/feeds/get/{codeName}";
+		return "redirect:/admin/risks/feeds/get/{codeName}";
 	}
 	
 	@RequestMapping("/get/{codeName}/update/ajax")
@@ -82,12 +82,12 @@ public class FeedRiskAdminController extends BaseController {
         }
         FeedRisk feedP = new FeedRisk(feed);
 		feedP = serviceFeed.createFeed(feedP);
-		if (feedP.getCode()!=null) {
+		if (feedP.getId()!=null) {
 			redirectAttributes.addFlashAttribute("info","Sitio creado correctamente");
 		} else {
 			redirectAttributes.addFlashAttribute("error","Ha ocurrido un error, vuelva a intentarlo más tarde.");
 		}
-		return "redirect:/admin/feeds/get/"+feedP.getCode()+"/edit";
+		return "redirect:/admin/risks/feeds/get/"+feedP.getId()+"/edit";
 	}
 	
 	@RequestMapping(value="/get/{codeName}/edit", method=RequestMethod.GET)
@@ -162,7 +162,7 @@ public class FeedRiskAdminController extends BaseController {
 			model.addAttribute("error","No se ha borrado la fuente " + feed.getName());
 			return FOLDER + "oneFeed";
 		}
-		return "redirect:/feeds";
+		return "redirect:/risks/feeds";
 	}
 	
 	@RequestMapping(value = "/get/{codeName}/check", method = RequestMethod.POST)
@@ -182,7 +182,7 @@ public class FeedRiskAdminController extends BaseController {
 			} catch (MalformedURLException e) {
 				redirectAttributes.addFlashAttribute("error", "No es una URL valida.");
 			}
-		return "redirect:/feeds/get/"+feed.getCode();
+		return "redirect:/risks/feeds/get/"+feed.getId();
 	}
 
 }

@@ -65,6 +65,18 @@
 						<textarea class="mdl-textfield__input" rows="6" type="text"
 							th:field="*{paabrasLugar}"></textarea>
 					</div>
+					<div
+						class="mdl-cell mdl-cell--10-col mdl-cell--10-col-desktop mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+						<label class="mdl-textfield__label" for="radiusNear">Radio de cercania para las alertas zonales</label>
+						<input class="mdl-textfield__input" type="text"
+							th:field="*{radiusNear}"/>
+					</div>
+					<div
+						class="mdl-cell mdl-cell--10-col mdl-cell--10-col-desktop mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+						<label class="mdl-textfield__label" for="dayRisks">Número de días para el calculo de la frecuencia de riesgos</label>
+						<input class="mdl-textfield__input" type="text"
+							th:field="*{dayRisks}"/>
+					</div>
 					<div class="mdl-grid">
 						<div class="mdl-cell mdl-cell--1-col"></div>
 						<div class="mdl-cell mdl-cell--10-col">

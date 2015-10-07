@@ -3,10 +3,8 @@ package com.ucm.ilsa.veterinaria.scheduler;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
 
-import org.hamcrest.core.IsInstanceOf;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Service;
@@ -40,6 +38,7 @@ public class SchedulerService {
 		this.newsCheckRiskService = newsCheckRiskService;
 		this.serviceFeedRisk = serviceRisk;
 		service.setSchedulerService(this);
+		serviceFeedRisk.setSchedulerService(this);
 		init();
 	}
 
@@ -63,7 +62,7 @@ public class SchedulerService {
 																	// espacioandolas
 																	// cada 2
 																	// minutos
-				tasks.put(feed.getCode(), futureTask);
+				tasks.put(feed.getId(), futureTask);
 			}
 		}
 		for (FeedRisk feed : listFeedsRisk) {
@@ -77,22 +76,22 @@ public class SchedulerService {
 																	// espacioandolas
 																	// cada 2
 																	// minutos
-				tasks.put(feed.getCode(), futureTask);
+				tasks.put(feed.getId(), futureTask);
 			}
 		}
 	}
 
 	public void removeFeedTask(SiteAbstract feed) {
-		if (tasks.containsKey(feed.getCode())) {
-			ScheduledFuture<?> futureTask = tasks.get(feed.getCode());
+		if (tasks.containsKey(feed.getId())) {
+			ScheduledFuture<?> futureTask = tasks.get(feed.getId());
 			futureTask.cancel(true);
-			tasks.remove(feed.getCode());
+			tasks.remove(feed.getId());
 		}
 	}
 
 	public void updateFeedTask(SiteAbstract feed) {
-		if (tasks.containsKey(feed.getCode())) {
-			ScheduledFuture<?> futureTask = tasks.remove(feed.getCode());
+		if (tasks.containsKey(feed.getId())) {
+			ScheduledFuture<?> futureTask = tasks.remove(feed.getId());
 			futureTask.cancel(true);
 		} 
 		if (feed.isActived() && feed.isAccepted()) {
@@ -108,7 +107,7 @@ public class SchedulerService {
 				futureTask = scheduler.scheduleWithFixedDelay(
 						task, MIN_MILIS * feed.getMinRefresh());
 			}
-			tasks.put(feed.getCode(), futureTask);
+			tasks.put(feed.getId(), futureTask);
 		}
 	}
 
@@ -126,7 +125,7 @@ public class SchedulerService {
 				futureTask = scheduler.scheduleWithFixedDelay(
 						task, MIN_MILIS * feed.getMinRefresh());
 			}
-			tasks.put(feed.getCode(), futureTask);
+			tasks.put(feed.getId(), futureTask);
 		}
 	}
 
