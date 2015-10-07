@@ -419,11 +419,11 @@ public class NewsCheckFeedServiceImpl implements NewsCheckFeedService {
 		return Lists.newArrayList(lugaresCercanos);
 	}
 
-	public Map<News, List<ResolvedLocation>> getLocations(List<News> listNews) {
+	public Map<News, List<ResolvedLocation>> getLocations(List<News> listNews, boolean isTest) {
 		Map<News, List<ResolvedLocation>> map = new HashMap<>();
 		Configuracion configuracion = configuracionRepository.findOne("conf");
 		String regExp = null;
-		if (configuracion.getUsarPalabrasLugar()) {
+		if (configuracion.getUsarPalabrasLugar() || isTest) {
 			regExp = configuracion.getPaabrasLugar();
 		}
 		for (News news : listNews) {
@@ -432,11 +432,13 @@ public class NewsCheckFeedServiceImpl implements NewsCheckFeedService {
 						news.getContent(), regExp);
 				if (locations.size() > 0)
 					map.put(news, locations);
+				else
+					map.put(news, new ArrayList<ResolvedLocation>());
 			} catch (Exception ex) {
 				LOGGER.info("Se ha producido un error al obtener las localizaciones de la noticia");
 				LOGGER.debug(ex.getMessage());
 			}
-			map.put(news, new ArrayList<ResolvedLocation>());
+			
 		}
 		return map;
 	}

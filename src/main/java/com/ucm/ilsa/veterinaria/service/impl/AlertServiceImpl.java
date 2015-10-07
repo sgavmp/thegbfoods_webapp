@@ -80,7 +80,7 @@ public class AlertServiceImpl {
 	}
 	
 	public List<Alert> getAlertDetectActivatedAfter(Date date) {
-		return repository.readAllByNewsDetectDatePubGreaterThanEqualOrderByCreateDateDesc(date);
+		return repository.readAllDistinctByNewsDetectDatePubGreaterThanEqualOrderByCreateDateDesc(date);
 	}
 	
 	public List<Alert> getAlertDetectSite(Feed feed) {

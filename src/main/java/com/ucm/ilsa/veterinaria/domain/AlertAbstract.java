@@ -94,4 +94,27 @@ public abstract class AlertAbstract extends BaseEntity {
 		return alertasPorFecha;
 	}
 	
+	public int numNewsDetectInDate(int day, int month, int year) {
+		Date start = new Date(year-1900,month-1,day);
+		Date end = new Date(year-1900,month-1,day+1);
+		int count = 0;
+		for (NewsDetect news : newsDetect) {
+			if (news.getDatePub().before(end) && ( news.getDatePub().after(start) || news.getDatePub().equals(start)))
+				count++;
+		}
+		return count;
+	}
+	
+	public int numNewsDetectInDateToday() {
+		Date today = new Date(System.currentTimeMillis());
+		Date start = new Date(today.getYear(),today.getMonth(),today.getDate());
+		Date end = new Date(today.getYear(),today.getMonth(),today.getDate()+1);
+		int count = 0;
+		for (NewsDetect news : newsDetect) {
+			if (news.getDatePub().before(end) && ( news.getDatePub().after(start) || news.getDatePub().compareTo(start)==0))
+				count++;
+		}
+		return count;
+	}
+	
 }

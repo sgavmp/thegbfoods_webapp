@@ -12,6 +12,6 @@ import com.ucm.ilsa.veterinaria.domain.SiteAbstract;
 
 public interface NewsCheckFeedService {
 	public void checkNews(List<News> listNews, Feed feed);
-	public Map<News, List<ResolvedLocation>> getLocations(List<News> listNews);
+	public Map<News, List<ResolvedLocation>> getLocations(List<News> listNews, boolean isTest);
 	public List<Alert> checkNews(News news, Feed feed);
 }

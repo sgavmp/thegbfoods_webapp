@@ -13,7 +13,7 @@ import com.ucm.ilsa.veterinaria.domain.Risk;
 
 @Repository
 public interface AlertRepository extends CrudRepository<Alert, Long> {
-	public List<Alert> readAllByNewsDetectDatePubGreaterThanEqualOrderByCreateDateDesc(Date date);
+	public List<Alert> readAllDistinctByNewsDetectDatePubGreaterThanEqualOrderByCreateDateDesc(Date date);
 	public List<Alert> readAllDistinctByNewsDetectSite(Feed Site);
 	public List<Alert> readAllDistinctByNewsDetectHistoryFalseAndNewsDetectFalPositiveFalse();
 	public List<Alert> readAllDistinctByNewsDetectHistoryTrue();
