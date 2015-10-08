@@ -90,6 +90,8 @@ public class SchedulerService {
 	}
 
 	public void updateFeedTask(SiteAbstract feed) {
+		Date startTime = new Date();
+		startTime.setTime(startTime.getTime() + 1000 * 120);
 		if (tasks.containsKey(feed.getId())) {
 			ScheduledFuture<?> futureTask = tasks.remove(feed.getId());
 			futureTask.cancel(true);
@@ -100,30 +102,32 @@ public class SchedulerService {
 				AlertTaskContainer task = new AlertTaskContainer((Feed) feed, serviceFeed, this,
 						newsCheckService);
 				futureTask = scheduler.scheduleWithFixedDelay(
-						task, MIN_MILIS * feed.getMinRefresh());
+						task, startTime, MIN_MILIS * feed.getMinRefresh());
 			} else {
 				RiskTaskContainer task = new RiskTaskContainer((FeedRisk) feed, serviceFeedRisk, this,
 						newsCheckRiskService);
 				futureTask = scheduler.scheduleWithFixedDelay(
-						task, MIN_MILIS * feed.getMinRefresh());
+						task, startTime, MIN_MILIS * feed.getMinRefresh());
 			}
 			tasks.put(feed.getId(), futureTask);
 		}
 	}
 
 	public void addFeedTask(SiteAbstract feed) {
+		Date startTime = new Date();
+		startTime.setTime(startTime.getTime() + 1000 * 120);
 		if (feed.isActived() && feed.isAccepted()) {
 			ScheduledFuture<?> futureTask = null;
 			if (feed instanceof Feed) {
 				AlertTaskContainer task = new AlertTaskContainer((Feed) feed, serviceFeed, this,
 						newsCheckService);
 				futureTask = scheduler.scheduleWithFixedDelay(
-						task, MIN_MILIS * feed.getMinRefresh());
+						task, startTime, MIN_MILIS * feed.getMinRefresh());
 			} else {
 				RiskTaskContainer task = new RiskTaskContainer((FeedRisk) feed, serviceFeedRisk, this,
 						newsCheckRiskService);
 				futureTask = scheduler.scheduleWithFixedDelay(
-						task, MIN_MILIS * feed.getMinRefresh());
+						task, startTime, MIN_MILIS * feed.getMinRefresh());
 			}
 			tasks.put(feed.getId(), futureTask);
 		}
