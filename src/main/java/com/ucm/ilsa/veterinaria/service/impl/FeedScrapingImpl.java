@@ -157,7 +157,10 @@ public class FeedScrapingImpl implements FeedScraping {
 							.getPublishedDate());
 				}
 				if (lastNews != null) {
-					feed = repositoryFeed.findOne(feed.getId());
+					if (feed instanceof Feed)
+						feed = repositoryFeed.findOne(feed.getId());
+					else
+						feed = repositoryFeedRisk.findOne(feed.getId());
 					feed.setLastNewsLink(lastNews);
 					if (feed instanceof Feed)
 						repositoryFeed.save((Feed) feed);

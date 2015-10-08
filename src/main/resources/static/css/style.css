@@ -224,3 +224,32 @@ _:-ms-input-placeholder, :root .demo-graph {
 .mdl-card {
 	min-height: 0px !important;
 }
+
+.c3-event-rect {
+	cursor: pointer;
+}
+
+.d3-tip {
+	background-color: #37474f;
+	color:white;
+	border-radius: 5px;
+	padding: 5px;
+}
+
+.d3-tip .info {
+	font-size: medium;
+	font-weight: bold;
+	text-align: center;
+}
+.d3-tip .value {
+	width: 100%;
+	text-align: center;
+}
+
+.d3-tip .more {
+	padding: 5px;
+	border-top: 1px solid;
+	margin-top: 10px;
+	background-color: rgb(255,87,34);
+	text-align: center;
+}
