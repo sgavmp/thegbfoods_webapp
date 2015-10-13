@@ -105,6 +105,18 @@ public abstract class AlertAbstract extends BaseEntity {
 		return count;
 	}
 	
+	public int numNewsDetectInDateLastWeek() {
+		Date now = new Date(System.currentTimeMillis());
+		Date end = new Date(now.getYear(), now.getMonth(), now.getDate()+1);
+		Date start = new Date(now.getYear(), now.getMonth(), now.getDate()-7);
+		int count = 0;
+		for (NewsDetect news : newsDetect) {
+			if (news.getDatePub().before(end) && ( news.getDatePub().after(start) || news.getDatePub().equals(start)))
+				count++;
+		}
+		return count;
+	}
+	
 	public int numNewsDetectInDateToday() {
 		Date today = new Date(System.currentTimeMillis());
 		Date start = new Date(today.getYear(),today.getMonth(),today.getDate());

@@ -25,6 +25,7 @@ import com.google.common.collect.Lists;
 import com.neovisionaries.i18n.CountryCode;
 import com.ucm.ilsa.veterinaria.domain.Alert;
 import com.ucm.ilsa.veterinaria.domain.Configuracion;
+import com.ucm.ilsa.veterinaria.domain.GraphData;
 import com.ucm.ilsa.veterinaria.domain.Location;
 import com.ucm.ilsa.veterinaria.domain.NewsDetect;
 import com.ucm.ilsa.veterinaria.domain.Risk;
@@ -56,12 +57,15 @@ public class MainController extends BaseController {
 
 	public MainController() {
 		this.assetLocator = new WebJarAssetLocator();
-		this.menu = "Resumen";
+		this.menu = "Panel de Control";
 	}
 
 	@ModelAttribute("alertsUncheck")
 	public List<Alert> getAllAlertsUnchecked() {
-		return service.getAllAlertActive();
+		Date now = new Date(System.currentTimeMillis());
+		Date today = new Date(now.getYear(), now.getMonth(), now.getDate()-7);
+		List<Alert> lista = service.getAlertDetectActivatedAfter(today);
+		return lista;
 	}
 	
 	@ModelAttribute("risksUncheck")
@@ -134,6 +138,77 @@ public class MainController extends BaseController {
 				statistics = new Statistics(current);
 			}
 			graph.add(statistics);
+		}
+		return graph;
+	}
+	
+	@ModelAttribute("week")
+	public GraphData getGraphDataForWeek() {
+		List<String> dias = Lists.newArrayList("Domingo","Lunes","Martes","Miercoles","Jueves","Viernes","Sabado");
+		List<Statistics> stats = new ArrayList<Statistics>();
+		Statistics statistics = null;
+		Long date = System.currentTimeMillis() - (ONE_DAY * 6);
+		GraphData graph = new GraphData();
+		for (int i = 0; i < 7; i++) {
+			java.sql.Date current = new java.sql.Date(date + (ONE_DAY * i));
+			statistics = statisticsRepository.findOne(current);
+			if (statistics == null) {
+				statistics = new Statistics(current);
+			}
+			stats.add(statistics);
+		}
+		for (Statistics stat : stats) {
+			graph.alertas.add(stat.getNumAlerts());
+			graph.noticias.add(stat.getNumNews());
+			graph.labels.add(dias.get(stat.getDate().getDay()).concat(" ").concat(String.valueOf(stat.getDate().getDate())));
+		}
+		graph.labels.remove(graph.labels.size()-1);
+		graph.labels.add("Hoy");
+		return graph;
+	}
+	
+	@ModelAttribute("month")
+	public GraphData getGraphDataForMonth() {
+		List<String> dias = Lists.newArrayList("Semana 1","Semana 2","Semana 3","Semana 4");
+		List<Statistics> stats = new ArrayList<Statistics>();
+		Statistics statistics = null;
+		Long date = System.currentTimeMillis() - (ONE_DAY * 6);
+		GraphData graph = new GraphData();
+		for (int i = 0; i < 7; i++) {
+			java.sql.Date current = new java.sql.Date(date + (ONE_DAY * i));
+			statistics = statisticsRepository.findOne(current);
+			if (statistics == null) {
+				statistics = new Statistics(current);
+			}
+			stats.add(statistics);
+		}
+		for (Statistics stat : stats) {
+			graph.alertas.add(stat.getNumAlerts().toString());
+			graph.noticias.add(stat.getNumNews().toString());
+		}
+		graph.labels.addAll(dias);
+		return graph;
+	}
+	
+	@ModelAttribute("year")
+	public GraphData getGraphDataForYear() {
+		List<String> dias = Lists.newArrayList("Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre");
+		List<Statistics> stats = new ArrayList<Statistics>();
+		Statistics statistics = null;
+		Long date = System.currentTimeMillis() - (ONE_DAY * 6);
+		GraphData graph = new GraphData();
+		for (int i = 0; i < 7; i++) {
+			java.sql.Date current = new java.sql.Date(date + (ONE_DAY * i));
+			statistics = statisticsRepository.findOne(current);
+			if (statistics == null) {
+				statistics = new Statistics(current);
+			}
+			stats.add(statistics);
+		}
+		for (Statistics stat : stats) {
+			graph.alertas.add(stat.getNumAlerts().toString());
+			graph.noticias.add(stat.getNumNews().toString());
+			graph.labels.add(dias.get(stat.getDate().getMonth()));
 		}
 		return graph;
 	}
