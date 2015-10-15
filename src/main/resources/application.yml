@@ -5,11 +5,12 @@ spring:
     active: production
   
 ---
-
+logging:
+  config: classpath:logback-production.xml
 spring:
   profiles: production
   datasource:
-    jndi-name: java:comp/env/jdbc/Veterinaria
+    jndi-name: java:comp/env/jdbc/veterinaria
     driverClassName: com.mysql.jdbc.Driver
   jpa:
     hibernate:
@@ -22,6 +23,8 @@ spring:
 name: production
 
 ---
+logging:
+  config: classpath:logback-local.xml
 
 spring:
   profiles: local
@@ -33,7 +36,8 @@ spring:
     cache: false
   datasource:
     url: jdbc:mysql://localhost:3306/veterinaria
-    username: local
+    username: root
+    password: root
     driverClassName: com.mysql.jdbc.Driver
     continueOnError: true
 

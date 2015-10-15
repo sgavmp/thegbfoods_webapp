@@ -11,6 +11,16 @@ buildscript {
     }
 }
 
+configurations.all {
+    resolutionStrategy {
+        eachDependency {
+            if (it.requested.group == 'org.apache.tomcat.embed') {
+                it.useVersion '7.0.59'
+            }
+        }
+    }
+}
+
 apply plugin: 'java'
 apply plugin: 'eclipse-wtp'
 apply plugin: 'idea'
@@ -19,12 +29,13 @@ apply plugin: 'war'
 
 war {
     baseName = 'veterinaria'
-    version = '0.0.1'
 }
+
 sourceCompatibility = 1.7
 targetCompatibility = 1.7
 
 repositories {
+	mavenLocal()
     mavenCentral()
 }
 
@@ -44,6 +55,14 @@ dependencies {
     compile("org.codehaus.castor:castor-xml:1.3.3")
     compile('com.google.guava:guava:18.0')
     compile('org.yaml:snakeyaml')
+    compile('org.thymeleaf.extras:thymeleaf-extras-springsecurity4:2.1.2.RELEASE')
+    compile('net.sourceforge.html5valdialect:html5valdialect:2.1.2')
+    compile('org.webjars:webjars-locator:0.21')
+    compile('org.webjars:materializecss:0.96.0')
+    compile('org.webjars:jquery:2.1.3')
+    compile('ch.qos.logback:logback-core:1.1.3')
+    compile 'com.neovisionaries:nv-i18n:1.17'
+    compile('me.vamsoft:clavin-mod:0.2.1')
     testCompile("org.springframework.boot:spring-boot-starter-test") 
     providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
 }

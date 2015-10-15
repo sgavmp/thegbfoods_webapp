@@ -1,46 +1,201 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<meta name="viewport"
-	content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no" />
-<title>Project Find News</title>
+<!doctype html>
+<!--
+  Material Design Lite
+  Copyright 2015 Google Inc. All rights reserved.
 
-<!-- CSS  -->
-<link href="/css/materialize.css" type="text/css" rel="stylesheet"
-	media="screen,projection" />
-<link href="/css/style.css" type="text/css" rel="stylesheet"
-	media="screen,projection" />
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+      https://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License
+-->
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="description"
+	content="A front-end template that helps you build fast, modern mobile web apps." />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>GB FOODS: Sistema de Alertas</title>
+
+<link
+	href="https://fonts.googleapis.com/css?family=Roboto:regular,bold,italic,thin,light,bolditalic,black,medium&amp;lang=en"
+	rel="stylesheet" />
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons"
+	rel="stylesheet" />
+<link rel="stylesheet"
+	href="https://storage.googleapis.com/code.getmdl.io/1.0.4/material.deep_orange-orange.min.css" />
+<link href="https://cdnjs.cloudflare.com/ajax/libs/c3/0.4.10/c3.min.css"
+	rel="stylesheet" />
+<link th:href="@{/static/css/style.css}" href="style.css"
+	type="text/css" rel="stylesheet" media="screen,projection" />
+<link th:href="@{/static/css/material.modal.css}"
+	href="material.modal.css" type="text/css" rel="stylesheet" />
+<link th:href="@{/static/css/material.snackbar.css}"
+	href="material.modal.css" type="text/css" rel="stylesheet" />
+<style>
+#view-source {
+	position: fixed;
+	display: block;
+	right: 0;
+	bottom: 0;
+	margin-right: 40px;
+	margin-bottom: 40px;
+	z-index: 900;
+}
+</style>
 </head>
 <body>
-	<header class="navbar-fixed">
-		<nav class="light-blue lighten-1" role="navigation">
-			<div class="container">
-				<div class="nav-wrapper">
-					<ul class="right">
-						<li><a href="/alerts">Alertas</a></li>
-						<li><a href="/feeds">Sitios</a></li>
-						<li><a href="#">Acceso</a></li>
-					</ul>
-
-					<ul id="nav-mobile" class="side-nav">
-						<li><a href="/alerts">Alertas</a></li>
-						<li><a href="/feeds">Sitios</a></li>
-						<li><a href="#">Acceso</a></li>
-					</ul>
-					<a href="#" data-activates="nav-mobile" class="button-collapse"><i
-						class="mdi-navigation-menu"></i></a>
-				</div>
+	<div
+		class="demo-layout mdl-layout mdl-js-layout mdl-layout--fixed-drawer mdl-layout--fixed-header">
+		<header th:fragment="menu-superior"
+			class="demo-header mdl-layout__header mdl-color--white mdl-color--grey-100 mdl-color-text--grey-600">
+			<div class="mdl-layout__header-row">
+				<span class="mdl-layout-title mdl-color-text--primary"
+					th:text="${menu}">Resumen</span>
+				<div class="mdl-layout-spacer"></div>
+				<!-- <div
+					Quitar espacio en los guiones de las clases
+					class="mdl-textfield mdl-js-textfield mdl-textfield- -expandable">
+					<label class="mdl-button mdl-js-button mdl-button- -icon"
+						for="search"> <i class="material-icons">search</i>
+					</label>
+					<div class="mdl-textfield__expandable-holder">
+						<input class="mdl-textfield__input" type="text" id="search" /> <label
+							class="mdl-textfield__label" for="search">Enter your
+							query...</label>
+					</div> 
+				</div> -->
 			</div>
-		</nav>
-	</header>
-
-	<main class="container"></main>
-
-	<!--  Scripts-->
-	<script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
-	<script src="/js/materialize.js"></script>
-	<script src="/js/init.js"></script>
-
+		</header>
+		<div th:fragment="menu-izquierdo"
+			class="demo-drawer mdl-layout__drawer mdl-color--primary mdl-color-text--blue-grey-50">
+			<header sec:authorize="isAuthenticated()" class="demo-drawer-header">
+				<div class="demo-avatar-dropdown">
+					<span sec:authentication="principal.email">hello@example.com</span>
+					<div class="mdl-layout-spacer"></div>
+					<button id="accbtn"
+						class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon">
+						<i class="material-icons" role="presentation">arrow_drop_down</i>
+						<span class="visuallyhidden">Accounts</span>
+					</button>
+					<ul
+						class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect"
+						for="accbtn">
+						<li class="mdl-menu__item"><a href="@{/profile}">Perfil</a></li>
+						<li class="mdl-menu__item"><a th:href="@{/logout}" href="">Salir</a></li>
+					</ul>
+				</div>
+			</header>
+			<header sec:authorize="!isAuthenticated()" class="demo-drawer-header">
+				<div class="demo-avatar-dropdown">
+					<span>Hola Anonimo. <a th:href="@{/login}" href="">Accede</a></span>
+					<div class="mdl-layout-spacer"></div>
+				</div>
+			</header>
+			<nav class="demo-navigation mdl-navigation mdl-color--blue-grey-800">
+				<a class="mdl-navigation__link"
+					th:class="${url == #httpServletRequest.requestURI ? 'mdl-navigation\_\_link mdl-navigation\_\_link--current' : 'mdl-navigation__link'}"
+					th:href="${url}" th:with="url=@{/}" href=""><i
+					class="mdl-color-text--white material-icons"
+					role="presentation">insert_chart</i>Panel de Control</a> 
+					<div class="mdl-layout-spacer"></div>
+					<div class="mdl-navigation__link">Alertas</div>
+					<a
+					class="mdl-navigation__link mdl-navigation__sub_link"
+					th:class="${url == #httpServletRequest.requestURI ? 'mdl-navigation\_\_link mdl-navigation\_\_link--current' : 'mdl-navigation\_\_link mdl-navigation\_\_sub_link'}"
+					th:href="${url}" th:with="url=@{/alerts}" href=""><i
+					class="mdl-color-text--white material-icons"
+					role="presentation">add_alert</i>Activas</a><a
+					sec:authorize="isAuthenticated()" class="mdl-navigation__link mdl-navigation__sub_link"
+					th:class="${url == #httpServletRequest.requestURI ? 'mdl-navigation\_\_link mdl-navigation\_\_link--current' : 'mdl-navigation\_\_link mdl-navigation\_\_sub_link'}"
+					th:href="${url}" th:with="url=@{/admin/words}" href=""><i
+					class="mdl-color-text--white material-icons"
+					role="presentation">create</i>Listado</a>
+					<div class="mdl-layout-spacer"></div>
+					<div class="mdl-navigation__link">Riesgos</div>
+					<a
+					class="mdl-navigation__link mdl-navigation__sub_link"
+					th:class="${url == #httpServletRequest.requestURI ? 'mdl-navigation\_\_link mdl-navigation\_\_link--current' : 'mdl-navigation\_\_link mdl-navigation\_\_sub_link'}"
+					th:href="${url}" th:with="url=@{/risks}" href=""><i
+					class="mdl-color-text--white material-icons"
+					role="presentation">add_alert</i>Activos</a> 
+					<a
+					sec:authorize="isAuthenticated()" class="mdl-navigation__link mdl-navigation__sub_link"
+					th:class="${url == #httpServletRequest.requestURI ? 'mdl-navigation\_\_link mdl-navigation\_\_link--current' : 'mdl-navigation\_\_link mdl-navigation\_\_sub_link'}"
+					th:href="${url}" th:with="url=@{/admin/risks}" href=""><i
+					class="mdl-color-text--white material-icons"
+					role="presentation">create</i>Riesgos</a> <a
+					class="mdl-navigation__link"
+					th:class="${url == #httpServletRequest.requestURI ? 'mdl-navigation\_\_link mdl-navigation\_\_link--current' : 'mdl-navigation__link'}"
+					th:href="${url}" th:with="url=@{/feeds}" href=""><i
+					class="mdl-color-text--white material-icons"
+					role="presentation">storage</i>Websites de alertas</a><a
+					class="mdl-navigation__link"
+					th:class="${url == #httpServletRequest.requestURI ? 'mdl-navigation\_\_link mdl-navigation\_\_link--current' : 'mdl-navigation__link'}"
+					th:href="${url}" th:with="url=@{/risks/feeds}" href=""><i
+					class="mdl-color-text--white material-icons"
+					role="presentation">storage</i>Websites de riegos</a> <a
+					sec:authorize="isAuthenticated()" class="mdl-navigation__link"
+					th:class="${url == #httpServletRequest.requestURI ? 'mdl-navigation\_\_link mdl-navigation\_\_link--current' : 'mdl-navigation__link'}"
+					th:href="${url}" th:with="url=@{/admin/locations}" href=""><i
+					class="mdl-color-text--white material-icons"
+					role="presentation">language</i>Provedores</a> <a
+					sec:authorize="isAuthenticated()" class="mdl-navigation__link"
+					th:class="${url == #httpServletRequest.requestURI ? 'mdl-navigation\_\_link mdl-navigation\_\_link--current' : 'mdl-navigation__link'}"
+					th:href="${url}" th:with="url=@{/admin/configuracion}" href=""><i
+					class="mdl-color-text--white material-icons"
+					role="presentation">settings</i>Configuración</a>
+				<div class="mdl-layout-spacer"></div>
+				<a class="mdl-navigation__link" href=""><i
+					class="mdl-color-text--white material-icons"
+					role="presentation">help_outline</i><span class="visuallyhidden">Help</span></a>
+			</nav>
+		</div>
+		<main class="mdl-layout__content mdl-color--grey-100"> </main>
+		<footer>
+			<div aria-live="assertive" aria-atomic="true" aria-relevant="text"
+				class="mdl-js-snackbar"></div>
+			<!--  Scripts-->
+			<script th:src="@{/webjars/jquery/jquery.min.js}"
+				src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+			<script
+				src="https://storage.googleapis.com/code.getmdl.io/1.0.4/material.min.js"></script>
+			<script th:src="@{/static/js/material.snackbar.js}"
+				src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+			<script th:inline="javascript">
+				/*<![CDATA[*/
+				$(document).ready(
+						function() {
+							componentHandler.upgradeAllRegistered();
+							var mesInfo = [[${info}]];
+							var mesError = [[${error}]];
+							var notification = document
+									.querySelector('.mdl-js-snackbar');
+							if (mesInfo!=null) {
+								notification.MaterialSnackbar.showSnackbar({
+									message : mesInfo,
+									cssColor : 'mdl-color--primary',
+									timeout : 3000
+								});
+						}
+							if (mesError!=null) {
+								notification.MaterialSnackbar.showSnackbar({
+									message : mesError,
+									cssColor : 'mdl-color--red',
+									timeout : 3000
+								});
+							}
+						});
+				/*]]>*/
+			</script>
+		</footer>
+	</div>
 </body>
 </html>

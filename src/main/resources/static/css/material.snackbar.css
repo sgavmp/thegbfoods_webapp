@@ -1,0 +1,101 @@
+.mdl-snackbar {
+	position: absolute;
+	bottom: 0;
+	left: 50%;
+	margin-right: -50%;
+	cursor: default;
+	background-color: #323232;
+	z-index: 10000;
+	max-height: 0;
+	border-radius: 2px;
+	display: table;
+	font-family: 'Roboto', 'Helvetica', 'Arial', sans-serif ! default;
+	will-change: transform;
+	transform: translate3d(0, -50px, 0) rotateZ(0deg);
+	@media
+	(
+	max-width
+	:
+	479px
+	!default;)
+{
+	width
+	:
+	 
+	100%;
+	left
+	:
+	0;
+	
+    
+	min-height
+	:
+	 
+	48
+	px
+	;
+	
+    
+	max-height
+	:
+	 
+	80
+	px
+	;
+	
+  
+}
+
+@media ( min-width : 480px !default;) {
+	min-width
+	:
+	 
+	288
+	px
+	;
+	
+    
+	max-width
+	:
+	 
+	568
+	px
+	;
+	
+  
+}
+
+}
+.mdl-snackbar .is-active {
+	max-height: 48px;
+	transform: translate3d(0, 0, 0);
+}
+
+.mdl-snackbar__text {
+	padding: 14px 24px;
+	vertical-align: middle;
+	color: white;
+	display: table-cell;
+}
+
+.mdl-snackbar__action {
+	background: transparent;
+	border: none;
+	border-radius: 2px!default;
+	color: white;
+	display: table-cell;
+	text-transform: uppercase;
+	min-width: 64px!default;
+	padding: 14px 24px;
+	overflow: hidden;
+	outline: none;
+	cursor: pointer;
+	text-decoration: none;
+	text-align: center;
+	line-height: $button-height;
+	vertical-align: middle;
+}
+
+.mdl-snackbar__action::-moz-focus-inner {
+	border: 0;
+}

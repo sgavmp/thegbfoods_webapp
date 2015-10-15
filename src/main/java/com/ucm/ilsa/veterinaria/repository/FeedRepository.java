@@ -1,9 +1,16 @@
 package com.ucm.ilsa.veterinaria.repository;
 
-import org.springframework.data.repository.CrudRepository;
+import java.util.List;
 
+import org.springframework.data.repository.CrudRepository;
+import org.springframework.stereotype.Repository;
+
+import com.ucm.ilsa.veterinaria.domain.Alert;
 import com.ucm.ilsa.veterinaria.domain.Feed;
 
-public interface FeedRepository extends CrudRepository<Feed, String> {
+@Repository
+public interface FeedRepository extends CrudRepository<Feed, Long> {
 
+	public List<Feed> findAllByOrderByNameAsc();
+	
 }
