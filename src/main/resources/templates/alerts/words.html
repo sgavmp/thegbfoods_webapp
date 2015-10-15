@@ -79,16 +79,16 @@
 				<tbody>
 					<tr th:each="word : ${allWords}">
 						<td class="mdl-data-table__cell--non-numeric"
-							th:text="${word.title}">Alerta de fiebre</td>
+							th:inline="text"><a th:href="@{/alerts/get/{id}(id=${word.id})}">[[${word.title}]]</a></td>
 						<td class="mdl-data-table__cell--non-numeric"
 							th:text="${word.type}"></td>
 						<td><a href="#"
 							th:href="@{/admin/words/get/{id}/edit(id=${word.id})}"><i
-								class="mdl-color-text--blue-grey-400 material-icons"
+								class="mdl-color-text--white material-icons"
 								role="presentation">mode-edit</i></a></td>
 						<td><a class="confirm" href="#"
 							th:href="@{/admin/words/get/{id}/remove(id=${word.id})}"><i
-								class="mdl-color-text--blue-grey-400 material-icons confirm"
+								class="mdl-color-text--white material-icons confirm"
 								role="presentation">delete</i></a></td>
 					</tr>
 				</tbody>
@@ -104,7 +104,7 @@
 				var url = e && (('string' === typeof e && e) || (e.currentTarget && e.currentTarget.attributes['href'].value));
 				notification.MaterialSnackbar.showSnackbar({
 					message : "¿Estas seguro de borrar la alerta seleccionada?",
-					cssColor : 'mdl-color--green',
+					cssColor : 'mdl-color--primary',
 					timeout : 300000,
 					actionHandler: function(event) {window.location = url; notification.MaterialSnackbar.cleanup_();},
 					  actionText: 'Si',

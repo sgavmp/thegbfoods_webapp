@@ -96,11 +96,11 @@
 						<td th:text="${loc.longitude}">-2.5653</td>
 						<td><a href="#"
 							th:href="@{/admin/locations/get/{id}/edit(id=${loc.id})}"><i
-								class="mdl-color-text--blue-grey-400 material-icons"
+								class="mdl-color-text--white material-icons"
 								role="presentation">mode-edit</i></a></td>
 						<td><a class="confirm" href="#"
 							th:href="@{/admin/locations/get/{id}/remove(id=${loc.id})}"><i
-								class="mdl-color-text--blue-grey-400 material-icons"
+								class="mdl-color-text--white material-icons"
 								role="presentation">delete</i></a></td>
 					</tr>
 				</tbody>
@@ -121,7 +121,7 @@
 							for (var i = 0; i < mesInfo.length; i++) {
 								notification.MaterialSnackbar.showSnackbar({
 									message : mesInfo[i],
-									cssColor : 'mdl-color--green',
+									cssColor : 'mdl-color--primary',
 									timeout : 3000
 								});
 							}
@@ -141,7 +141,7 @@
 				var url = e.currentTarget;
 				notification.MaterialSnackbar.showSnackbar({
 					message : "¿Estas seguro de borrar el proveedor seleccionado?",
-					cssColor : 'mdl-color--green',
+					cssColor : 'mdl-color--primary',
 					timeout : 300000,
 					actionHandler: function(event) {window.location = url; notification.MaterialSnackbar.cleanup_();},
 					  actionText: 'Si',

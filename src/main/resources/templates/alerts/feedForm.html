@@ -33,22 +33,25 @@
 							class="mdl-switch__label">&iquest;Es un sitio con RSS?</span>
 						</label>
 					</div>
+					
 					<div class="mdl-cell mdl-cell--3-col">
 						<label class="mdl-switch mdl-js-switch mdl-js-ripple-effect"
 							for="actived"> <input type="checkbox"
 							class="mdl-switch__input" id="actived" name="actived"
 							th:checked="*{actived}" th:field="*{actived}" /> <span
-							class="mdl-switch__label">&iquest;Está aceptado?</span>
+							class="mdl-switch__label">&iquest;Está activado?</span>
 						</label>
-					</div>
-					<div class="mdl-cell mdl-cell--3-col">
+					</div>  
+					<!-- 
+					Quitar espacio entre guiones en las clases
+					<div class="mdl-cell mdl-cell- -3-col">
 						<label class="mdl-switch mdl-js-switch mdl-js-ripple-effect"
 							for="accepted"> <input type="checkbox"
 							class="mdl-switch__input" id="accepted" name="accepted"
 							th:checked="*{accepted}" th:field="*{accepted}" /> <span
-							class="mdl-switch__label">&iquest;Está activado?</span>
+							class="mdl-switch__label">&iquest;Está aceptado?</span>
 						</label>
-					</div>
+					</div> -->
 					<div
 						class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
 						<input class="mdl-textfield__input" type="text" th:field="*{name}" />

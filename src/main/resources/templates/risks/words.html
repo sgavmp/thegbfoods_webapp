@@ -20,8 +20,8 @@
 				class="mdl-cell mdl-cell--8-col mdl-color--white mdl-shadow--2dp">
 				<div
 					class="mdl-cell mdl-cell--12-col mdl-cell--12-col-desktop mdl-typography--display-1-color-contrast"
-					th:inline="text">[[${term.id==null?'Crear alerta':'Editar
-					alerta'}]]</div>
+					th:inline="text">[[${term.id==null?'Crear riesgo':'Editar
+					riesgo'}]]</div>
 				<form action="#"
 					th:action="${term.id==null}?@{/admin/risks/create}:@{/admin/risks/get/{id}/edit(id=${term.id})}"
 					val:validate="${term}" th:object="${term}" method="post">
@@ -71,11 +71,11 @@
 							th:inline="text"><a th:href="@{/risks/get/{id}(id=${word.id})}">[[${word.title}]]</a></td>
 						<td><a href="#"
 							th:href="@{/admin/risks/get/{id}/edit(id=${word.id})}"><i
-								class="mdl-color-text--blue-grey-400 material-icons"
+								class="mdl-color-text--white material-icons"
 								role="presentation">mode-edit</i></a></td>
 						<td><a class="confirm" href="#"
 							th:href="@{/admin/risks/get/{id}/remove(id=${word.id})}"><i
-								class="mdl-color-text--blue-grey-400 material-icons confirm"
+								class="mdl-color-text--white material-icons confirm"
 								role="presentation">delete</i></a></td>
 					</tr>
 				</tbody>
@@ -91,7 +91,7 @@
 				var url = e && (('string' === typeof e && e) || (e.currentTarget && e.currentTarget.attributes['href'].value));
 				notification.MaterialSnackbar.showSnackbar({
 					message : "¿Estas seguro de borrar la alerta seleccionada?",
-					cssColor : 'mdl-color--green',
+					cssColor : 'mdl-color--primary',
 					timeout : 300000,
 					actionHandler: function(event) {window.location = url; notification.MaterialSnackbar.cleanup_();},
 					  actionText: 'Si',

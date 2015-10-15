@@ -27,6 +27,10 @@ html, body {
 	margin-bottom: 16px;
 }
 
+.mdl-navigation__sub_link {
+	padding-left: 70px !important;	
+}
+
 .demo-drawer {
 	border: none;
 }
@@ -73,7 +77,7 @@ html, body {
 	display: flex !important;
 	flex-direction: row;
 	align-items: center;
-	color: rgba(255, 255, 255, 0.56);
+	color: rgba(255, 255, 255, 1);
 	font-weight: 500;
 }
 
@@ -84,7 +88,7 @@ html, body {
 
 .demo-navigation .mdl-navigation__link .material-icons {
 	font-size: 24px;
-	color: rgba(255, 255, 255, 0.56);
+	color: rgba(255, 255, 255, 1);
 	margin-right: 32px;
 }
 
@@ -202,7 +206,7 @@ _:-ms-input-placeholder, :root .demo-graph {
 }
 
 .vet-alerta-num:after {
-	background: #F44336 !important;
+	background: #37474f !important;
 }
 
 .doc-page {

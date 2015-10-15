@@ -35,7 +35,7 @@ public class RiskAdminController extends BaseController {
 	private NewsDetectRepository repository;
 	
 	public RiskAdminController() {
-		this.menu = "Riesgos futuros";
+		this.menu = "Riesgos";
 	}
 	
 	@RequestMapping("**")
