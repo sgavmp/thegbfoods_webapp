@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -61,32 +62,32 @@ public class MainController extends BaseController {
 	}
 
 	@ModelAttribute("alertsUncheck")
-	public List<Alert> getAllAlertsUnchecked() {
+	public Set<Alert> getAllAlertsUnchecked() {
 		Date now = new Date(System.currentTimeMillis());
 		Date today = new Date(now.getYear(), now.getMonth(), now.getDate()-7);
-		List<Alert> lista = service.getAlertDetectActivatedAfter(today);
+		Set<Alert> lista = service.getAlertDetectActivatedAfter(today);
 		return lista;
 	}
 	
 	@ModelAttribute("risksUncheck")
-	public List<Risk> getAllRisksUnchecked() {
+	public Set<Risk> getAllRisksUnchecked() {
 		return serviceRisk.getAllAlertActive();
 	}
 
 	@ModelAttribute("alertsActivateToday")
-	public List<Alert> getAllAlertsToday() {
+	public Set<Alert> getAllAlertsToday() {
 		Date now = new Date(System.currentTimeMillis());
 		Date today = new Date(now.getYear(), now.getMonth(), now.getDate());
-		List<Alert> lista = service.getAlertDetectActivatedAfter(today);
+		Set<Alert> lista = service.getAlertDetectActivatedAfter(today);
 		return lista;
 	}
 	
 	@ModelAttribute("risksActivateInLast")
-	public List<Risk> getAllRiskInLast() {
+	public Set<Risk> getAllRiskInLast() {
 		Date now = new Date(System.currentTimeMillis());
 		Configuracion conf = configuracionRepository.findOne("conf");
 		Date date = new Date(now.getYear(), now.getMonth(), now.getDate()-conf.getDayRisks());
-		List<Risk> lista = serviceRisk.getAlertDetectActivatedAfter(date);
+		Set<Risk> lista = serviceRisk.getAlertDetectActivatedAfter(date);
 		for (Risk risk : lista) {
 			for (NewsDetect news : risk.getNewsDetect()) {
 				news.setAlertDetect(null);
@@ -98,7 +99,7 @@ public class MainController extends BaseController {
 	@ModelAttribute("allCountriesAfects")
 	public Map<String, String> getAllCountriesAfects() {
 		Map<String, String> listCountries = new HashMap<String, String>();
-		List<Alert> listAlert = service.getAllAlert();
+		Set<Alert> listAlert = service.getAllAlert();
 		for (Alert alert : listAlert) {
 			for (NewsDetect news : alert.getNewsDetect()) {
 				if (!news.getFalPositive() && !news.getHistory()) {
@@ -112,18 +113,6 @@ public class MainController extends BaseController {
 		}
 		listCountries.put("defaultFill", "rgba(200,200,200,1)");
 		return listCountries;
-	}
-
-	@ModelAttribute("stat")
-	public Statistics getStatisticsToday() {
-		Statistics statistics = statisticsRepository.findOne(new java.sql.Date(
-				System.currentTimeMillis()));
-		if (statistics == null) {
-			statistics = new Statistics(new java.sql.Date(
-					System.currentTimeMillis()), 0, 0);
-			statisticsRepository.save(statistics);
-		}
-		return statistics;
 	}
 
 	@ModelAttribute("graph")
@@ -169,46 +158,35 @@ public class MainController extends BaseController {
 	
 	@ModelAttribute("month")
 	public GraphData getGraphDataForMonth() {
-		List<String> dias = Lists.newArrayList("Semana 1","Semana 2","Semana 3","Semana 4");
-		List<Statistics> stats = new ArrayList<Statistics>();
-		Statistics statistics = null;
-		Long date = System.currentTimeMillis() - (ONE_DAY * 6);
 		GraphData graph = new GraphData();
-		for (int i = 0; i < 7; i++) {
-			java.sql.Date current = new java.sql.Date(date + (ONE_DAY * i));
-			statistics = statisticsRepository.findOne(current);
-			if (statistics == null) {
-				statistics = new Statistics(current);
-			}
-			stats.add(statistics);
+		List<Object[]> stats = statisticsRepository.getStatsByWeek();
+		while(stats.size()<4) {
+			Object[] t = {((Integer)stats.get(0)[0])-1,0,0};
+			stats.add(0, t);
 		}
-		for (Statistics stat : stats) {
-			graph.alertas.add(stat.getNumAlerts().toString());
-			graph.noticias.add(stat.getNumNews().toString());
+		for (Object[] stat : stats) {
+			graph.alertas.add(stat[1]);
+			graph.noticias.add(stat[2]);
+			graph.labels.add("Semana " + (Integer)stat[0]);
 		}
-		graph.labels.addAll(dias);
 		return graph;
 	}
 	
 	@ModelAttribute("year")
 	public GraphData getGraphDataForYear() {
 		List<String> dias = Lists.newArrayList("Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre");
-		List<Statistics> stats = new ArrayList<Statistics>();
-		Statistics statistics = null;
-		Long date = System.currentTimeMillis() - (ONE_DAY * 6);
 		GraphData graph = new GraphData();
-		for (int i = 0; i < 7; i++) {
-			java.sql.Date current = new java.sql.Date(date + (ONE_DAY * i));
-			statistics = statisticsRepository.findOne(current);
-			if (statistics == null) {
-				statistics = new Statistics(current);
-			}
-			stats.add(statistics);
+		List<Object[]> stats = statisticsRepository.getStatsByMonth();
+		while(stats.size()<12) {
+			Integer month = ((Integer)stats.get(0)[0])-1;
+			month = month<1?12:month;
+			Object[] t = {month,0,0};
+			stats.add(0, t);
 		}
-		for (Statistics stat : stats) {
-			graph.alertas.add(stat.getNumAlerts().toString());
-			graph.noticias.add(stat.getNumNews().toString());
-			graph.labels.add(dias.get(stat.getDate().getMonth()));
+		for (Object[] stat : stats) {
+			graph.alertas.add(stat[1]);
+			graph.noticias.add(stat[2]);
+			graph.labels.add(dias.get((Integer)stat[0]-1));
 		}
 		return graph;
 	}

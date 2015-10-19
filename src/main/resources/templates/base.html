@@ -105,30 +105,28 @@
 					th:href="${url}" th:with="url=@{/}" href=""><i
 					class="mdl-color-text--white material-icons"
 					role="presentation">insert_chart</i>Panel de Control</a> 
-					<div class="mdl-layout-spacer"></div>
-					<div class="mdl-navigation__link">Alertas</div>
+					<div class="mdl-navigation__group">Alertas</div>
 					<a
 					class="mdl-navigation__link mdl-navigation__sub_link"
-					th:class="${url == #httpServletRequest.requestURI ? 'mdl-navigation\_\_link mdl-navigation\_\_link--current' : 'mdl-navigation\_\_link mdl-navigation\_\_sub_link'}"
+					th:class="${url == #httpServletRequest.requestURI ? 'mdl-navigation\_\_link mdl-navigation\_\_link--current mdl-navigation\_\_sub_link' : 'mdl-navigation\_\_link mdl-navigation\_\_sub_link'}"
 					th:href="${url}" th:with="url=@{/alerts}" href=""><i
 					class="mdl-color-text--white material-icons"
 					role="presentation">add_alert</i>Activas</a><a
 					sec:authorize="isAuthenticated()" class="mdl-navigation__link mdl-navigation__sub_link"
-					th:class="${url == #httpServletRequest.requestURI ? 'mdl-navigation\_\_link mdl-navigation\_\_link--current' : 'mdl-navigation\_\_link mdl-navigation\_\_sub_link'}"
+					th:class="${url == #httpServletRequest.requestURI ? 'mdl-navigation\_\_link mdl-navigation\_\_link--current mdl-navigation\_\_sub_link' : 'mdl-navigation\_\_link mdl-navigation\_\_sub_link'}"
 					th:href="${url}" th:with="url=@{/admin/words}" href=""><i
 					class="mdl-color-text--white material-icons"
 					role="presentation">create</i>Listado</a>
-					<div class="mdl-layout-spacer"></div>
-					<div class="mdl-navigation__link">Riesgos</div>
+					<div class="mdl-navigation__group">Riesgos</div>
 					<a
 					class="mdl-navigation__link mdl-navigation__sub_link"
-					th:class="${url == #httpServletRequest.requestURI ? 'mdl-navigation\_\_link mdl-navigation\_\_link--current' : 'mdl-navigation\_\_link mdl-navigation\_\_sub_link'}"
+					th:class="${url == #httpServletRequest.requestURI ? 'mdl-navigation\_\_link mdl-navigation\_\_link--current mdl-navigation\_\_sub_link' : 'mdl-navigation\_\_link mdl-navigation\_\_sub_link'}"
 					th:href="${url}" th:with="url=@{/risks}" href=""><i
 					class="mdl-color-text--white material-icons"
 					role="presentation">add_alert</i>Activos</a> 
 					<a
 					sec:authorize="isAuthenticated()" class="mdl-navigation__link mdl-navigation__sub_link"
-					th:class="${url == #httpServletRequest.requestURI ? 'mdl-navigation\_\_link mdl-navigation\_\_link--current' : 'mdl-navigation\_\_link mdl-navigation\_\_sub_link'}"
+					th:class="${url == #httpServletRequest.requestURI ? 'mdl-navigation\_\_link mdl-navigation\_\_link--current mdl-navigation\_\_sub_link' : 'mdl-navigation\_\_link mdl-navigation\_\_sub_link'}"
 					th:href="${url}" th:with="url=@{/admin/risks}" href=""><i
 					class="mdl-color-text--white material-icons"
 					role="presentation">create</i>Riesgos</a> <a
@@ -136,12 +134,7 @@
 					th:class="${url == #httpServletRequest.requestURI ? 'mdl-navigation\_\_link mdl-navigation\_\_link--current' : 'mdl-navigation__link'}"
 					th:href="${url}" th:with="url=@{/feeds}" href=""><i
 					class="mdl-color-text--white material-icons"
-					role="presentation">storage</i>Websites de alertas</a><a
-					class="mdl-navigation__link"
-					th:class="${url == #httpServletRequest.requestURI ? 'mdl-navigation\_\_link mdl-navigation\_\_link--current' : 'mdl-navigation__link'}"
-					th:href="${url}" th:with="url=@{/risks/feeds}" href=""><i
-					class="mdl-color-text--white material-icons"
-					role="presentation">storage</i>Websites de riegos</a> <a
+					role="presentation">storage</i>Websites</a> <a
 					sec:authorize="isAuthenticated()" class="mdl-navigation__link"
 					th:class="${url == #httpServletRequest.requestURI ? 'mdl-navigation\_\_link mdl-navigation\_\_link--current' : 'mdl-navigation__link'}"
 					th:href="${url}" th:with="url=@{/admin/locations}" href=""><i

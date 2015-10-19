@@ -27,8 +27,29 @@ html, body {
 	margin-bottom: 16px;
 }
 
+.mdl-navigation__group {
+	display: flex !important;
+	flex-direction: row;
+	align-items: center;
+	color: rgba(255, 255, 255, 1);
+	font-weight: 500;
+	flex-shrink: 0;
+	padding: 16px 40px;
+	margin: 0;
+	font-size: 17px;
+	text-decoration: none;
+}
+
+.mdl-navigation__link--current {
+	color: rgb(255,87,34)!important;
+}
+
+.mdl-navigation__link--current .material-icons {
+	color: rgb(255,87,34)!important;
+}
+
 .mdl-navigation__sub_link {
-	padding-left: 70px !important;	
+	padding-left: 70px !important;
 }
 
 .demo-drawer {
@@ -56,9 +77,9 @@ html, body {
 	padding: 9px;
 	height: 185px;
 	background-image: url("../img/logo.png");
-    background-size: contain;
-    background-repeat: no-repeat;
-    margin: 10px;
+	background-size: contain;
+	background-repeat: no-repeat;
+	margin: 10px;
 }
 
 .demo-avatar-dropdown {
@@ -211,7 +232,6 @@ _:-ms-input-placeholder, :root .demo-graph {
 
 .doc-page {
 	margin-top: 30px;
-	
 }
 
 .snippet {
@@ -239,7 +259,7 @@ _:-ms-input-placeholder, :root .demo-graph {
 
 .d3-tip {
 	background-color: #37474f;
-	color:white;
+	color: white;
 	border-radius: 5px;
 	padding: 5px;
 }
@@ -249,6 +269,7 @@ _:-ms-input-placeholder, :root .demo-graph {
 	font-weight: bold;
 	text-align: center;
 }
+
 .d3-tip .value {
 	width: 100%;
 	text-align: center;
@@ -258,6 +279,6 @@ _:-ms-input-placeholder, :root .demo-graph {
 	padding: 5px;
 	border-top: 1px solid;
 	margin-top: 10px;
-	background-color: rgb(255,87,34);
+	background-color: rgb(255, 87, 34);
 	text-align: center;
 }

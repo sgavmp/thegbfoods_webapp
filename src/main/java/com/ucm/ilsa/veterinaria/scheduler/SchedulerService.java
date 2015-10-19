@@ -11,11 +11,7 @@ import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Maps;
 import com.ucm.ilsa.veterinaria.domain.Feed;
-import com.ucm.ilsa.veterinaria.domain.FeedRisk;
-import com.ucm.ilsa.veterinaria.domain.SiteAbstract;
-import com.ucm.ilsa.veterinaria.service.FeedRiskService;
 import com.ucm.ilsa.veterinaria.service.FeedService;
-import com.ucm.ilsa.veterinaria.service.NewsCheckFeedRiskService;
 import com.ucm.ilsa.veterinaria.service.NewsCheckFeedService;
 
 @Service
@@ -23,28 +19,22 @@ public class SchedulerService {
 
 	private TaskScheduler scheduler;
 	private FeedService serviceFeed;
-	private FeedRiskService serviceFeedRisk;
 	private Map<Long, ScheduledFuture<?>> tasks = Maps.newLinkedHashMap();
 	private static final int MIN_MILIS = 60000;
 	private NewsCheckFeedService newsCheckService;
-	private NewsCheckFeedRiskService newsCheckRiskService;
 
 	@Autowired
-	public SchedulerService(FeedService service, FeedRiskService serviceRisk, TaskScheduler scheduler,
-			NewsCheckFeedService newsCheckService, NewsCheckFeedRiskService newsCheckRiskService) {
+	public SchedulerService(FeedService service, TaskScheduler scheduler,
+			NewsCheckFeedService newsCheckService) {
 		this.scheduler = scheduler;
 		this.serviceFeed = service;
 		this.newsCheckService = newsCheckService;
-		this.newsCheckRiskService = newsCheckRiskService;
-		this.serviceFeedRisk = serviceRisk;
 		service.setSchedulerService(this);
-		serviceFeedRisk.setSchedulerService(this);
 		init();
 	}
 
 	public void init() {
 		List<Feed> listFeeds = serviceFeed.getAllFeed();
-		List<FeedRisk> listFeedsRisk = serviceFeedRisk.getAllFeed();
 		Date startTime = new Date();
 		startTime.setTime(startTime.getTime() + 1000 * 120);// Las tareas se
 															// comienzan a
@@ -53,22 +43,8 @@ public class SchedulerService {
 															// tras planificar
 		for (Feed feed : listFeeds) {
 			if (feed.isAccepted() & feed.isActived()) {
-				AlertTaskContainer task = new AlertTaskContainer(feed, serviceFeed, this,
-						newsCheckService);
-				ScheduledFuture<?> futureTask = scheduler
-						.scheduleWithFixedDelay(task, startTime, MIN_MILIS
-								* feed.getMinRefresh());
-				startTime.setTime(startTime.getTime() + 1000 * 30);// Vamos
-																	// espacioandolas
-																	// cada 2
-																	// minutos
-				tasks.put(feed.getId(), futureTask);
-			}
-		}
-		for (FeedRisk feed : listFeedsRisk) {
-			if (feed.isAccepted() & feed.isActived()) {
-				RiskTaskContainer task = new RiskTaskContainer(feed, serviceFeedRisk, this,
-						newsCheckRiskService);
+				AlertTaskContainer task = new AlertTaskContainer(feed,
+						serviceFeed, this, newsCheckService);
 				ScheduledFuture<?> futureTask = scheduler
 						.scheduleWithFixedDelay(task, startTime, MIN_MILIS
 								* feed.getMinRefresh());
@@ -81,7 +57,7 @@ public class SchedulerService {
 		}
 	}
 
-	public void removeFeedTask(SiteAbstract feed) {
+	public void removeFeedTask(Feed feed) {
 		if (tasks.containsKey(feed.getId())) {
 			ScheduledFuture<?> futureTask = tasks.get(feed.getId());
 			futureTask.cancel(true);
@@ -89,63 +65,44 @@ public class SchedulerService {
 		}
 	}
 
-	public void updateFeedTask(SiteAbstract feed) {
+	public void updateFeedTask(Feed feed) {
 		Date startTime = new Date();
 		startTime.setTime(startTime.getTime() + 1000 * 120);
 		if (tasks.containsKey(feed.getId())) {
 			ScheduledFuture<?> futureTask = tasks.remove(feed.getId());
 			futureTask.cancel(true);
-		} 
+		}
 		if (feed.isActived() && feed.isAccepted()) {
 			ScheduledFuture<?> futureTask = null;
-			if (feed instanceof Feed) {
-				AlertTaskContainer task = new AlertTaskContainer((Feed) feed, serviceFeed, this,
-						newsCheckService);
-				futureTask = scheduler.scheduleWithFixedDelay(
-						task, startTime, MIN_MILIS * feed.getMinRefresh());
-			} else {
-				RiskTaskContainer task = new RiskTaskContainer((FeedRisk) feed, serviceFeedRisk, this,
-						newsCheckRiskService);
-				futureTask = scheduler.scheduleWithFixedDelay(
-						task, startTime, MIN_MILIS * feed.getMinRefresh());
-			}
+			AlertTaskContainer task = new AlertTaskContainer((Feed) feed,
+					serviceFeed, this, newsCheckService);
+			futureTask = scheduler.scheduleWithFixedDelay(task, startTime,
+					MIN_MILIS * feed.getMinRefresh());
 			tasks.put(feed.getId(), futureTask);
 		}
 	}
 
-	public void addFeedTask(SiteAbstract feed) {
+	public void addFeedTask(Feed feed) {
 		Date startTime = new Date();
 		startTime.setTime(startTime.getTime() + 1000 * 120);
 		if (feed.isActived() && feed.isAccepted()) {
 			ScheduledFuture<?> futureTask = null;
-			if (feed instanceof Feed) {
-				AlertTaskContainer task = new AlertTaskContainer((Feed) feed, serviceFeed, this,
-						newsCheckService);
-				futureTask = scheduler.scheduleWithFixedDelay(
-						task, startTime, MIN_MILIS * feed.getMinRefresh());
-			} else {
-				RiskTaskContainer task = new RiskTaskContainer((FeedRisk) feed, serviceFeedRisk, this,
-						newsCheckRiskService);
-				futureTask = scheduler.scheduleWithFixedDelay(
-						task, startTime, MIN_MILIS * feed.getMinRefresh());
-			}
+			AlertTaskContainer task = new AlertTaskContainer((Feed) feed,
+					serviceFeed, this, newsCheckService);
+			futureTask = scheduler.scheduleWithFixedDelay(task, startTime,
+					MIN_MILIS * feed.getMinRefresh());
 			tasks.put(feed.getId(), futureTask);
 		}
 	}
 
-	public void startTask(SiteAbstract feed) {
+	public void startTask(Feed feed) {
 		if (feed.isActived() && feed.isAccepted()) {
 			Date startTime = new Date();
 			startTime.setTime(startTime.getTime() + 1000 * 5); // Iniciar en 5
-			if (feed instanceof Feed) {
-				AlertTaskContainer task = new AlertTaskContainer((Feed) feed, serviceFeed, this,
-						newsCheckService);
-				scheduler.schedule(task, startTime);
-			} else {
-				RiskTaskContainer task = new RiskTaskContainer((FeedRisk) feed, serviceFeedRisk, this,
-						newsCheckRiskService);
-				scheduler.schedule(task, startTime);
-			}
+			AlertTaskContainer task = new AlertTaskContainer((Feed) feed,
+					serviceFeed, this, newsCheckService);
+			scheduler.schedule(task, startTime);
+
 		}
 	}
 

@@ -8,7 +8,7 @@ import java.util.Locale;
 import com.ucm.ilsa.veterinaria.domain.Feed;
 import com.ucm.ilsa.veterinaria.domain.Language;
 import com.ucm.ilsa.veterinaria.domain.News;
-import com.ucm.ilsa.veterinaria.domain.SiteAbstract;
+import com.ucm.ilsa.veterinaria.domain.Feed;
 
 public class NewsBuilder {
 
@@ -16,7 +16,7 @@ public class NewsBuilder {
 	private String dateFormat;
 	private Locale locale;
 
-	public NewsBuilder(SiteAbstract feed) {
+	public NewsBuilder(Feed feed) {
 		this.news = new News();
 		this.news.setSite(feed.getId());
 		this.dateFormat = feed.getDateFormat();

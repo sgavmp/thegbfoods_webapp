@@ -1,6 +1,7 @@
 package com.ucm.ilsa.veterinaria.service;
 
 import java.util.List;
+import java.util.Set;
 
 import com.ucm.ilsa.veterinaria.domain.Alert;
 import com.ucm.ilsa.veterinaria.domain.AlertAbstract;
@@ -21,7 +22,7 @@ public interface FeedService {
 	public void setSchedulerService(SchedulerService schedulerService);
 	public News testFeed(FeedForm feed);
 	public List<NewsDetect> findAllDistinctNewsDetectByFeedOrderByDatePub(Feed feed);
-	public List<Alert> checkNewsLinkOnFeed(String link, Feed feed);
+	public Set<AlertAbstract> checkNewsLinkOnFeed(String link, Feed feed);
 	public Feed setSateOfFeed(Feed feed, UpdateStateEnum state);
 
 }

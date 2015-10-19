@@ -2,7 +2,7 @@ package com.ucm.ilsa.veterinaria.domain;
 
 public enum WebLevel {
 	
-	yellow(1),orange(2),red(3);
+	yellow(1),orange(2),red(3),blue(4);
 	
 	private int value;
 

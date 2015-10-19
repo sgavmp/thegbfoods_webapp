@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
@@ -57,7 +58,7 @@ public class FeedController extends BaseController {
 	@RequestMapping("/get/{codeName}")
 	public String getAllNewsByFeed(Model model, @PathVariable ("codeName") Feed feed) {
 		model.addAttribute(feed);
-		List<Alert> alertas = serviceAlert.getAlertDetectSite(feed);
+		Set<Alert> alertas = serviceAlert.getAlertDetectSite(feed);
 		for (Alert alerta : alertas) {
 			Iterator<NewsDetect> iterator = alerta.getNewsDetect().iterator();
 			while(iterator.hasNext()) {

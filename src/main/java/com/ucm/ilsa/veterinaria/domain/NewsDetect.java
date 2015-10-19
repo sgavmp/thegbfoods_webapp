@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.CollectionTable;
@@ -38,7 +39,7 @@ public class NewsDetect extends BaseEntity {
 	private Long id;
 	@ManyToOne
 	@JoinColumn(name = "siteCodeName")
-	private SiteAbstract site;
+	private Feed site;
 	@Lob
 	private String title;
 	@Lob
@@ -46,18 +47,20 @@ public class NewsDetect extends BaseEntity {
 	private String link;
 	private Date datePub;
 	@ElementCollection(fetch = FetchType.EAGER)
-	private List<String> wordsDetect;
+	private Set<String> wordsDetect;
 	@ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
 	@JoinColumn(name = "alert_detect_id")
-	private List<Location> locationsNear;
+	private Set<Location> locationsNear;
 	@ElementCollection(fetch = FetchType.EAGER)
 	@CollectionTable(name = "news_detect_locations", joinColumns = @JoinColumn(name = "NEWS_ID") )
-	private List<PointLocation> locations;
+	private Set<PointLocation> locations;
 	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
 	@JoinColumn(name = "alert_detect_id")
 	private AlertAbstract alertDetect;
 	private boolean history = false;
 	private boolean falPositive = false;
+	private boolean mark = false;
+	private Double score;
 
 	public Long getId() {
 		return id;
@@ -67,27 +70,27 @@ public class NewsDetect extends BaseEntity {
 		this.id = id;
 	}
 
-	public List<String> getWordsDetect() {
+	public Set<String> getWordsDetect() {
 		return wordsDetect;
 	}
 
-	public void setWordsDetect(List<String> wordsDetect) {
+	public void setWordsDetect(Set<String> wordsDetect) {
 		this.wordsDetect = wordsDetect;
 	}
 
-	public List<Location> getLocationsNear() {
+	public Set<Location> getLocationsNear() {
 		return locationsNear;
 	}
 
-	public void setLocationsNear(List<Location> locationsNear) {
+	public void setLocationsNear(Set<Location> locationsNear) {
 		this.locationsNear = locationsNear;
 	}
 
-	public SiteAbstract getSite() {
+	public Feed getSite() {
 		return site;
 	}
 
-	public void setSite(SiteAbstract site) {
+	public void setSite(Feed site) {
 		this.site = site;
 	}
 
@@ -137,11 +140,11 @@ public class NewsDetect extends BaseEntity {
 		return mapa;
 	}
 
-	public List<PointLocation> getLocations() {
+	public Set<PointLocation> getLocations() {
 		return locations;
 	}
 
-	public void setLocations(List<PointLocation> locations) {
+	public void setLocations(Set<PointLocation> locations) {
 		this.locations = locations;
 	}
 
@@ -159,6 +162,22 @@ public class NewsDetect extends BaseEntity {
 
 	public void setFalPositive(boolean isFalsePositive) {
 		this.falPositive = isFalsePositive;
+	}
+
+	public boolean isMark() {
+		return mark;
+	}
+
+	public void setMark(boolean mark) {
+		this.mark = mark;
+	}
+
+	public Double getScore() {
+		return score;
+	}
+
+	public void setScore(Double score) {
+		this.score = score;
 	}
 
 	@Override

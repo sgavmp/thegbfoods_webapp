@@ -7,21 +7,14 @@ import java.net.URLConnection;
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 
-import org.apache.commons.lang.CharSet;
 import org.apache.log4j.Logger;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.scheduling.annotation.AsyncResult;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Repository;
 
 import com.rometools.rome.feed.synd.SyndContent;
@@ -33,13 +26,10 @@ import com.rometools.rome.io.XmlReader;
 import com.ucm.ilsa.veterinaria.domain.CharsetEnum;
 import com.ucm.ilsa.veterinaria.domain.Feed;
 import com.ucm.ilsa.veterinaria.domain.FeedForm;
-import com.ucm.ilsa.veterinaria.domain.FeedRisk;
 import com.ucm.ilsa.veterinaria.domain.News;
-import com.ucm.ilsa.veterinaria.domain.SiteAbstract;
 import com.ucm.ilsa.veterinaria.domain.Statistics;
 import com.ucm.ilsa.veterinaria.domain.builder.NewsBuilder;
 import com.ucm.ilsa.veterinaria.repository.FeedRepository;
-import com.ucm.ilsa.veterinaria.repository.FeedRiskRepository;
 import com.ucm.ilsa.veterinaria.repository.NewsDetectRepository;
 import com.ucm.ilsa.veterinaria.repository.StatisticsRepository;
 import com.ucm.ilsa.veterinaria.service.FeedScraping;
@@ -51,7 +41,6 @@ public class FeedScrapingImpl implements FeedScraping {
 			.getLogger(FeedScrapingImpl.class);
 
 	private FeedRepository repositoryFeed;
-	private FeedRiskRepository repositoryFeedRisk;
 
 	private NewsDetectRepository repositoryNewsDetect;
 
@@ -59,48 +48,41 @@ public class FeedScrapingImpl implements FeedScraping {
 
 	@Autowired
 	public FeedScrapingImpl(FeedRepository repositoryFeed,
-			FeedRiskRepository repositoryFeedRisk,
-			NewsDetectRepository repositoryNewsDetect, StatisticsRepository statisticsRepository) {
+			NewsDetectRepository repositoryNewsDetect,
+			StatisticsRepository statisticsRepository) {
 		this.repositoryFeed = repositoryFeed;
-		this.repositoryFeedRisk = repositoryFeedRisk;
 		this.repositoryNewsDetect = repositoryNewsDetect;
 		this.statisticsRepository = statisticsRepository;
 	}
 
 	@Override
-	public List<News> scrapNews(SiteAbstract feed) {
+	public List<News> scrapNews(Feed feed) {
 		List<News> newsList = new ArrayList<>();
 		if (feed.isRSS()) {
 			newsList = scrapingWhitRSS(feed);
 		} else {
 			newsList = scrapingWithOutRSS(feed);
 		}
-		if (feed instanceof Feed)
-			feed = repositoryFeed.findOne(feed.getId());
-		else
-			feed = repositoryFeedRisk.findOne(feed.getId());
+		feed = repositoryFeed.findOne(feed.getId());
 		feed.setUltimaRecuperacion(new Timestamp(System.currentTimeMillis()));
 		feed.setNumNewNews(newsList != null ? newsList.size() : 0);
-		if (feed instanceof Feed) {
-			repositoryFeed.save((Feed) feed);
-			if (newsList!=null) {
-				Date today = new Date(System.currentTimeMillis());
-				Statistics statistics = statisticsRepository.findOne(today);
-				if (statistics != null) {
-					statistics.increment(0, newsList.size());
-				} else {
-					statistics = new Statistics(today, 0, newsList.size());
-				}
-				statisticsRepository.save(statistics);
+		repositoryFeed.save((Feed) feed);
+		if (newsList != null) {
+			Date today = new Date(System.currentTimeMillis());
+			Statistics statistics = statisticsRepository.findOne(today);
+			if (statistics != null) {
+				statistics.increment(0, newsList.size());
+			} else {
+				statistics = new Statistics(today, 0, newsList.size());
 			}
-		} else
-			repositoryFeedRisk.save((FeedRisk) feed);
+			statisticsRepository.save(statistics);
+		}
 		LOGGER.info("Noticias recuperadas del sitio " + feed.getName());
 		return newsList;
 	}
 
 	@Override
-	public List<News> scrapNewsWithOutEvent(SiteAbstract feed) {
+	public List<News> scrapNewsWithOutEvent(Feed feed) {
 		List<News> newsList = new ArrayList<>();
 		if (feed.isRSS()) {
 			newsList = scrapingWhitRSS(feed);
@@ -119,7 +101,7 @@ public class FeedScrapingImpl implements FeedScraping {
 		}
 	}
 
-	private List<News> scrapingWhitRSS(SiteAbstract feed) {
+	private List<News> scrapingWhitRSS(Feed feed) {
 		try {
 			List<News> listNews = new ArrayList<News>();
 			// open a connection to the rss feed
@@ -157,15 +139,9 @@ public class FeedScrapingImpl implements FeedScraping {
 							.getPublishedDate());
 				}
 				if (lastNews != null) {
-					if (feed instanceof Feed)
-						feed = repositoryFeed.findOne(feed.getId());
-					else
-						feed = repositoryFeedRisk.findOne(feed.getId());
+					feed = repositoryFeed.findOne(feed.getId());
 					feed.setLastNewsLink(lastNews);
-					if (feed instanceof Feed)
-						repositoryFeed.save((Feed) feed);
-					else
-						repositoryFeedRisk.save((FeedRisk) feed);
+					repositoryFeed.save((Feed) feed);
 				}
 			}
 			return listNews;
@@ -184,7 +160,7 @@ public class FeedScrapingImpl implements FeedScraping {
 		}
 	}
 
-	private List<News> scrapingWithOutRSS(SiteAbstract feed) {
+	private List<News> scrapingWithOutRSS(Feed feed) {
 		try {
 			List<News> listNews = new ArrayList<News>();
 			if (feed.getUrlNews() != null) {
@@ -223,10 +199,7 @@ public class FeedScrapingImpl implements FeedScraping {
 				}
 				if (lastNews != null) {
 					feed.setLastNewsLink(lastNews);
-					if (feed instanceof Feed)
-						repositoryFeed.save((Feed) feed);
-					else
-						repositoryFeedRisk.save((FeedRisk) feed);
+					repositoryFeed.save((Feed) feed);
 				}
 			}
 			return listNews;
@@ -297,9 +270,9 @@ public class FeedScrapingImpl implements FeedScraping {
 		}
 	}
 
-	public News getNewsWithRSS(SiteAbstract feed, SyndEntry news) {
-		String url = news.getLink().startsWith("http://") ? news
-				.getLink() : feed.getUrlSite().concat(news.getLink());
+	public News getNewsWithRSS(Feed feed, SyndEntry news) {
+		String url = news.getLink().startsWith("http://") ? news.getLink()
+				: feed.getUrlSite().concat(news.getLink());
 		NewsBuilder temp = new NewsBuilder(feed);
 		temp.setTitle(news.getTitle());
 		temp.setUrl(url);
@@ -366,8 +339,7 @@ public class FeedScrapingImpl implements FeedScraping {
 
 	}
 
-	public News getNewsWithOutRSS(SiteAbstract feed, String linkNews,
-			String title) {
+	public News getNewsWithOutRSS(Feed feed, String linkNews, String title) {
 		Document newsPage = null;
 		Integer count = 0;
 		while (true) {
@@ -425,7 +397,7 @@ public class FeedScrapingImpl implements FeedScraping {
 	}
 
 	@Override
-	public News getNewsFromSite(String link, SiteAbstract feed) {
+	public News getNewsFromSite(String link, Feed feed) {
 		return getNewsWithOutRSS(feed, link, link);
 	}
 

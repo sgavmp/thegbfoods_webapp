@@ -1,7 +1,9 @@
 package com.ucm.ilsa.veterinaria.web.controller.impl;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -30,12 +32,12 @@ public class AlertController extends BaseController {
 	}
 	
 	@ModelAttribute("alertsUncheck")
-	public List<Alert> getAllAlertsUnchecked() {
+	public Set<Alert> getAllAlertsUnchecked() {
 		return service.getAllAlertActive();
 	}
 	
 	@ModelAttribute("alertsCheck")
-	public List<Alert> getAllAlertsChecked() {
+	public Set<Alert> getAllAlertsChecked() {
 		return service.getAllAlertWithHistory();
 	}
 	
@@ -44,15 +46,15 @@ public class AlertController extends BaseController {
 		Alert alertActive = new Alert();
 		alertActive.setId(alert.getId());
 		alertActive.setTitle(alert.getTitle());
-		alertActive.setNewsDetect(new ArrayList<NewsDetect>());
+		alertActive.setNewsDetect(new HashSet<NewsDetect>());
 		Alert alertHistory = new Alert();
 		alertHistory.setId(alert.getId());
 		alertHistory.setTitle(alert.getTitle());
-		alertHistory.setNewsDetect(new ArrayList<NewsDetect>());
+		alertHistory.setNewsDetect(new HashSet<NewsDetect>());
 		Alert alertFalse = new Alert();
 		alertFalse.setId(alert.getId());
 		alertFalse.setTitle(alert.getTitle());
-		alertFalse.setNewsDetect(new ArrayList<NewsDetect>());
+		alertFalse.setNewsDetect(new HashSet<NewsDetect>());
 		for (NewsDetect news : alert.getNewsDetect()) {
 			if (news.getFalPositive()) {
 				alertFalse.getNewsDetect().add(news);

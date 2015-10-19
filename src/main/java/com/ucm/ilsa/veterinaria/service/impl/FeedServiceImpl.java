@@ -10,6 +10,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
@@ -29,6 +30,7 @@ import com.rometools.rome.io.FeedException;
 import com.rometools.rome.io.SyndFeedInput;
 import com.rometools.rome.io.XmlReader;
 import com.ucm.ilsa.veterinaria.domain.Alert;
+import com.ucm.ilsa.veterinaria.domain.AlertAbstract;
 import com.ucm.ilsa.veterinaria.domain.Feed;
 import com.ucm.ilsa.veterinaria.domain.FeedForm;
 import com.ucm.ilsa.veterinaria.domain.News;
@@ -109,9 +111,9 @@ public class FeedServiceImpl implements FeedService {
 		return newsDetectRepository.findAllDistinctBySiteOrderByDatePubDesc(feed);
 	}
 	
-	public List<Alert> checkNewsLinkOnFeed(String link, Feed feed) {
+	public Set<AlertAbstract> checkNewsLinkOnFeed(String link, Feed feed) {
 		News news = scrapingFeed.getNewsFromSite(link, feed);
-		List<Alert> alertasDetectadas = newsCheckService.checkNews(news, feed);
+		Set<AlertAbstract> alertasDetectadas = newsCheckService.checkNews(news, feed);
 		return alertasDetectadas;
 	}
 	

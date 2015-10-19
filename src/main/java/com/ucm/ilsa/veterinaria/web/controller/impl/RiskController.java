@@ -4,8 +4,10 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.neovisionaries.i18n.CountryCode;
 import com.ucm.ilsa.veterinaria.domain.Alert;
 import com.ucm.ilsa.veterinaria.domain.Location;
@@ -42,7 +45,7 @@ public class RiskController extends BaseController {
 	}
 	
 	@ModelAttribute("alertsUncheck")
-	public List<Risk> getAllRisk() {
+	public Set<Risk> getAllRisk() {
 		return service.getAllAlertActive();
 	}
 	
@@ -51,15 +54,15 @@ public class RiskController extends BaseController {
 		Risk alertActive = new Risk();
 		alertActive.setId(alert.getId());
 		alertActive.setTitle(alert.getTitle());
-		alertActive.setNewsDetect(new ArrayList<NewsDetect>());
+		alertActive.setNewsDetect(new HashSet<NewsDetect>());
 		Risk alertHistory = new Risk();
 		alertHistory.setId(alert.getId());
 		alertHistory.setTitle(alert.getTitle());
-		alertHistory.setNewsDetect(new ArrayList<NewsDetect>());
+		alertHistory.setNewsDetect(new HashSet<NewsDetect>());
 		Risk alertFalse = new Risk();
 		alertFalse.setId(alert.getId());
 		alertFalse.setTitle(alert.getTitle());
-		alertFalse.setNewsDetect(new ArrayList<NewsDetect>());
+		alertFalse.setNewsDetect(new HashSet<NewsDetect>());
 		for (NewsDetect news : alert.getNewsDetect()) {
 			if (news.getFalPositive()) {
 				alertFalse.getNewsDetect().add(news);

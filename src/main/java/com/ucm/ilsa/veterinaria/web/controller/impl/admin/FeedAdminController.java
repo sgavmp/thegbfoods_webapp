@@ -2,6 +2,7 @@ package com.ucm.ilsa.veterinaria.web.controller.impl.admin;
 
 import java.net.MalformedURLException;
 import java.util.List;
+import java.util.Set;
 
 import javax.validation.Valid;
 
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.ucm.ilsa.veterinaria.domain.Alert;
+import com.ucm.ilsa.veterinaria.domain.AlertAbstract;
 import com.ucm.ilsa.veterinaria.domain.Feed;
 import com.ucm.ilsa.veterinaria.domain.FeedForm;
 import com.ucm.ilsa.veterinaria.domain.Language;
@@ -143,7 +145,7 @@ public class FeedAdminController extends BaseController {
 	public String removePageNews(Model model, @ModelAttribute(value="feed") FeedForm feed, @RequestParam("removePage")Integer index) {
 		feed.getUrlPages().remove(index.intValue());
 		//model.addAttribute(feed);
-		return "feedForm";
+		return FOLDER + "feedForm";
 	}
 	
 	@RequestMapping(value={"/get/{codeName}/edit","/create"}, method=RequestMethod.POST, params={"testFeed"})
@@ -177,10 +179,10 @@ public class FeedAdminController extends BaseController {
 				if (!feed.linkIsFromSite(link)) {
 					redirectAttributes.addFlashAttribute("error", "La noticia introducida no pertenece a este sitio.");
 				} else {
-				List<Alert> alertas = serviceFeed.checkNewsLinkOnFeed(link, feed);
+					Set<AlertAbstract> alertas = serviceFeed.checkNewsLinkOnFeed(link, feed);
 				model.addAttribute(feed);
 				model.addAttribute("alertasDetectadas", alertas);
-				return "oneFeed";
+				return FOLDER + "oneFeed";
 				}
 			} catch (MalformedURLException e) {
 				redirectAttributes.addFlashAttribute("error", "No es una URL valida.");

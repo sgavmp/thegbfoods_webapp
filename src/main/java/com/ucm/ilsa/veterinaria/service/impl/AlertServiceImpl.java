@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
@@ -21,7 +22,7 @@ public class AlertServiceImpl {
 	@Autowired
 	private AlertRepository repository;
 	
-	public List<Alert> getAllAlert() {
+	public Set<Alert> getAllAlert() {
 		return repository.findAllByOrderByTitleAsc();
 	}
 	
@@ -79,23 +80,23 @@ public class AlertServiceImpl {
 		return alertasPorFecha;
 	}
 	
-	public List<Alert> getAlertDetectActivatedAfter(Date date) {
-		return repository.readAllDistinctByNewsDetectDatePubGreaterThanEqualOrderByCreateDateDesc(date);
+	public Set<Alert> getAlertDetectActivatedAfter(Date date) {
+		return repository.readAllDistinctByNewsDetectHistoryFalseAndNewsDetectFalPositiveFalseAndNewsDetectDatePubGreaterThanEqualOrderByCreateDateDesc(date);
 	}
 	
-	public List<Alert> getAlertDetectSite(Feed feed) {
+	public Set<Alert> getAlertDetectSite(Feed feed) {
 		return repository.readAllDistinctByNewsDetectSite(feed);
 	}
 	
-	public List<Alert> getAllAlertActive() {
+	public Set<Alert> getAllAlertActive() {
 		return repository.readAllDistinctByNewsDetectHistoryFalseAndNewsDetectFalPositiveFalse();
 	}
 	
-	public List<Alert> getAllAlertWithHistory() {
+	public Set<Alert> getAllAlertWithHistory() {
 		return repository.readAllDistinctByNewsDetectHistoryTrue();
 	}
 	
-	public List<Alert> getAllAlertWithFalsePositive() {
+	public Set<Alert> getAllAlertWithFalsePositive() {
 		return repository.readAllDistinctByNewsDetectFalPositiveTrue();
 	}
 	

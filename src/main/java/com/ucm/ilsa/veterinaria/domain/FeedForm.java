@@ -20,6 +20,8 @@ public class FeedForm {
 	private WebLevel type = WebLevel.yellow;
 	private boolean actived = false;
 	private boolean accepted = true;
+	private boolean forAlerts = true;
+	private boolean forRisks = true;
 	private Integer minRefresh = 120;
 	private String selectorTitle;
 	private String selectorDescription;
@@ -41,7 +43,7 @@ public class FeedForm {
 		this.urlPages = new ArrayList<String>();
 	}
 	
-	public FeedForm(SiteAbstract feed) {
+	public FeedForm(Feed feed) {
 		this.name=feed.getName();
 		this.dateFormat=feed.getDateFormat();
 		this.languaje=feed.getLanguaje();
@@ -63,6 +65,8 @@ public class FeedForm {
 		this.accepted = feed.isAccepted();
 		this.actived = feed.isActived();
 		this.charSet = feed.getCharSet();
+		this.forAlerts = feed.getForAlerts();
+		this.forRisks = feed.getForRisks();
 	}
 
 	public String getName() {
@@ -243,6 +247,22 @@ public class FeedForm {
 
 	public void setCharSet(CharsetEnum charSet) {
 		this.charSet = charSet;
+	}
+	
+	public boolean getForAlerts() {
+		return forAlerts;
+	}
+
+	public void setForAlerts(boolean forAlerts) {
+		this.forAlerts = forAlerts;
+	}
+
+	public boolean getForRisks() {
+		return forRisks;
+	}
+
+	public void setForRisks(boolean forRisks) {
+		this.forRisks = forRisks;
 	}
 
 }

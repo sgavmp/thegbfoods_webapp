@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
@@ -23,7 +24,7 @@ public class RiskServiceImpl {
 	@Autowired
 	private RiskRepository repository;
 	
-	public List<Risk> getAllAlert() {
+	public Set<Risk> getAllAlert() {
 		return repository.findAllByOrderByTitleAsc();
 	}
 	
@@ -81,23 +82,23 @@ public class RiskServiceImpl {
 		return alertasPorFecha;
 	}
 	
-	public List<Risk> getAlertDetectActivatedAfter(Date date) {
+	public Set<Risk> getAlertDetectActivatedAfter(Date date) {
 		return repository.readAllByNewsDetectDatePubGreaterThanEqualOrderByCreateDateDesc(date);
 	}
 	
-	public List<Risk> getAlertDetectSite(Feed feed) {
+	public Set<Risk> getAlertDetectSite(Feed feed) {
 		return repository.readAllDistinctByNewsDetectSite(feed);
 	}
 	
-	public List<Risk> getAllAlertActive() {
+	public Set<Risk> getAllAlertActive() {
 		return repository.readAllDistinctByNewsDetectHistoryFalseAndNewsDetectFalPositiveFalse();
 	}
 	
-	public List<Risk> getAllAlertWithHistory() {
+	public Set<Risk> getAllAlertWithHistory() {
 		return repository.readAllDistinctByNewsDetectHistoryTrue();
 	}
 	
-	public List<Risk> getAllAlertWithFalsePositive() {
+	public Set<Risk> getAllAlertWithFalsePositive() {
 		return repository.readAllDistinctByNewsDetectFalPositiveTrue();
 	}
 
