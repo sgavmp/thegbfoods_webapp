@@ -26,7 +26,6 @@
 
 	<logger name="com.ucm.ilsa.veterinaria" additivity="false">
 	    <level value="ALL" />
-		<appender-ref ref="db"/>
 		<appender-ref ref="consoleAppender" />
 	</logger>
 

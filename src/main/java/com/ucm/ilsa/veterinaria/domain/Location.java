@@ -21,19 +21,14 @@ public class Location extends BaseEntity {
 	public Location() {
 
 	}
-	
 
 	public Long getId() {
 		return id;
 	}
 
-
-
 	public void setId(Long id) {
 		this.id = id;
 	}
-
-
 
 	public String getName() {
 		return name;
@@ -73,6 +68,14 @@ public class Location extends BaseEntity {
 		dist = dist * 60 * 1.1515;//Millas
 		dist = dist * 1.609344;//Km
 		return (dist);
+	}
+	
+	public Location bind(Location location) {
+		this.id = location.id;
+		this.createDate = location.createDate;
+		this.updateDate = location.updateDate;
+		this.version = location.version;
+		return this;
 	}
 
 	/* ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: */

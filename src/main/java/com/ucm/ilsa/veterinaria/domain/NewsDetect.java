@@ -59,6 +59,8 @@ public class NewsDetect extends BaseEntity {
 	private AlertAbstract alertDetect;
 	private boolean history = false;
 	private boolean falPositive = false;
+	@ElementCollection(fetch = FetchType.EAGER)
+	private Set<DictDetect> dictionaryDetect;
 	private boolean mark = false;
 	private Double score;
 
@@ -178,6 +180,14 @@ public class NewsDetect extends BaseEntity {
 
 	public void setScore(Double score) {
 		this.score = score;
+	}
+
+	public Set<DictDetect> getDictionaryDetect() {
+		return dictionaryDetect;
+	}
+
+	public void setDictionaryDetect(Set<DictDetect> dictionaryDetect) {
+		this.dictionaryDetect = dictionaryDetect;
 	}
 
 	@Override

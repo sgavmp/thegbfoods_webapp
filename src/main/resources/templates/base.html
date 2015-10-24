@@ -129,7 +129,7 @@
 					th:class="${url == #httpServletRequest.requestURI ? 'mdl-navigation\_\_link mdl-navigation\_\_link--current mdl-navigation\_\_sub_link' : 'mdl-navigation\_\_link mdl-navigation\_\_sub_link'}"
 					th:href="${url}" th:with="url=@{/admin/risks}" href=""><i
 					class="mdl-color-text--white material-icons"
-					role="presentation">create</i>Riesgos</a> <a
+					role="presentation">create</i>Listado</a> <a
 					class="mdl-navigation__link"
 					th:class="${url == #httpServletRequest.requestURI ? 'mdl-navigation\_\_link mdl-navigation\_\_link--current' : 'mdl-navigation__link'}"
 					th:href="${url}" th:with="url=@{/feeds}" href=""><i
@@ -140,6 +140,11 @@
 					th:href="${url}" th:with="url=@{/admin/locations}" href=""><i
 					class="mdl-color-text--white material-icons"
 					role="presentation">language</i>Provedores</a> <a
+					sec:authorize="isAuthenticated()" class="mdl-navigation__link"
+					th:class="${url == #httpServletRequest.requestURI ? 'mdl-navigation\_\_link mdl-navigation\_\_link--current' : 'mdl-navigation__link'}"
+					th:href="${url}" th:with="url=@{/admin/dictionary}" href=""><i
+					class="mdl-color-text--white material-icons"
+					role="presentation">settings</i>Diccionario</a> <a
 					sec:authorize="isAuthenticated()" class="mdl-navigation__link"
 					th:class="${url == #httpServletRequest.requestURI ? 'mdl-navigation\_\_link mdl-navigation\_\_link--current' : 'mdl-navigation__link'}"
 					th:href="${url}" th:with="url=@{/admin/configuracion}" href=""><i

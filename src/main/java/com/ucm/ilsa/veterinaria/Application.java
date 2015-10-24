@@ -54,8 +54,8 @@ public class Application extends SpringBootServletInitializer implements AsyncCo
 	@Override
     public Executor getAsyncExecutor() {
         ThreadPoolTaskExecutor taskExecutor = new ThreadPoolTaskExecutor();
-        taskExecutor.setMaxPoolSize(4);
-        taskExecutor.setCorePoolSize(4);
+        taskExecutor.setMaxPoolSize(1);
+        taskExecutor.setCorePoolSize(1);
         taskExecutor.setThreadNamePrefix("ILSA-Async-");
         taskExecutor.initialize();
         return taskExecutor;
@@ -64,7 +64,7 @@ public class Application extends SpringBootServletInitializer implements AsyncCo
     @Bean
     public TaskScheduler getSchedulerExecutor() {
     	ThreadPoolTaskScheduler taskScheduler = new ThreadPoolTaskScheduler();
-    	taskScheduler.setPoolSize(4);
+    	taskScheduler.setPoolSize(1);
     	taskScheduler.setThreadNamePrefix("ILSA-Scheduler-");
         taskScheduler.initialize();
         return taskScheduler;

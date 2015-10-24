@@ -49,14 +49,24 @@
 					<div class="mdl-grid">
 						<div th:each="news : ${day.value}"
 							class="mdl-cell mdl-cell--6-col mdl-card mdl-shadow--3dp">
-							<div class="mdl-card__title mdl-color--primary">
+							<div class="mdl-card__title mdl-color--primary" th:class="${news.mark?'mdl-card\_\_title mdl-color--red-800':'mdl-card\_\_title mdl-color--primary'}">
 								<h2 class="mdl-card__title-text  mdl-color-text--white" th:inline="text">
-									<a class="mdl-color-text--white" target="_blank" th:href="${news.link}"
+									<a th:id="${news.id}" class="mdl-color-text--white" target="_blank" th:href="${news.link}"
 										href="http://www.google.es">[[${news.title}]]</a>
+									<div class="mdl-tooltip" th:for="${news.id}" th:inline="text">
+										[[${news.link}]]
+										</div>
 								</h2>
 							</div>
 							<div class="mdl-card__supporting-text">
 								<div class="mdl-grid">
+									<div class="mdl-cell mdl-cell--12-col">
+										Sitio: <a th:id="${news.id + '_' + news.site.id}" class="mdl-color-text--primary" target="_blank" th:inline="text" th:href="${news.site.urlSite}"
+										href="http://www.google.es">[[${news.site.name}]]</a>
+										<div class="mdl-tooltip" th:for="${news.id + '_' + news.site.id}" th:inline="text">
+										[[${news.site.urlSite}]]
+										</div>
+									</div>
 									<div class="mdl-cell mdl-cell--5-col">
 										<table
 											class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">

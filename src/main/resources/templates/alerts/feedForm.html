@@ -41,7 +41,23 @@
 							th:checked="*{actived}" th:field="*{actived}" /> <span
 							class="mdl-switch__label">&iquest;Está activado?</span>
 						</label>
+					</div> 
+					<div class="mdl-cell mdl-cell--3-col">
+						<label class="mdl-switch mdl-js-switch mdl-js-ripple-effect"
+							for="forAlerts"> <input type="checkbox"
+							class="mdl-switch__input" id="forAlerts" name="forAlerts"
+							th:checked="*{forAlerts}" th:field="*{forAlerts}" /> <span
+							class="mdl-switch__label">Para alertas</span>
+						</label>
 					</div>  
+					<div class="mdl-cell mdl-cell--3-col">
+						<label class="mdl-switch mdl-js-switch mdl-js-ripple-effect"
+							for="forRisks"> <input type="checkbox"
+							class="mdl-switch__input" id="forRisks" name="forRisks"
+							th:checked="*{forRisks}" th:field="*{forRisks}" /> <span
+							class="mdl-switch__label">Para riesgos</span>
+						</label>
+					</div> 
 					<!-- 
 					Quitar espacio entre guiones en las clases
 					<div class="mdl-cell mdl-cell- -3-col">

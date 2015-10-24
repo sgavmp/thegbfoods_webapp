@@ -38,7 +38,7 @@ public class AlertTaskContainer implements Runnable {
 		feedComp = service.getFeedByCodeName(feed.getId());
 		if (feedComp != null) {
 			feed = service.setSateOfFeed(feedComp, UpdateStateEnum.GET_NEWS);
-			List<News> listNews = service.scrapFeed(feed);
+			List<News> listNews = service.scrapFeed(feed,null,false);
 			feed = service.getFeedByCodeName(feed.getId());
 			if (listNews != null) {
 				if (!listNews.isEmpty()) {

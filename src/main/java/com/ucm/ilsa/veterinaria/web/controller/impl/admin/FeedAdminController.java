@@ -55,18 +55,8 @@ public class FeedAdminController extends BaseController {
 		return Language.values();
 	}
 	
-	@RequestMapping("/get/{codeName}/update")
-	public String updateNewsByFeed(Model model, RedirectAttributes redirectAttributes, @PathVariable ("codeName") Feed feed) {
-		List<News> newsListAdd = serviceFeed.scrapFeed(feed);
-		model.addAttribute(feed);
-		model.addAttribute(newsListAdd);
-		redirectAttributes.addFlashAttribute("info","Actualizando fuente");
-		return "redirect:/feeds/get/{codeName}";
-	}
-	
 	@RequestMapping("/get/{codeName}/update/ajax")
 	public @ResponseBody String updateNewsByFeedAjax(Model model, @PathVariable ("codeName") Feed feed) {
-//		serviceFeed.scrapFeed(feed);
 		schedulerService.startTask(feed);
 		return "ok";
 	}
@@ -188,6 +178,13 @@ public class FeedAdminController extends BaseController {
 				redirectAttributes.addFlashAttribute("error", "No es una URL valida.");
 			}
 		return "redirect:/feeds/get/"+feed.getId();
+	}
+	
+	@RequestMapping("/update/all")
+	public String updateAll(Model model, RedirectAttributes redirectAttributes) {
+		schedulerService.startAllTask();
+		redirectAttributes.addFlashAttribute("info","Se ha iniciado el proceso de actualización de los websites, esto puede llevar un rato.");
+		return "redirect:/admin/configuracion";
 	}
 
 }

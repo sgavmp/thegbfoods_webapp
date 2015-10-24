@@ -61,7 +61,7 @@ public class LocationsController extends BaseController {
         	redirectAttributes.addFlashAttribute("error","Hay un error en el formulario");
             return "locations";
         }
-		serviceLocation.createLocation(location);
+		serviceLocation.createLocation(location.bind(before));
 		redirectAttributes.addFlashAttribute("info","Se ha actualizado correctamente la localizaci&oacute;n");
 		return "redirect:/admin/locations";
 	}

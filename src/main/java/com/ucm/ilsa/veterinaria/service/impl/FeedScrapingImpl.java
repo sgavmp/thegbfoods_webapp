@@ -56,12 +56,12 @@ public class FeedScrapingImpl implements FeedScraping {
 	}
 
 	@Override
-	public List<News> scrapNews(Feed feed) {
+	public List<News> scrapNews(Feed feed, Date after, boolean withOutLimit) {
 		List<News> newsList = new ArrayList<>();
 		if (feed.isRSS()) {
-			newsList = scrapingWhitRSS(feed);
+			newsList = scrapingWhitRSS(feed, after, withOutLimit);
 		} else {
-			newsList = scrapingWithOutRSS(feed);
+			newsList = scrapingWithOutRSS(feed, after, withOutLimit);
 		}
 		feed = repositoryFeed.findOne(feed.getId());
 		feed.setUltimaRecuperacion(new Timestamp(System.currentTimeMillis()));
@@ -82,17 +82,6 @@ public class FeedScrapingImpl implements FeedScraping {
 	}
 
 	@Override
-	public List<News> scrapNewsWithOutEvent(Feed feed) {
-		List<News> newsList = new ArrayList<>();
-		if (feed.isRSS()) {
-			newsList = scrapingWhitRSS(feed);
-		} else {
-			newsList = scrapingWithOutRSS(feed);
-		}
-		return newsList;
-	}
-
-	@Override
 	public News scrapOneNews(FeedForm feed) {
 		if (feed.getIsRSS()) {
 			return scrapingOneWhitRSS(feed);
@@ -101,7 +90,8 @@ public class FeedScrapingImpl implements FeedScraping {
 		}
 	}
 
-	private List<News> scrapingWhitRSS(Feed feed) {
+	private List<News> scrapingWhitRSS(Feed feed, Date after,
+			boolean withOutLimit) {
 		try {
 			List<News> listNews = new ArrayList<News>();
 			// open a connection to the rss feed
@@ -114,34 +104,46 @@ public class FeedScrapingImpl implements FeedScraping {
 				boolean isFirst = true;
 				String lastNews = null;
 				for (SyndEntry news : newsList.getEntries()) {
-					// Vamos comprobando el link de la entrada con el enlace de
-					// la ultima noticia almacenada del feed
-					if (feed.getLastNewsLink() != null) {
-						// En caso de coincidencia (es decir que ya esta en el
-						// sistema) devolvemos la lista (puede estar vacia)
-						if (!feed.getLastNewsLink().isEmpty()
-								&& feed.getLastNewsLink()
-										.equals(news.getLink())) {
-							break;
+					if (!withOutLimit && after == null) {
+						// Vamos comprobando el link de la entrada con el enlace
+						// de
+						// la ultima noticia almacenada del feed
+						if (feed.getLastNewsLink() != null) {
+							// En caso de coincidencia (es decir que ya esta en
+							// el
+							// sistema) devolvemos la lista (puede estar vacia)
+							if (!feed.getLastNewsLink().isEmpty()
+									&& feed.getLastNewsLink().equals(
+											news.getLink())) {
+								break;
+							} else if (isFirst) {
+								lastNews = news.getLink();
+								isFirst = false;
+							}
 						} else if (isFirst) {
 							lastNews = news.getLink();
 							isFirst = false;
 						}
-					} else if (isFirst) {
-						lastNews = news.getLink();
-						isFirst = false;
 					}
-					listNews.add(getNewsWithRSS(feed, news));
+					News newsData = getNewsWithRSS(feed, news);
+					if (!withOutLimit && after != null) {
+						if (newsData.getPubDate().before(after)) {
+							break;
+						}
+					}
+					listNews.add(newsData);
 				}
 				if (feed.getDateFirstNews() == null) {
 					feed.setDateFirstNews(newsList.getEntries()
 							.get(newsList.getEntries().size() - 1)
 							.getPublishedDate());
 				}
-				if (lastNews != null) {
-					feed = repositoryFeed.findOne(feed.getId());
-					feed.setLastNewsLink(lastNews);
-					repositoryFeed.save((Feed) feed);
+				if (after == null && !withOutLimit) {
+					if (lastNews != null) {
+						feed = repositoryFeed.findOne(feed.getId());
+						feed.setLastNewsLink(lastNews);
+						repositoryFeed.save((Feed) feed);
+					}
 				}
 			}
 			return listNews;
@@ -160,7 +162,8 @@ public class FeedScrapingImpl implements FeedScraping {
 		}
 	}
 
-	private List<News> scrapingWithOutRSS(Feed feed) {
+	private List<News> scrapingWithOutRSS(Feed feed, Date after,
+			boolean withOutLimit) {
 		try {
 			List<News> listNews = new ArrayList<News>();
 			if (feed.getUrlNews() != null) {
@@ -175,21 +178,29 @@ public class FeedScrapingImpl implements FeedScraping {
 					// Titutlo de la noticia
 					String title = link.text();
 					news = getNewsWithOutRSS(feed, linkNews, title);
-					// Vamos comprobando el link de la entrada con el enlace de
-					// la ultima noticia almacenada del feed
-					if (feed.getLastNewsLink() != null) {
-						// En caso de coincidencia (es decir que ya esta en el
-						// sistema) devolvemos la lista (puede estar vacia)
-						if (!feed.getLastNewsLink().isEmpty()
-								&& feed.getLastNewsLink().equals(linkNews)) {
-							break;
+					if (!withOutLimit && after == null) {
+						// Vamos comprobando el link de la entrada con el enlace
+						// de
+						// la ultima noticia almacenada del feed
+						if (feed.getLastNewsLink() != null) {
+							// En caso de coincidencia (es decir que ya esta en
+							// el
+							// sistema) devolvemos la lista (puede estar vacia)
+							if (!feed.getLastNewsLink().isEmpty()
+									&& feed.getLastNewsLink().equals(linkNews)) {
+								break;
+							} else if (isFirst) {
+								lastNews = linkNews;
+								isFirst = false;
+							}
 						} else if (isFirst) {
 							lastNews = linkNews;
 							isFirst = false;
 						}
-					} else if (isFirst) {
-						lastNews = linkNews;
-						isFirst = false;
+					} else if (!withOutLimit && after != null) {
+						if (news.getPubDate().before(after)) {
+							break;
+						}
 					}
 					listNews.add(news);
 				}
@@ -197,9 +208,11 @@ public class FeedScrapingImpl implements FeedScraping {
 					if (news != null)
 						feed.setDateFirstNews(news.getPubDate());
 				}
-				if (lastNews != null) {
-					feed.setLastNewsLink(lastNews);
-					repositoryFeed.save((Feed) feed);
+				if (after == null && !withOutLimit) {
+					if (lastNews != null) {
+						feed.setLastNewsLink(lastNews);
+						repositoryFeed.save((Feed) feed);
+					}
 				}
 			}
 			return listNews;

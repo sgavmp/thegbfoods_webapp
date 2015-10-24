@@ -4,9 +4,9 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.sql.Date;
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -59,8 +59,8 @@ public class FeedServiceImpl implements FeedService {
 	private SchedulerService schedulerService;
 
 	@Override
-	public List<News> scrapFeed(Feed feed) {
-		return scrapingFeed.scrapNews(feed);
+	public List<News> scrapFeed(Feed feed, Date after, boolean withOutLimit) {
+		return scrapingFeed.scrapNews(feed, after, withOutLimit);
 	}
 	
 	public News testFeed(FeedForm feed) {

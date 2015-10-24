@@ -22,6 +22,7 @@ import com.ucm.ilsa.veterinaria.domain.Configuracion;
 import com.ucm.ilsa.veterinaria.domain.Feed;
 import com.ucm.ilsa.veterinaria.domain.News;
 import com.ucm.ilsa.veterinaria.repository.ConfiguracionRepository;
+import com.ucm.ilsa.veterinaria.scheduler.SchedulerService;
 import com.ucm.ilsa.veterinaria.service.FeedScraping;
 import com.ucm.ilsa.veterinaria.service.FeedService;
 import com.ucm.ilsa.veterinaria.service.NewsCheckFeedService;
@@ -43,6 +44,9 @@ public class ConfiguracionController extends BaseController {
 	
 	@Autowired
 	private FeedScraping feedScraping;
+	
+	@Autowired
+	private SchedulerService schedulerService;
 	
 	public ConfiguracionController() {
 		this.menu = "Configuración";
@@ -84,5 +88,7 @@ public class ConfiguracionController extends BaseController {
 		model.addAttribute("conf", configuracionService.findOne("conf"));
 		return "conf";
 	}
+	
+	
 	
 }

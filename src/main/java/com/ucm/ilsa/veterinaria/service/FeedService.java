@@ -1,5 +1,6 @@
 package com.ucm.ilsa.veterinaria.service;
 
+import java.sql.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -15,7 +16,7 @@ import com.ucm.ilsa.veterinaria.scheduler.SchedulerService;
 public interface FeedService {
 	public Feed createFeed(Feed feed);
 	public Feed updateFeed(Feed feed);
-	public List<News> scrapFeed(Feed feed);
+	public List<News> scrapFeed(Feed feed,Date after, boolean withOutLimit);
 	public List<Feed> getAllFeed();
 	public Feed getFeedByCodeName(Long codeName);
 	public boolean removeFeed(Feed feed);

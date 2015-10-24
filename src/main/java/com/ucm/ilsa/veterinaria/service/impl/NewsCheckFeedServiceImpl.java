@@ -3,6 +3,7 @@ package com.ucm.ilsa.veterinaria.service.impl;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -28,15 +29,18 @@ import com.ucm.ilsa.veterinaria.domain.Alert;
 import com.ucm.ilsa.veterinaria.domain.AlertAbstract;
 import com.ucm.ilsa.veterinaria.domain.AlertLevel;
 import com.ucm.ilsa.veterinaria.domain.Configuracion;
+import com.ucm.ilsa.veterinaria.domain.Dictionary;
 import com.ucm.ilsa.veterinaria.domain.Feed;
 import com.ucm.ilsa.veterinaria.domain.Location;
 import com.ucm.ilsa.veterinaria.domain.News;
 import com.ucm.ilsa.veterinaria.domain.NewsDetect;
+import com.ucm.ilsa.veterinaria.domain.DictDetect;
 import com.ucm.ilsa.veterinaria.domain.PointLocation;
 import com.ucm.ilsa.veterinaria.domain.Risk;
 import com.ucm.ilsa.veterinaria.domain.Statistics;
 import com.ucm.ilsa.veterinaria.domain.UpdateStateEnum;
 import com.ucm.ilsa.veterinaria.repository.ConfiguracionRepository;
+import com.ucm.ilsa.veterinaria.repository.DictionaryRepository;
 import com.ucm.ilsa.veterinaria.repository.NewsDetectRepository;
 import com.ucm.ilsa.veterinaria.repository.StatisticsRepository;
 import com.ucm.ilsa.veterinaria.service.FeedService;
@@ -59,6 +63,9 @@ public class NewsCheckFeedServiceImpl implements NewsCheckFeedService {
 
 	@Autowired
 	private StatisticsRepository statisticsRepository;
+	
+	@Autowired
+	private DictionaryRepository dictionaryRepository;
 
 	private ConfiguracionRepository configuracionRepository;
 
@@ -97,7 +104,7 @@ public class NewsCheckFeedServiceImpl implements NewsCheckFeedService {
 		Set<Location> lugares = placeAlertService.getAllLocations();
 		Set<Alert> alertas = alertService.getAllAlert();
 		Set<Risk> riesgos = riskService.getAllAlert();
-		Set<AlertAbstract> detectar = Sets.newHashSet();
+		Set<AlertAbstract> detectar = Sets.newHashSet();		
 		detectar.addAll(alertas);
 		detectar.addAll(riesgos);
 		feed = service.setSateOfFeed(feed, UpdateStateEnum.DETECT_ALERTS);
@@ -109,134 +116,11 @@ public class NewsCheckFeedServiceImpl implements NewsCheckFeedService {
 						+ news.getUrl() + " y del sitio: " + feed.getName());
 				continue;
 			}
-			Set<String> newsDetectPreliminar = Sets.newHashSet();
-			// Solo se filtra por los terminos de alerta general si hay
-			// alguno
-			if (configuracion.getPalabrasAlerta().length() > 0
-					&& configuracion.getUsarPalabrasAlerta()
-					&& !feed.getForAlerts()) {
-				List<String> terminos = Lists.newArrayList(configuracion
-						.getPalabrasAlerta().split(","));
-				if (news != null) {
-					for (String word : terminos) {
-						boolean caseSensitive = false;
-						if (word.startsWith("\"") && word.endsWith("\"")) {
-							word = word.replace("\"", "").trim();
-							caseSensitive = true;
-						} else {
-							word = word.toLowerCase().trim();
-						}
-						String content = caseSensitive ? news.getContent()
-								: news.getContent().toLowerCase();
-						if (content.contains(" " + word + " ")
-								|| content.startsWith(word + " ")
-								|| content.endsWith(" " + word)) {
-							newsDetectPreliminar.add(word);
-						}
-					}
-				}
-			}
-			if (newsDetectPreliminar.size() > 0 && !feed.getForRisks()) {
-				continue;
-			}
-			for (AlertAbstract alerta : detectar) {// Iteramos sobre cada alerta
-													// o riesgo si el
-				if (alerta.getId() == 65605 && feed.getId() == 32779)
-					LOGGER.info("Test");
-				if (alerta instanceof Alert && !feed.getForAlerts()) {
-					continue;
-				} else if (alerta instanceof Risk && !feed.getForRisks()) {
-					continue;
-				}
-				// sitio esta activo las alertas
-				Set<String> wordsDetect = Sets.newHashSet();
-				// Comprobamos todos los terminos y los almacenamos
-				Set<String> terminos = Sets.newHashSet(alerta.getWords().split(
-						","));
-				terminos.add(alerta.getTitle());// El titulo de la alerta
-												// también se busca
-				terminos.add(alerta.getTitleEn());// El titulo en ingles de la
-													// alerta también se busca
-				for (String word : terminos) {
-					boolean caseSensitive = false;
-					if (word.startsWith("\"") && word.endsWith("\"")) {
-						word = word.replace("\"", "").trim();
-						caseSensitive = true;
-					} else {
-						word = word.toLowerCase().trim();
-					}
-					String content = caseSensitive ? news.getContent() : news
-							.getContent().toLowerCase();
-					if (content.contains(" " + word + " ")
-							|| content.startsWith(word + " ")
-							|| content.endsWith(" " + word)) {
-						wordsDetect.add(word);
-					}
-				}
-				if (newsDetectPreliminar.size() > 0) {
-					wordsDetect.addAll(newsDetectPreliminar);
-				}
-				// Si se han detectado palabras de la alerta en la noticia
-				if (wordsDetect.size() > 0) {
-					if (repositoryNewsDetect.findFirstByAlertDetectAndLink(
-							alerta, news.getUrl()) != null) {
-						continue;
-					}
-					NewsDetect newsDetect = new NewsDetect();
-					newsDetect.setDatePub(news.getPubDate());
-					newsDetect.setAlertDetect(alerta);
-					newsDetect.setLink(news.getUrl());
-					newsDetect.setSite(feed);
-					newsDetect.setTitle(news.getTitle());
-					newsDetect.setWordsDetect(wordsDetect);
-					if (alerta instanceof Alert) {
-						feed = service.setSateOfFeed(feed,
-								UpdateStateEnum.DETECT_PLACES);
-						Alert alert = (Alert) alerta;
-						String regExp = null;
-						if (configuracion.getUsarPalabrasLugar()) {
-							regExp = configuracion.getPaabrasLugar();
-						}
-						Set<ResolvedLocation> locationsAp = null;
-						try {
-							locationsAp = Sets.newHashSet(parser.parse(
-									news.getContent(), regExp));
-						} catch (Exception e) {
-							LOGGER.info("Se ha producido un error al obtener las localizaciones de la noticia");
-							LOGGER.debug(e.getMessage());
-						}
-						// Si la alerta es de Nivel 2 o 3 se detecta los
-						// proveedores por el pais
-						if (alert.getType().equals(AlertLevel.orange)
-								|| alert.getType().equals(AlertLevel.red)) {
-							// Obtenemos los lugares que coincidan con el pais
-							// de
-							// las localizaciones encontradas
-							newsDetect
-									.setLocationsNear(obtenerLocalizacionesCercanasPais(
-											locationsAp, lugares));
-						} else { // Si la alerta es de Nivel 1 se detecta los
-									// proveedores por cercania a los puntos
-									// encontrados
-							// Obtenemos los lugares que entren en el radio de
-							// la localizacion
-							newsDetect
-									.setLocationsNear(obtenerLocalizacionesCercanas(
-											locationsAp, lugares));
-						}
-						// Guardamos los lugares encontrados de la noticia
-						Set<PointLocation> puntos = Sets.newHashSet();
-						for (ResolvedLocation loc : locationsAp) {
-							PointLocation point = new PointLocation();
-							point.setCountry(loc.getGeoname()
-									.getPrimaryCountryCode());
-							point.setLatitude(loc.getGeoname().getLatitude());
-							point.setLongitude(loc.getGeoname().getLongitude());
-							point.setName(loc.getMatchedName());
-							puntos.add(point);
-						}
-						newsDetect.setLocations(puntos);
-					}
+
+			Map<AlertAbstract, NewsDetect> alertWithNews = checkIfNewsIsAlert(
+					news, detectar, feed);
+			for (AlertAbstract alerta : alertWithNews.keySet()) {
+				NewsDetect newsDetect = alertWithNews.get(alerta);
 					if (repositoryNewsDetect.findFirstByAlertDetectAndLink(
 							alerta, newsDetect.getLink()) == null) {
 						repositoryNewsDetect.save(newsDetect);
@@ -269,7 +153,6 @@ public class NewsCheckFeedServiceImpl implements NewsCheckFeedService {
 							}
 						}
 					}
-				}
 			}
 		}
 		Date today = new Date(System.currentTimeMillis());
@@ -282,13 +165,15 @@ public class NewsCheckFeedServiceImpl implements NewsCheckFeedService {
 		statisticsRepository.save(statistics);
 	}
 
-	private Map<AlertAbstract,List<NewsDetect>> checkIfNewsIsAlert(News news,
-			List<AlertAbstract> alertas, Feed feed) {
-		Map<AlertAbstract,List<NewsDetect>> newsDetectByAlert = Maps.newHashMap();
+	private Map<AlertAbstract, NewsDetect> checkIfNewsIsAlert(News news,
+			Set<AlertAbstract> alertas, Feed feed) {
+		Map<AlertAbstract, NewsDetect> newsDetectByAlert = Maps
+				.newHashMap();
 		NewsDetect newsDetect = null;
 		Set<Location> lugares = placeAlertService.getAllLocations();
 		Configuracion configuracion = configuracionRepository.findOne("conf");
 		Set<String> newsDetectPreliminar = Sets.newHashSet();
+		Set<Dictionary> dictionaries = Sets.newHashSet(dictionaryRepository.findAll());
 		// Solo se filtra por los terminos de alerta general si hay
 		// alguno
 		if (configuracion.getPalabrasAlerta().length() > 0
@@ -320,130 +205,19 @@ public class NewsCheckFeedServiceImpl implements NewsCheckFeedService {
 		}
 		for (AlertAbstract alerta : alertas) {// Iteramos sobre cada alerta
 												// o riesgo si el
-			newsDetectByAlert.put(alerta, new ArrayList<NewsDetect>());
-			if (alerta.getId() == 65605 && feed.getId() == 32779)
-				LOGGER.info("Test");
 			if (alerta instanceof Alert && !feed.getForAlerts()) {
 				continue;
 			} else if (alerta instanceof Risk && !feed.getForRisks()) {
 				continue;
 			}
-			// sitio esta activo las alertas
-			Set<String> wordsDetect = Sets.newHashSet();
-			// Comprobamos todos los terminos y los almacenamos
-			Set<String> terminos = Sets
-					.newHashSet(alerta.getWords().split(","));
-			terminos.add(alerta.getTitle());// El titulo de la alerta
-											// también se busca
-			terminos.add(alerta.getTitleEn());// El titulo en ingles de la
-												// alerta también se busca
-			for (String word : terminos) {
-				boolean caseSensitive = false;
-				if (word.startsWith("\"") && word.endsWith("\"")) {
-					word = word.replace("\"", "").trim();
-					caseSensitive = true;
-				} else {
-					word = word.toLowerCase().trim();
-				}
-				String content = caseSensitive ? news.getContent() : news
-						.getContent().toLowerCase();
-				if (content.contains(" " + word + " ")
-						|| content.startsWith(word + " ")
-						|| content.endsWith(" " + word)) {
-					wordsDetect.add(word);
-				}
-			}
-			if (newsDetectPreliminar.size() > 0) {
-				wordsDetect.addAll(newsDetectPreliminar);
-			}
-			// Si se han detectado palabras de la alerta en la noticia
-			if (wordsDetect.size() > 0) {
-				if (repositoryNewsDetect.findFirstByAlertDetectAndLink(alerta,
-						news.getUrl()) != null) {
-					continue;
-				}
-				newsDetect = new NewsDetect();
-				newsDetect.setDatePub(news.getPubDate());
-				newsDetect.setAlertDetect(alerta);
-				newsDetect.setLink(news.getUrl());
-				newsDetect.setSite(feed);
-				newsDetect.setTitle(news.getTitle());
-				newsDetect.setWordsDetect(wordsDetect);
-				if (alerta instanceof Alert) {
-					feed = service.setSateOfFeed(feed,
-							UpdateStateEnum.DETECT_PLACES);
-					Alert alert = (Alert) alerta;
-					String regExp = null;
-					if (configuracion.getUsarPalabrasLugar()) {
-						regExp = configuracion.getPaabrasLugar();
-					}
-					Set<ResolvedLocation> locationsAp = null;
-					try {
-						locationsAp = Sets.newHashSet(parser.parse(
-								news.getContent(), regExp));
-					} catch (Exception e) {
-						LOGGER.info("Se ha producido un error al obtener las localizaciones de la noticia");
-						LOGGER.debug(e.getMessage());
-					}
-					// Si la alerta es de Nivel 2 o 3 se detecta los
-					// proveedores por el pais
-					if (alert.getType().equals(AlertLevel.orange)
-							|| alert.getType().equals(AlertLevel.red)) {
-						// Obtenemos los lugares que coincidan con el pais
-						// de
-						// las localizaciones encontradas
-						newsDetect
-								.setLocationsNear(obtenerLocalizacionesCercanasPais(
-										locationsAp, lugares));
-					} else { // Si la alerta es de Nivel 1 se detecta los
-								// proveedores por cercania a los puntos
-								// encontrados
-						// Obtenemos los lugares que entren en el radio de
-						// la localizacion
-						newsDetect
-								.setLocationsNear(obtenerLocalizacionesCercanas(
-										locationsAp, lugares));
-					}
-					// Guardamos los lugares encontrados de la noticia
-					Set<PointLocation> puntos = Sets.newHashSet();
-					for (ResolvedLocation loc : locationsAp) {
-						PointLocation point = new PointLocation();
-						point.setCountry(loc.getGeoname()
-								.getPrimaryCountryCode());
-						point.setLatitude(loc.getGeoname().getLatitude());
-						point.setLongitude(loc.getGeoname().getLongitude());
-						point.setName(loc.getMatchedName());
-						puntos.add(point);
-					}
-					newsDetect.setLocations(puntos);
-				}
-				newsDetectByAlert.get(alerta).add(newsDetect);
-			}
-		}
-		return newsDetectByAlert;
-	}
-
-	public Set<AlertAbstract> checkNews(News news, Feed feed) {
-		LOGGER.info("Iniciada comprobacion de alerta de cercania y palabras de filtro para el sitio: "
-				+ feed.getName());
-		Set<AlertAbstract> alertDetect = Sets.newHashSet();
-		Set<Location> lugares = placeAlertService.getAllLocations();
-		Set<Alert> alertas = alertService.getAllAlert();
-		Set<Risk> riesgos = riskService.getAllAlert();
-		List<AlertAbstract> detectar = Lists.newArrayList();
-		detectar.addAll(alertas);
-		detectar.addAll(riesgos);
-		Configuracion configuracion = configuracionRepository.findOne("conf");
-		List<String> newsDetectPreliminar = new ArrayList<String>();
-		// Solo se filtra por los terminos de alerta general si hay
-		// alguno
-		if (configuracion.getPalabrasAlerta().length() > 0
-				&& configuracion.getUsarPalabrasAlerta()
-				&& !feed.getForAlerts()) {
-			List<String> terminos = Lists.newArrayList(configuracion
-					.getPalabrasAlerta().split(","));
-			if (news != null) {
-				for (String word : terminos) {
+			// Se comprueba los terminos negativos
+			if (alerta.getWordsNegative() != null) {
+				Set<String> terminosNegativos = Sets.newHashSet(alerta
+						.getWordsNegative().split(","));
+				boolean skip = false; // Variable para saltar la alerta en caso
+										// de coincidencia de algun termino
+										// negativo
+				for (String word : terminosNegativos) {
 					boolean caseSensitive = false;
 					if (word.startsWith("\"") && word.endsWith("\"")) {
 						word = word.replace("\"", "").trim();
@@ -456,13 +230,16 @@ public class NewsCheckFeedServiceImpl implements NewsCheckFeedService {
 					if (content.contains(" " + word + " ")
 							|| content.startsWith(word + " ")
 							|| content.endsWith(" " + word)) {
-						newsDetectPreliminar.add(word);
+						skip = true;
+						break;
 					}
 				}
+				// Si ha habido coincidencia esta activa y salta
+				if (skip) {
+					continue;
+				}
 			}
-		}
-		for (AlertAbstract alerta : detectar) {// Iteramos sobre cada alerta
-												// o riesgo si el
+			// Se comprueba los terminos positivos
 			// sitio esta activo las alertas
 			Set<String> wordsDetect = Sets.newHashSet();
 			// Comprobamos todos los terminos y los almacenamos
@@ -470,8 +247,10 @@ public class NewsCheckFeedServiceImpl implements NewsCheckFeedService {
 					.newHashSet(alerta.getWords().split(","));
 			terminos.add(alerta.getTitle());// El titulo de la alerta
 											// también se busca
-			terminos.add(alerta.getTitleEn());// El titulo en ingles de la
-												// alerta también se busca
+			if (alerta.getTitleEn() != null) {
+				terminos.add(alerta.getTitleEn());// El titulo en ingles de la
+													// alerta también se busca
+			}
 			for (String word : terminos) {
 				boolean caseSensitive = false;
 				if (word.startsWith("\"") && word.endsWith("\"")) {
@@ -493,17 +272,14 @@ public class NewsCheckFeedServiceImpl implements NewsCheckFeedService {
 			}
 			// Si se han detectado palabras de la alerta en la noticia
 			if (wordsDetect.size() > 0) {
-				if (repositoryNewsDetect.findFirstByAlertDetectAndLink(alerta,
-						news.getUrl()) != null) {
-					continue;
-				}
-				NewsDetect newsDetect = new NewsDetect();
+				newsDetect = new NewsDetect();
 				newsDetect.setDatePub(news.getPubDate());
 				newsDetect.setAlertDetect(alerta);
 				newsDetect.setLink(news.getUrl());
 				newsDetect.setSite(feed);
 				newsDetect.setTitle(news.getTitle());
 				newsDetect.setWordsDetect(wordsDetect);
+				newsDetect.setDictionaryDetect(new HashSet<DictDetect>());
 				if (alerta instanceof Alert) {
 					feed = service.setSateOfFeed(feed,
 							UpdateStateEnum.DETECT_PLACES);
@@ -552,11 +328,54 @@ public class NewsCheckFeedServiceImpl implements NewsCheckFeedService {
 					}
 					newsDetect.setLocations(puntos);
 				}
+				boolean mark = false; //Variable para marcar una noticia como importante
+				for (Dictionary dict : dictionaries) {
+					Set<String> terminosDict = Sets.newHashSet(dict.getWords().split(","));
+					String terminosDetect = "";
+					for (String word : terminosDict) {
+						boolean caseSensitive = false;
+						if (word.startsWith("\"") && word.endsWith("\"")) {
+							word = word.replace("\"", "").trim();
+							caseSensitive = true;
+						} else {
+							word = word.toLowerCase().trim();
+						}
+						String content = caseSensitive ? news.getContent() : news
+								.getContent().toLowerCase();
+						if (content.contains(" " + word + " ")
+								|| content.startsWith(word + " ")
+								|| content.endsWith(" " + word)) {
+							terminosDetect = terminosDetect.concat(word).concat(",");
+							mark = true;
+						}
+					}
+					if (!terminosDetect.isEmpty()) {
+						newsDetect.getDictionaryDetect().add(new DictDetect(dict,terminosDetect.substring(0, terminosDetect.length()-1)));
+					}
+				}
+				newsDetect.setMark(mark);
+				newsDetectByAlert.put(alerta,newsDetect);
+			}
+		}
+		return newsDetectByAlert;
+	}
+
+	public Set<AlertAbstract> checkNews(News news, Feed feed) {
+		LOGGER.info("Iniciada comprobacion de alerta de cercania y palabras de filtro para el sitio: "
+				+ feed.getName());
+		Set<AlertAbstract> alertDetect = Sets.newHashSet();
+		Set<Location> lugares = placeAlertService.getAllLocations();
+		Set<Alert> alertas = alertService.getAllAlert();
+		Set<Risk> riesgos = riskService.getAllAlert();
+		Set<AlertAbstract> detectar = Sets.newHashSet();
+		detectar.addAll(alertas);
+		detectar.addAll(riesgos);
+		Map<AlertAbstract, NewsDetect> alertWithNews = checkIfNewsIsAlert(news, detectar, feed);
+		for (AlertAbstract alerta : alertWithNews.keySet()) {
+			NewsDetect newsDetect = alertWithNews.get(alerta);
 				alerta.getNewsDetect().clear();
 				alerta.getNewsDetect().add(newsDetect);
 				alertDetect.add(alerta);
-			}
-
 		}
 		return alertDetect;
 	}

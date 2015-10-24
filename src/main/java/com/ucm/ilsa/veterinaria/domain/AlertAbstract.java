@@ -107,6 +107,14 @@ public abstract class AlertAbstract extends BaseEntity {
 	public void setWordsNegative(String wordsNegative) {
 		this.wordsNegative = wordsNegative;
 	}
+	
+	public AlertAbstract bind(AlertAbstract before) {
+		this.createDate = before.getCreateDate();
+		this.id = before.getId();
+		this.updateDate = before.getUpdateDate();
+		this.version = before.getVersion();
+		return this;
+	}
 
 	public SortedMap<Date,List<NewsDetect>> getAllNewsDetectOrderByDate() {
 		SortedMap<Date,List<NewsDetect>> alertasPorFecha = new TreeMap<Date, List<NewsDetect>>(Collections.reverseOrder());

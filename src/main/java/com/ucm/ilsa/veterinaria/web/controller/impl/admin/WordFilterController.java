@@ -63,7 +63,7 @@ public class WordFilterController extends BaseController {
         	model.addAttribute("error","Hay un error en el formulario");
             return FOLDER + "words";
         }
-		wordService.create(wordFilter);
+		wordService.create((Alert)wordFilter.bind(before));
 		redirectAttributes.addFlashAttribute("info","Se ha actualizado correctamente el filtro.");
 		return "redirect:/admin/words";
 	}

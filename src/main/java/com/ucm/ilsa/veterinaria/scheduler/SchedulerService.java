@@ -3,6 +3,7 @@ package com.ucm.ilsa.veterinaria.scheduler;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -104,6 +105,13 @@ public class SchedulerService {
 			scheduler.schedule(task, startTime);
 
 		}
+	}
+
+	public void startAllTask() {
+		for (Feed feed : serviceFeed.getAllFeed()) {
+			startTask(feed);
+		}
+		
 	}
 
 }
