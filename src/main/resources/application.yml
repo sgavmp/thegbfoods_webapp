@@ -3,6 +3,10 @@ spring:
     name: veterinaria
   profiles:
     active: production
+  datasource:
+    testWhileIdle: true
+    timeBetweenEvictionRunsMillis: 1800000
+    validationQuery: SELECT 1
   
 ---
 logging:
@@ -42,3 +46,6 @@ spring:
     continueOnError: true
 
 name: local
+
+server:
+  port: 9000

@@ -38,7 +38,7 @@ public abstract class AlertAbstract extends BaseEntity {
 	private String words;
 	@Lob
 	private String wordsNegative;
-	@OneToMany(mappedBy = "alertDetect", fetch = FetchType.EAGER, cascade=CascadeType.ALL)
+	@OneToMany(mappedBy = "alertDetect", fetch = FetchType.LAZY, cascade=CascadeType.ALL)
 	protected Set<NewsDetect> newsDetect;
 	@Enumerated(EnumType.ORDINAL)
 	private AlertLevel type;

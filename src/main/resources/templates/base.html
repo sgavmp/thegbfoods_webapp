@@ -105,7 +105,7 @@
 					th:href="${url}" th:with="url=@{/}" href=""><i
 					class="mdl-color-text--white material-icons"
 					role="presentation">insert_chart</i>Panel de Control</a> 
-					<div class="mdl-navigation__group">Alertas</div>
+					<div class="mdl-navigation__group">Alertas Sanitárias</div>
 					<a
 					class="mdl-navigation__link mdl-navigation__sub_link"
 					th:class="${url == #httpServletRequest.requestURI ? 'mdl-navigation\_\_link mdl-navigation\_\_link--current mdl-navigation\_\_sub_link' : 'mdl-navigation\_\_link mdl-navigation\_\_sub_link'}"
@@ -117,13 +117,13 @@
 					th:href="${url}" th:with="url=@{/admin/words}" href=""><i
 					class="mdl-color-text--white material-icons"
 					role="presentation">create</i>Listado</a>
-					<div class="mdl-navigation__group">Riesgos</div>
+					<div class="mdl-navigation__group">Otros Alertas</div>
 					<a
 					class="mdl-navigation__link mdl-navigation__sub_link"
 					th:class="${url == #httpServletRequest.requestURI ? 'mdl-navigation\_\_link mdl-navigation\_\_link--current mdl-navigation\_\_sub_link' : 'mdl-navigation\_\_link mdl-navigation\_\_sub_link'}"
 					th:href="${url}" th:with="url=@{/risks}" href=""><i
 					class="mdl-color-text--white material-icons"
-					role="presentation">add_alert</i>Activos</a> 
+					role="presentation">add_alert</i>Activas</a> 
 					<a
 					sec:authorize="isAuthenticated()" class="mdl-navigation__link mdl-navigation__sub_link"
 					th:class="${url == #httpServletRequest.requestURI ? 'mdl-navigation\_\_link mdl-navigation\_\_link--current mdl-navigation\_\_sub_link' : 'mdl-navigation\_\_link mdl-navigation\_\_sub_link'}"
@@ -144,12 +144,7 @@
 					th:class="${url == #httpServletRequest.requestURI ? 'mdl-navigation\_\_link mdl-navigation\_\_link--current' : 'mdl-navigation__link'}"
 					th:href="${url}" th:with="url=@{/admin/dictionary}" href=""><i
 					class="mdl-color-text--white material-icons"
-					role="presentation">settings</i>Diccionario</a> <a
-					sec:authorize="isAuthenticated()" class="mdl-navigation__link"
-					th:class="${url == #httpServletRequest.requestURI ? 'mdl-navigation\_\_link mdl-navigation\_\_link--current' : 'mdl-navigation__link'}"
-					th:href="${url}" th:with="url=@{/admin/configuracion}" href=""><i
-					class="mdl-color-text--white material-icons"
-					role="presentation">settings</i>Configuración</a>
+					role="presentation">book</i>Diccionarios</a>
 				<div class="mdl-layout-spacer"></div>
 				<a class="mdl-navigation__link" href=""><i
 					class="mdl-color-text--white material-icons"

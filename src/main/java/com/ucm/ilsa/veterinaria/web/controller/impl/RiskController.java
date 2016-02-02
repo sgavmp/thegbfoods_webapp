@@ -41,7 +41,7 @@ public class RiskController extends BaseController {
 	
 	
 	public RiskController() {
-		this.menu = "Estadísticas de Riesgos";
+		this.menu = "Otras Alertas";
 	}
 	
 	@ModelAttribute("alertsUncheck")

@@ -167,7 +167,7 @@ public class FeedScrapingImpl implements FeedScraping {
 		try {
 			List<News> listNews = new ArrayList<News>();
 			if (feed.getUrlNews() != null) {
-				Document doc = Jsoup.connect(feed.getUrlNews()).get();
+				Document doc = Jsoup.connect(feed.getUrlNews()).timeout(20000).get();
 				Elements newsLinks = doc.select(feed.getNewsLink());
 				boolean isFirst = true;
 				String lastNews = null;

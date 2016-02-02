@@ -37,7 +37,7 @@ public class AlertAdminController extends BaseController {
 	private StatisticsRepository statsRepository;
 	
 	public AlertAdminController() {
-		this.menu = "Alertas activas";
+		this.menu = "Alertas Sanitarias Activas";
 	}
 	
 	@RequestMapping(value = "/get/{id}/news/{idNews}/history", method=RequestMethod.GET)

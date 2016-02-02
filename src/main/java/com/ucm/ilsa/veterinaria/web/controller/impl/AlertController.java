@@ -28,7 +28,7 @@ public class AlertController extends BaseController {
 	private AlertServiceImpl service;
 	
 	public AlertController() {
-		this.menu = "Alertas activas";
+		this.menu = "Alertas Sanitarias Activas";
 	}
 	
 	@ModelAttribute("alertsUncheck")

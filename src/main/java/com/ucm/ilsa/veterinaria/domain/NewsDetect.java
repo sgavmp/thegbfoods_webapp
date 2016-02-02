@@ -46,12 +46,12 @@ public class NewsDetect extends BaseEntity {
 	@Column(name = "link")
 	private String link;
 	private Date datePub;
-	@ElementCollection(fetch = FetchType.EAGER)
+	@ElementCollection(fetch = FetchType.LAZY)
 	private Set<String> wordsDetect;
-	@ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
+	@ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
 	@JoinColumn(name = "alert_detect_id")
 	private Set<Location> locationsNear;
-	@ElementCollection(fetch = FetchType.EAGER)
+	@ElementCollection(fetch = FetchType.LAZY)
 	@CollectionTable(name = "news_detect_locations", joinColumns = @JoinColumn(name = "NEWS_ID") )
 	private Set<PointLocation> locations;
 	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
@@ -59,7 +59,7 @@ public class NewsDetect extends BaseEntity {
 	private AlertAbstract alertDetect;
 	private boolean history = false;
 	private boolean falPositive = false;
-	@ElementCollection(fetch = FetchType.EAGER)
+	@ElementCollection(fetch = FetchType.LAZY)
 	private Set<DictDetect> dictionaryDetect;
 	private boolean mark = false;
 	private Double score;

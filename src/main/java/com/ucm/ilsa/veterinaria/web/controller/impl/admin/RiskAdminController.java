@@ -41,7 +41,7 @@ public class RiskAdminController extends BaseController {
 	private StatisticsRepository statsRepository;
 	
 	public RiskAdminController() {
-		this.menu = "Riesgos";
+		this.menu = "Otras Alertas";
 	}
 	
 	@RequestMapping("**")

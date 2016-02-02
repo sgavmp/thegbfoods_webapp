@@ -9,8 +9,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.transaction.Transactional;
+
 import org.apache.commons.collections.map.HashedMap;
 import org.apache.log4j.Logger;
+import org.hibernate.Hibernate;
 import org.hibernate.StaleObjectStateException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -96,6 +99,7 @@ public class NewsCheckFeedServiceImpl implements NewsCheckFeedService {
 				: "No iniciado"));
 	}
 
+	@Transactional
 	public void checkNews(List<News> listNews, Feed feed) {
 		LOGGER.info("Iniciada comprobacion de alerta de cercania y palabras de filtro para el sitio: "
 				+ feed.getName());
@@ -110,6 +114,8 @@ public class NewsCheckFeedServiceImpl implements NewsCheckFeedService {
 		feed = service.setSateOfFeed(feed, UpdateStateEnum.DETECT_ALERTS);
 		Configuracion configuracion = configuracionRepository.findOne("conf");
 		for (News news : listNews) { // Iteramos sobre cada noticia
+			if (news == null)
+				continue;
 			if (news.getContent() == null) {// Comprobación de contenido de la
 											// noticia
 				LOGGER.error("No se ha conseguido el cuerpo de la noticia con URL: "
@@ -126,6 +132,7 @@ public class NewsCheckFeedServiceImpl implements NewsCheckFeedService {
 						repositoryNewsDetect.save(newsDetect);
 						alertDetectNum++;
 						try {
+							Hibernate.initialize(alerta.getNewsDetect());
 							if (alerta instanceof Alert) {
 								alerta = alertService
 										.getOneById(alerta.getId());
