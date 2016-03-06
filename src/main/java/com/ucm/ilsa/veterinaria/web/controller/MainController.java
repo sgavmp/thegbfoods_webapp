@@ -1,7 +1,7 @@
 package com.ucm.ilsa.veterinaria.web.controller;
 
+import java.sql.Date;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,11 +15,15 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.HandlerMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.webjars.WebJarAssetLocator;
 
 import com.google.common.collect.Lists;
@@ -33,6 +37,7 @@ import com.ucm.ilsa.veterinaria.domain.Risk;
 import com.ucm.ilsa.veterinaria.domain.Statistics;
 import com.ucm.ilsa.veterinaria.repository.ConfiguracionRepository;
 import com.ucm.ilsa.veterinaria.repository.StatisticsRepository;
+import com.ucm.ilsa.veterinaria.service.ConfiguracionService;
 import com.ucm.ilsa.veterinaria.service.impl.AlertServiceImpl;
 import com.ucm.ilsa.veterinaria.service.impl.RiskServiceImpl;
 import com.ucm.ilsa.veterinaria.web.controller.impl.admin.ConfiguracionController;
@@ -53,8 +58,11 @@ public class MainController extends BaseController {
 	@Autowired
 	private StatisticsRepository statisticsRepository;
 	
+	@Autowired
+	private ConfiguracionService configuracionService;
+	
 	@Autowired 
-	private ConfiguracionRepository configuracionRepository;
+	private ConfiguracionService configuracion;
 
 	public MainController() {
 		this.assetLocator = new WebJarAssetLocator();
@@ -74,19 +82,44 @@ public class MainController extends BaseController {
 		return serviceRisk.getAllAlertActive();
 	}
 
-	@ModelAttribute("alertsActivateToday")
-	public Set<Alert> getAllAlertsToday() {
+	@ModelAttribute("alertsScoreToday")
+	public List<Object[]> getAllAlertsToday() {
 		Date now = new Date(System.currentTimeMillis());
 		Date today = new Date(now.getYear(), now.getMonth(), now.getDate());
-		Set<Alert> lista = service.getAlertDetectActivatedAfter(today);
+		List<Object[]> lista = statisticsRepository.getAlertSocreAvgDay(today.toString(),5);
+		return lista;
+	}
+	
+	@ModelAttribute("alertsScoreWeek")
+	public List<Object[]> getAllAlertsWeek() {
+		Date now = new Date(System.currentTimeMillis());
+		Date today = new Date(now.getYear(), now.getMonth(), now.getDate());
+		Date past = new Date(now.getYear(), now.getMonth(), now.getDate()-7);
+		List<Object[]> lista = statisticsRepository.getAlertSocreAvgBetween(today.toString(),past.toString(),7);
+		return lista;
+	}
+	
+	@ModelAttribute("risksScoreToday")
+	public List<Object[]> getAllRisksToday() {
+		Date now = new Date(System.currentTimeMillis());
+		Date today = new Date(now.getYear(), now.getMonth(), now.getDate());
+		List<Object[]> lista = statisticsRepository.getRiskSocreAvgDay(today.toString(),5);
+		return lista;
+	}
+	
+	@ModelAttribute("risksScoreWeek")
+	public List<Object[]> getAllRisksWeek() {
+		Date now = new Date(System.currentTimeMillis());
+		Date today = new Date(now.getYear(), now.getMonth(), now.getDate());
+		Date past = new Date(now.getYear(), now.getMonth(), now.getDate()-7);
+		List<Object[]> lista = statisticsRepository.getRiskSocreAvgBetween(today.toString(),past.toString(),7);
 		return lista;
 	}
 	
 	@ModelAttribute("risksActivateInLast")
 	public Set<Risk> getAllRiskInLast() {
 		Date now = new Date(System.currentTimeMillis());
-		Configuracion conf = configuracionRepository.findOne("conf");
-		Date date = new Date(now.getYear(), now.getMonth(), now.getDate()-conf.getDayRisks());
+		Date date = new Date(now.getYear(), now.getMonth(), now.getDate()-configuracion.getConfiguracion().getDayRisks());
 		Set<Risk> lista = serviceRisk.getAlertDetectActivatedAfter(date);
 		for (Risk risk : lista) {
 			for (NewsDetect news : risk.getNewsDetect()) {
@@ -95,23 +128,24 @@ public class MainController extends BaseController {
 		}
 		return lista;
 	}
+	
 
 	@ModelAttribute("allCountriesAfects")
 	public Map<String, String> getAllCountriesAfects() {
 		Map<String, String> listCountries = new HashMap<String, String>();
-		Set<Alert> listAlert = service.getAllAlert();
-		for (Alert alert : listAlert) {
-			for (NewsDetect news : alert.getNewsDetect()) {
-				if (!news.getFalPositive() && !news.getHistory()) {
-					for (Location loc : news.getLocationsNear()) {
-						listCountries.put(
-								CountryCode.getByCode(loc.getCountry().name())
-										.getAlpha3(), "rgba(255,87,34,1)");
-					}
-				}
-			}
-		}
-		listCountries.put("defaultFill", "rgba(200,200,200,1)");
+//		Set<Alert> listAlert = service.getAllAlert();
+//		for (Alert alert : listAlert) {
+//			for (NewsDetect news : alert.getNewsDetect()) {
+//				if (!news.getFalPositive() && !news.getHistory()) {
+//					for (Location loc : news.getLocationsNear()) {
+//						listCountries.put(
+//								CountryCode.getByCode(loc.getCountry().name())
+//										.getAlpha3(), "rgba(255,87,34,1)");
+//					}
+//				}
+//			}
+//		}
+//		listCountries.put("defaultFill", "rgba(200,200,200,1)");
 		return listCountries;
 	}
 
@@ -159,16 +193,16 @@ public class MainController extends BaseController {
 	@ModelAttribute("month")
 	public GraphData getGraphDataForMonth() {
 		GraphData graph = new GraphData();
-		List<Object[]> stats = statisticsRepository.getStatsByWeek();
-		while(stats.size()<4) {
-			Object[] t = {((Integer)stats.get(0)[0])-1,0,0};
-			stats.add(0, t);
-		}
-		for (Object[] stat : stats) {
-			graph.alertas.add(stat[1]);
-			graph.noticias.add(stat[2]);
-			graph.labels.add("Semana " + (Integer)stat[0]);
-		}
+//		List<Object[]> stats = statisticsRepository.getStatsByWeek();
+//		while(stats.size()<4) {
+//			Object[] t = {((Integer)stats.get(0)[0])-1,0,0};
+//			stats.add(0, t);
+//		}
+//		for (Object[] stat : stats) {
+//			graph.alertas.add(stat[1]);
+//			graph.noticias.add(stat[2]);
+//			graph.labels.add("Semana " + (Integer)stat[0]);
+//		}
 		return graph;
 	}
 	
@@ -176,18 +210,18 @@ public class MainController extends BaseController {
 	public GraphData getGraphDataForYear() {
 		List<String> dias = Lists.newArrayList("Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre");
 		GraphData graph = new GraphData();
-		List<Object[]> stats = statisticsRepository.getStatsByMonth();
-		while(stats.size()<12) {
-			Integer month = ((Integer)stats.get(0)[0])-1;
-			month = month<1?12:month;
-			Object[] t = {month,0,0};
-			stats.add(0, t);
-		}
-		for (Object[] stat : stats) {
-			graph.alertas.add(stat[1]);
-			graph.noticias.add(stat[2]);
-			graph.labels.add(dias.get((Integer)stat[0]-1));
-		}
+//		List<Object[]> stats = statisticsRepository.getStatsByMonth();
+//		while(stats.size()<12) {
+//			Integer month = ((Integer)stats.get(0)[0])-1;
+//			month = month<1?12:month;
+//			Object[] t = {month,0,0};
+//			stats.add(0, t);
+//		}
+//		for (Object[] stat : stats) {
+//			graph.alertas.add(stat[1]);
+//			graph.noticias.add(stat[2]);
+//			graph.labels.add(dias.get((Integer)stat[0]-1));
+//		}
 		return graph;
 	}
 

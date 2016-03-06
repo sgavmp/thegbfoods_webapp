@@ -1,5 +1,6 @@
 package com.ucm.ilsa.veterinaria.web.controller.impl.admin;
 
+import java.io.ByteArrayInputStream;
 import java.util.List;
 
 import javax.validation.Valid;
@@ -16,8 +17,16 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.google.common.collect.Lists;
 import com.ucm.ilsa.veterinaria.domain.Alert;
 import com.ucm.ilsa.veterinaria.domain.NewsDetect;
+import com.ucm.ilsa.veterinaria.domain.topic.TopicManager;
 import com.ucm.ilsa.veterinaria.service.impl.AlertServiceImpl;
 import com.ucm.ilsa.veterinaria.web.controller.BaseController;
+
+import es.ucm.visavet.gbf.topics.validator.CyclicDependencyException;
+import es.ucm.visavet.gbf.topics.validator.ParseException;
+import es.ucm.visavet.gbf.topics.validator.TokenMgrError;
+import es.ucm.visavet.gbf.topics.validator.TopicDoesNotExistsException;
+import es.ucm.visavet.gbf.topics.validator.TopicValidator;
+import es.ucm.visavet.gbf.topics.validator.TopicValidatorSemantics;
 
 @Controller
 @RequestMapping("/admin/words")
@@ -28,8 +37,11 @@ public class WordFilterController extends BaseController {
 	@Autowired
 	private AlertServiceImpl wordService;
 	
+	@Autowired
+	private TopicManager topicManager;
+	
 	public WordFilterController() {
-		this.menu = "Alertas Sanitárias";
+		this.menu = "Alertas Sanitarias";
 	}
 	
 	@RequestMapping("**")
@@ -41,9 +53,25 @@ public class WordFilterController extends BaseController {
 	
 	@RequestMapping(value="/create", method=RequestMethod.POST)
 	public String createLocation(Model model, RedirectAttributes redirectAttributes, Alert wordFilter,BindingResult result) {
-        if (result.hasErrors()) {
+		model.addAttribute("term", wordFilter);
+		if (result.hasErrors()) {
             return FOLDER + "words";
         }
+		TopicValidator validator = new TopicValidator(
+				new TopicValidatorSemantics(wordFilter.getTitle(), topicManager),
+				new ByteArrayInputStream(wordFilter.getWords().getBytes()));
+		try {
+			validator.topic();
+		} catch (TopicDoesNotExistsException e) {
+			model.addAttribute("error", "El topic " + e.getTopic() + " no existe.");
+			return FOLDER + "words";
+		} catch (CyclicDependencyException e) {
+			model.addAttribute("error", e.toString());
+			return FOLDER + "words";
+		} catch (ParseException | TokenMgrError e) {
+			model.addAttribute("error", "Se ha producido un error al validar el topic.");
+			return FOLDER + "words";
+		}
 		wordService.create(wordFilter);
 		redirectAttributes.addFlashAttribute("info","Se ha a&ntilde;adido correctamente el filtro");
 		return "redirect:/alerts/words";
@@ -59,10 +87,27 @@ public class WordFilterController extends BaseController {
 	
 	@RequestMapping(value="/get/{id}/edit", method=RequestMethod.POST)
 	public String updateLocation(Model model, RedirectAttributes redirectAttributes, Alert wordFilter, @PathVariable ("id") Alert before,BindingResult result) {
-        if (result.hasErrors()) {
+		model.addAttribute("term", wordFilter);
+		if (result.hasErrors()) {
         	model.addAttribute("error","Hay un error en el formulario");
             return FOLDER + "words";
         }
+        model.addAttribute("term", wordFilter);
+		TopicValidator validator = new TopicValidator(
+				new TopicValidatorSemantics(wordFilter.getTitle(), topicManager),
+				new ByteArrayInputStream(wordFilter.getWords().getBytes()));
+		try {
+			validator.topic();
+		} catch (TopicDoesNotExistsException e) {
+			model.addAttribute("error", "El topic " + e.getTopic() + " no existe.");
+			return FOLDER + "words";
+		} catch (CyclicDependencyException e) {
+			model.addAttribute("error", e.toString());
+			return FOLDER + "words";
+		} catch (ParseException | TokenMgrError e) {
+			model.addAttribute("error", "Se ha producido un error al validar el topic.");
+			return FOLDER + "words";
+		}
 		wordService.create((Alert)wordFilter.bind(before));
 		redirectAttributes.addFlashAttribute("info","Se ha actualizado correctamente el filtro.");
 		return "redirect:/admin/words";

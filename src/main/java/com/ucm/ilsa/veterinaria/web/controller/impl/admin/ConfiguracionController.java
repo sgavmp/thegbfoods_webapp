@@ -1,5 +1,6 @@
 package com.ucm.ilsa.veterinaria.web.controller.impl.admin;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -23,10 +24,13 @@ import com.ucm.ilsa.veterinaria.domain.Feed;
 import com.ucm.ilsa.veterinaria.domain.News;
 import com.ucm.ilsa.veterinaria.repository.ConfiguracionRepository;
 import com.ucm.ilsa.veterinaria.scheduler.SchedulerService;
+import com.ucm.ilsa.veterinaria.service.ConfiguracionService;
 import com.ucm.ilsa.veterinaria.service.FeedScraping;
 import com.ucm.ilsa.veterinaria.service.FeedService;
 import com.ucm.ilsa.veterinaria.service.NewsCheckFeedService;
+import com.ucm.ilsa.veterinaria.service.NewsIndexService;
 import com.ucm.ilsa.veterinaria.service.impl.AlertServiceImpl;
+import com.ucm.ilsa.veterinaria.service.impl.NewsIndexServiceImpl;
 import com.ucm.ilsa.veterinaria.web.controller.BaseController;
 
 @Controller
@@ -34,7 +38,7 @@ import com.ucm.ilsa.veterinaria.web.controller.BaseController;
 public class ConfiguracionController extends BaseController {
 	
 	@Autowired
-	private ConfiguracionRepository configuracionService;
+	private ConfiguracionService configuracionService;
 	
 	@Autowired
 	private FeedService feedService;
@@ -48,6 +52,10 @@ public class ConfiguracionController extends BaseController {
 	@Autowired
 	private SchedulerService schedulerService;
 	
+	@Autowired
+	private NewsIndexService newsIndexService; 
+
+	
 	public ConfiguracionController() {
 		this.menu = "Configuración";
 	}
@@ -59,7 +67,7 @@ public class ConfiguracionController extends BaseController {
 	
 	@RequestMapping("**")
 	public String getAllLocations(Model model) {
-		model.addAttribute("conf", configuracionService.findOne("conf"));
+		model.addAttribute("conf", configuracionService.getConfiguracion());
 		return "conf";
 	}
 	
@@ -68,7 +76,12 @@ public class ConfiguracionController extends BaseController {
         if (result.hasErrors()) {
             return "conf";
         }
-		configuracionService.save(configuracion);
+		try {
+			configuracionService.setConfiguracion(configuracion);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		redirectAttributes.addFlashAttribute("info","Se ha actualizado correctamente la configuración");
 		return "redirect:/admin/configuracion";
 	}
@@ -85,10 +98,21 @@ public class ConfiguracionController extends BaseController {
 				model.addAttribute("lugares", lugares.get(news));
 			}
 		}
-		model.addAttribute("conf", configuracionService.findOne("conf"));
+		model.addAttribute("conf", configuracionService.getConfiguracion());
 		return "conf";
 	}
 	
+	@RequestMapping(value="/resetAlerts")
+	public String resetAlerts(Model model, RedirectAttributes redirectAttributes, Configuracion configuracion,BindingResult result) {
+        try {
+			newsIndexService.resetAllAlerts();
+		} catch (IOException e) {
+			model.addAttribute("error", "Ha ocurrido un error al resetear todas las alertas");
+		}
+		model.addAttribute("info", "Se estan reiniciando las alertas detectadas.");
+		model.addAttribute("conf", configuracionService.getConfiguracion());
+		return "conf";
+	}
 	
 	
 }

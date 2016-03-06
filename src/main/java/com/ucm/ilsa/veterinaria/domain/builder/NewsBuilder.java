@@ -65,37 +65,4 @@ public class NewsBuilder {
 		}
 		return this;
 	}
-
-	public NewsBuilder setValueOf(String attribute, String value) {
-		switch (attribute) {
-		case "title":
-			this.news.setTitle(value);
-			break;
-		case "description":
-			this.news.setDescription(value);
-			break;
-		case "content":
-			this.news.setContent(value);
-			if (value.length()>200)
-				this.news.setDescription(value.substring(0, 200).concat("..."));
-			else
-				this.news.setDescription(value);
-			break;
-		case "url":
-			this.news.setUrl(value);
-			break;
-		case "pubDate":
-			try {
-				this.news.setPubDate(new SimpleDateFormat(dateFormat,
-						this.locale).parse(value));
-			} catch (ParseException ex) {
-				this.news.setPubDate(new Date(System.currentTimeMillis()));
-			}
-			break;
-		default:
-			this.news.getOthers().put(attribute, value);
-			break;
-		}
-		return this;
-	}
 }

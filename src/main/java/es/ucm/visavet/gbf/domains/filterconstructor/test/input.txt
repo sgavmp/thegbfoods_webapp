@@ -1,0 +1,2 @@
+ilsa.fdi.ucm.es
+! *.ucm.es & ! ( *.upm.es | *.uc3m.es )

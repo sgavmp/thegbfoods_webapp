@@ -32,20 +32,22 @@ import com.ucm.ilsa.veterinaria.domain.Alert;
 import com.ucm.ilsa.veterinaria.domain.AlertAbstract;
 import com.ucm.ilsa.veterinaria.domain.AlertLevel;
 import com.ucm.ilsa.veterinaria.domain.Configuracion;
-import com.ucm.ilsa.veterinaria.domain.Dictionary;
+import com.ucm.ilsa.veterinaria.domain.Topic;
 import com.ucm.ilsa.veterinaria.domain.Feed;
 import com.ucm.ilsa.veterinaria.domain.Location;
 import com.ucm.ilsa.veterinaria.domain.News;
 import com.ucm.ilsa.veterinaria.domain.NewsDetect;
-import com.ucm.ilsa.veterinaria.domain.DictDetect;
 import com.ucm.ilsa.veterinaria.domain.PointLocation;
 import com.ucm.ilsa.veterinaria.domain.Risk;
+import com.ucm.ilsa.veterinaria.domain.ScrapStatistics;
 import com.ucm.ilsa.veterinaria.domain.Statistics;
 import com.ucm.ilsa.veterinaria.domain.UpdateStateEnum;
 import com.ucm.ilsa.veterinaria.repository.ConfiguracionRepository;
-import com.ucm.ilsa.veterinaria.repository.DictionaryRepository;
+import com.ucm.ilsa.veterinaria.repository.TopicRepository;
 import com.ucm.ilsa.veterinaria.repository.NewsDetectRepository;
+import com.ucm.ilsa.veterinaria.repository.ScrapStatisticsRepository;
 import com.ucm.ilsa.veterinaria.repository.StatisticsRepository;
+import com.ucm.ilsa.veterinaria.service.ConfiguracionService;
 import com.ucm.ilsa.veterinaria.service.FeedService;
 import com.ucm.ilsa.veterinaria.service.NewsCheckFeedService;
 
@@ -65,12 +67,13 @@ public class NewsCheckFeedServiceImpl implements NewsCheckFeedService {
 	private PlaceAlertServiceImpl placeAlertService;
 
 	@Autowired
-	private StatisticsRepository statisticsRepository;
-	
-	@Autowired
-	private DictionaryRepository dictionaryRepository;
+	private ScrapStatisticsRepository statisticsRepository;
 
-	private ConfiguracionRepository configuracionRepository;
+	@Autowired
+	private TopicRepository dictionaryRepository;
+
+	@Autowired
+	private ConfiguracionService configuracion;
 
 	@Autowired
 	private FeedService service;
@@ -81,22 +84,18 @@ public class NewsCheckFeedServiceImpl implements NewsCheckFeedService {
 			.getLogger(NewsCheckFeedServiceImpl.class);
 
 	@Autowired
-	public NewsCheckFeedServiceImpl(
-			ConfiguracionRepository configuracionRepository)
+	public NewsCheckFeedServiceImpl(ConfiguracionService configuracion)
 			throws ClavinException {
-		this.configuracionRepository = configuracionRepository;
-		if (!configuracionRepository.exists("conf")) {
-			LOGGER.info("No existe una configuración inicial, se inciará una en la base de datos.");
-			configuracionRepository.save(new Configuracion());
+		if (configuracion.getConfiguracion().getPathIndexClavin() != null && configuracion.getConfiguracion().getRunClavin()) {
+			if (!configuracion.getConfiguracion().getPathIndexClavin().isEmpty()) {
+				String path = configuracion.getConfiguracion().getPathIndexClavin();
+				parser = GeoParserFactory.getDefault(path,
+						new AlphaExtractor(), 50, 15, false);
+				LOGGER.info("Indice CLAVIN-MOD: ".concat(path));
+				LOGGER.info("GeoParser ".concat(parser != null ? "Iniciado"
+						: "No iniciado"));
+			}
 		}
-		ClassLoader classLoader = getClass().getClassLoader();
-		String path = classLoader.getResource("IndexDirectory").getFile();
-		path = path.replaceAll("%20", " ");
-		parser = GeoParserFactory.getDefault(path, new AlphaExtractor(), 50,
-				15, false);
-		LOGGER.info("Indice CLAVIN-MOD: ".concat(path));
-		LOGGER.info("GeoParser ".concat(parser != null ? "Iniciado"
-				: "No iniciado"));
 	}
 
 	@Transactional
@@ -108,11 +107,10 @@ public class NewsCheckFeedServiceImpl implements NewsCheckFeedService {
 		Set<Location> lugares = placeAlertService.getAllLocations();
 		Set<Alert> alertas = alertService.getAllAlert();
 		Set<Risk> riesgos = riskService.getAllAlert();
-		Set<AlertAbstract> detectar = Sets.newHashSet();		
+		Set<AlertAbstract> detectar = Sets.newHashSet();
 		detectar.addAll(alertas);
 		detectar.addAll(riesgos);
 		feed = service.setSateOfFeed(feed, UpdateStateEnum.DETECT_ALERTS);
-		Configuracion configuracion = configuracionRepository.findOne("conf");
 		for (News news : listNews) { // Iteramos sobre cada noticia
 			if (news == null)
 				continue;
@@ -127,89 +125,59 @@ public class NewsCheckFeedServiceImpl implements NewsCheckFeedService {
 					news, detectar, feed);
 			for (AlertAbstract alerta : alertWithNews.keySet()) {
 				NewsDetect newsDetect = alertWithNews.get(alerta);
-					if (repositoryNewsDetect.findFirstByAlertDetectAndLink(
-							alerta, newsDetect.getLink()) == null) {
-						repositoryNewsDetect.save(newsDetect);
-						alertDetectNum++;
-						try {
-							Hibernate.initialize(alerta.getNewsDetect());
-							if (alerta instanceof Alert) {
-								alerta = alertService
-										.getOneById(alerta.getId());
-								alerta.getNewsDetect().add(newsDetect);
-								alertService.update((Alert) alerta);
-							} else {
-								alerta = riskService.getOneById(alerta.getId());
-								alerta.getNewsDetect().add(newsDetect);
-								riskService.update((Risk) alerta);
-							}
-						} catch (StaleObjectStateException ex) {
-							LOGGER.error("Se ha producido un error al añadir una noticia del sitio "
-									+ feed.getName()
-									+ " a la alerta "
-									+ alerta.getTitle());
-							if (alerta instanceof Alert) {
-								alerta = alertService
-										.getOneById(alerta.getId());
-								alerta.getNewsDetect().add(newsDetect);
-								alertService.update((Alert) alerta);
-							} else {
-								alerta = riskService.getOneById(alerta.getId());
-								alerta.getNewsDetect().add(newsDetect);
-								riskService.update((Risk) alerta);
-							}
+				if (repositoryNewsDetect.findFirstByAlertDetectAndLink(alerta,
+						newsDetect.getLink()) == null) {
+					repositoryNewsDetect.save(newsDetect);
+					alertDetectNum++;
+					try {
+						Hibernate.initialize(alerta.getNewsDetect());
+						if (alerta instanceof Alert) {
+							alerta = alertService.getOneById(alerta.getId());
+							alerta.getNewsDetect().add(newsDetect);
+							alertService.update((Alert) alerta);
+						} else {
+							alerta = riskService.getOneById(alerta.getId());
+							alerta.getNewsDetect().add(newsDetect);
+							riskService.update((Risk) alerta);
+						}
+					} catch (StaleObjectStateException ex) {
+						LOGGER.error("Se ha producido un error al añadir una noticia del sitio "
+								+ feed.getName()
+								+ " a la alerta "
+								+ alerta.getTitle());
+						if (alerta instanceof Alert) {
+							alerta = alertService.getOneById(alerta.getId());
+							alerta.getNewsDetect().add(newsDetect);
+							alertService.update((Alert) alerta);
+						} else {
+							alerta = riskService.getOneById(alerta.getId());
+							alerta.getNewsDetect().add(newsDetect);
+							riskService.update((Risk) alerta);
 						}
 					}
+				}
 			}
 		}
 		Date today = new Date(System.currentTimeMillis());
-		Statistics statistics = statisticsRepository.findOne(today);
+		ScrapStatistics statistics = statisticsRepository.findOne(today);
 		if (statistics != null) {
-			statistics.increment(alertDetectNum, 0);
+			statistics.setTotal(statistics.getTotal()+newsNum);
 		} else {
-			statistics = new Statistics(today, alertDetectNum, newsNum);
+			statistics = new ScrapStatistics(today, newsNum);
 		}
 		statisticsRepository.save(statistics);
 	}
 
 	private Map<AlertAbstract, NewsDetect> checkIfNewsIsAlert(News news,
 			Set<AlertAbstract> alertas, Feed feed) {
-		Map<AlertAbstract, NewsDetect> newsDetectByAlert = Maps
-				.newHashMap();
+		Map<AlertAbstract, NewsDetect> newsDetectByAlert = Maps.newHashMap();
 		NewsDetect newsDetect = null;
 		Set<Location> lugares = placeAlertService.getAllLocations();
-		Configuracion configuracion = configuracionRepository.findOne("conf");
 		Set<String> newsDetectPreliminar = Sets.newHashSet();
-		Set<Dictionary> dictionaries = Sets.newHashSet(dictionaryRepository.findAll());
+		Set<Topic> dictionaries = Sets.newHashSet(dictionaryRepository
+				.findAll());
 		// Solo se filtra por los terminos de alerta general si hay
 		// alguno
-		if (configuracion.getPalabrasAlerta().length() > 0
-				&& configuracion.getUsarPalabrasAlerta()
-				&& !feed.getForAlerts()) {
-			List<String> terminos = Lists.newArrayList(configuracion
-					.getPalabrasAlerta().split(","));
-			if (news != null) {
-				for (String word : terminos) {
-					boolean caseSensitive = false;
-					if (word.startsWith("\"") && word.endsWith("\"")) {
-						word = word.replace("\"", "").trim();
-						caseSensitive = true;
-					} else {
-						word = word.toLowerCase().trim();
-					}
-					String content = caseSensitive ? news.getContent() : news
-							.getContent().toLowerCase();
-					if (content.contains(" " + word + " ")
-							|| content.startsWith(word + " ")
-							|| content.endsWith(" " + word)) {
-						newsDetectPreliminar.add(word);
-					}
-				}
-			}
-		}
-		if (newsDetectPreliminar.size() > 0 && !feed.getForRisks()) {
-			return null;
-		}
 		for (AlertAbstract alerta : alertas) {// Iteramos sobre cada alerta
 												// o riesgo si el
 			if (alerta instanceof Alert && !feed.getForAlerts()) {
@@ -285,59 +253,78 @@ public class NewsCheckFeedServiceImpl implements NewsCheckFeedService {
 				newsDetect.setLink(news.getUrl());
 				newsDetect.setSite(feed);
 				newsDetect.setTitle(news.getTitle());
-				newsDetect.setWordsDetect(wordsDetect);
-				newsDetect.setDictionaryDetect(new HashSet<DictDetect>());
-				if (alerta instanceof Alert) {
-					feed = service.setSateOfFeed(feed,
-							UpdateStateEnum.DETECT_PLACES);
-					Alert alert = (Alert) alerta;
-					String regExp = null;
-					if (configuracion.getUsarPalabrasLugar()) {
-						regExp = configuracion.getPaabrasLugar();
+				//newsDetect.setWordsDetect(wordsDetect);
+				if (parser == null) {
+					if (configuracion.getConfiguracion().getPathIndexClavin() != null) {
+						if (!configuracion.getConfiguracion().getPathIndexClavin().isEmpty()) {
+							String path = configuracion.getConfiguracion().getPathIndexClavin();
+							try {
+								parser = GeoParserFactory.getDefault(path,
+										new AlphaExtractor(), 50, 15, false);
+							} catch (ClavinException e) {
+								LOGGER.error("Error iniciando Clavin");
+							}
+							LOGGER.info("Indice CLAVIN-MOD: ".concat(path));
+							LOGGER.info("GeoParser "
+									.concat(parser != null ? "Iniciado"
+											: "No iniciado"));
+						}
 					}
-					Set<ResolvedLocation> locationsAp = null;
-					try {
-						locationsAp = Sets.newHashSet(parser.parse(
-								news.getContent(), regExp));
-					} catch (Exception e) {
-						LOGGER.info("Se ha producido un error al obtener las localizaciones de la noticia");
-						LOGGER.debug(e.getMessage());
-					}
-					// Si la alerta es de Nivel 2 o 3 se detecta los
-					// proveedores por el pais
-					if (alert.getType().equals(AlertLevel.orange)
-							|| alert.getType().equals(AlertLevel.red)) {
-						// Obtenemos los lugares que coincidan con el pais
-						// de
-						// las localizaciones encontradas
-						newsDetect
-								.setLocationsNear(obtenerLocalizacionesCercanasPais(
-										locationsAp, lugares));
-					} else { // Si la alerta es de Nivel 1 se detecta los
-								// proveedores por cercania a los puntos
-								// encontrados
-						// Obtenemos los lugares que entren en el radio de
-						// la localizacion
-						newsDetect
-								.setLocationsNear(obtenerLocalizacionesCercanas(
-										locationsAp, lugares));
-					}
-					// Guardamos los lugares encontrados de la noticia
-					Set<PointLocation> puntos = Sets.newHashSet();
-					for (ResolvedLocation loc : locationsAp) {
-						PointLocation point = new PointLocation();
-						point.setCountry(loc.getGeoname()
-								.getPrimaryCountryCode());
-						point.setLatitude(loc.getGeoname().getLatitude());
-						point.setLongitude(loc.getGeoname().getLongitude());
-						point.setName(loc.getMatchedName());
-						puntos.add(point);
-					}
-					newsDetect.setLocations(puntos);
 				}
-				boolean mark = false; //Variable para marcar una noticia como importante
-				for (Dictionary dict : dictionaries) {
-					Set<String> terminosDict = Sets.newHashSet(dict.getWords().split(","));
+				if (parser != null) {
+					if (alerta instanceof Alert) {
+						feed = service.setSateOfFeed(feed,
+								UpdateStateEnum.DETECT_PLACES);
+						Alert alert = (Alert) alerta;
+						String regExp = null;
+						Set<ResolvedLocation> locationsAp = null;
+						try {
+							locationsAp = Sets.newHashSet(parser.parse(
+									news.getContent(), regExp));
+						} catch (Exception e) {
+							LOGGER.error("Se ha producido un error al obtener las localizaciones de la noticia");
+							LOGGER.debug(e.getMessage());
+						}
+						// Si la alerta es de Nivel 2 o 3 se detecta los
+						// proveedores por el pais
+//						if (alert.getType().equals(AlertLevel.orange)
+//								|| alert.getType().equals(AlertLevel.red)) {
+//							// Obtenemos los lugares que coincidan con el pais
+//							// de
+//							// las localizaciones encontradas
+//							newsDetect
+//									.setLocationsNear(obtenerLocalizacionesCercanasPais(
+//											locationsAp, lugares));
+//						} else { // Si la alerta es de Nivel 1 se detecta los
+//									// proveedores por cercania a los puntos
+//									// encontrados
+//							// Obtenemos los lugares que entren en el radio de
+//							// la localizacion
+//							newsDetect
+//									.setLocationsNear(obtenerLocalizacionesCercanas(
+//											locationsAp, lugares));
+//						}
+						// Guardamos los lugares encontrados de la noticia
+						Set<PointLocation> puntos = Sets.newHashSet();
+						for (ResolvedLocation loc : locationsAp) {
+							PointLocation point = new PointLocation();
+							point.setCountry(loc.getGeoname()
+									.getPrimaryCountryCode());
+							point.setLatitude(loc.getGeoname().getLatitude());
+							point.setLongitude(loc.getGeoname().getLongitude());
+							point.setName(loc.getMatchedName());
+							puntos.add(point);
+						}
+						newsDetect.setLocations(puntos);
+					}
+				} else {
+					LOGGER.error("Error iniciando Clavin");
+				}
+				boolean mark = false; // Variable para marcar una noticia como
+										// importante
+				for (Topic dict : dictionaries) {
+					Set<String> terminosDict = Sets.newHashSet(dict.getWords()
+							.split(","));
 					String terminosDetect = "";
 					for (String word : terminosDict) {
 						boolean caseSensitive = false;
@@ -347,21 +334,19 @@ public class NewsCheckFeedServiceImpl implements NewsCheckFeedService {
 						} else {
 							word = word.toLowerCase().trim();
 						}
-						String content = caseSensitive ? news.getContent() : news
-								.getContent().toLowerCase();
+						String content = caseSensitive ? news.getContent()
+								: news.getContent().toLowerCase();
 						if (content.contains(" " + word + " ")
 								|| content.startsWith(word + " ")
 								|| content.endsWith(" " + word)) {
-							terminosDetect = terminosDetect.concat(word).concat(",");
+							terminosDetect = terminosDetect.concat(word)
+									.concat(",");
 							mark = true;
 						}
 					}
-					if (!terminosDetect.isEmpty()) {
-						newsDetect.getDictionaryDetect().add(new DictDetect(dict,terminosDetect.substring(0, terminosDetect.length()-1)));
-					}
 				}
 				newsDetect.setMark(mark);
-				newsDetectByAlert.put(alerta,newsDetect);
+				newsDetectByAlert.put(alerta, newsDetect);
 			}
 		}
 		return newsDetectByAlert;
@@ -377,12 +362,13 @@ public class NewsCheckFeedServiceImpl implements NewsCheckFeedService {
 		Set<AlertAbstract> detectar = Sets.newHashSet();
 		detectar.addAll(alertas);
 		detectar.addAll(riesgos);
-		Map<AlertAbstract, NewsDetect> alertWithNews = checkIfNewsIsAlert(news, detectar, feed);
+		Map<AlertAbstract, NewsDetect> alertWithNews = checkIfNewsIsAlert(news,
+				detectar, feed);
 		for (AlertAbstract alerta : alertWithNews.keySet()) {
 			NewsDetect newsDetect = alertWithNews.get(alerta);
-				alerta.getNewsDetect().clear();
-				alerta.getNewsDetect().add(newsDetect);
-				alertDetect.add(alerta);
+			alerta.getNewsDetect().clear();
+			alerta.getNewsDetect().add(newsDetect);
+			alertDetect.add(alerta);
 		}
 		return alertDetect;
 	}
@@ -423,13 +409,12 @@ public class NewsCheckFeedServiceImpl implements NewsCheckFeedService {
 
 	private Set<Location> obtenerLocalizacionesCercanas(
 			Set<ResolvedLocation> locations, Set<Location> lugares) {
-		Configuracion configuracion = configuracionRepository.findOne("conf");
 		Set<Location> lugaresCercanos = Sets.newHashSet();
 		for (ResolvedLocation resolvedLocation : locations) {
 			for (Location location : lugares) {
 				if (location.isNearOf(resolvedLocation.getGeoname()
 						.getLatitude(), resolvedLocation.getGeoname()
-						.getLongitude(), configuracion.getRadiusNear())) {
+						.getLongitude(), configuracion.getConfiguracion().getRadiusNear())) {
 					lugaresCercanos.add(location);
 				}
 			}
@@ -440,24 +425,41 @@ public class NewsCheckFeedServiceImpl implements NewsCheckFeedService {
 	public Map<News, List<ResolvedLocation>> getLocations(List<News> listNews,
 			boolean isTest) {
 		Map<News, List<ResolvedLocation>> map = new HashMap<>();
-		Configuracion configuracion = configuracionRepository.findOne("conf");
 		String regExp = null;
-		if (configuracion.getUsarPalabrasLugar() || isTest) {
-			regExp = configuracion.getPaabrasLugar();
+		if (parser == null) {
+			if (configuracion.getConfiguracion().getPathIndexClavin() != null) {
+				if (!configuracion.getConfiguracion().getPathIndexClavin().isEmpty()) {
+					String path = configuracion.getConfiguracion().getPathIndexClavin();
+					try {
+						parser = GeoParserFactory.getDefault(path,
+								new AlphaExtractor(), 50, 15, false);
+					} catch (ClavinException e) {
+						LOGGER.error("Error iniciando Clavin");
+					}
+					LOGGER.info("Indice CLAVIN-MOD: ".concat(path));
+					LOGGER.info("GeoParser "
+							.concat(parser != null ? "Iniciado"
+									: "No iniciado"));
+				}
+			}
 		}
+		if (parser!=null) {
 		for (News news : listNews) {
 			try {
-				List<ResolvedLocation> locations = parser.parse(
-						news.getContent(), regExp);
-				if (locations.size() > 0)
-					map.put(news, locations);
-				else
-					map.put(news, new ArrayList<ResolvedLocation>());
-			} catch (Exception ex) {
-				LOGGER.info("Se ha producido un error al obtener las localizaciones de la noticia");
-				LOGGER.debug(ex.getMessage());
-			}
+					List<ResolvedLocation> locations = parser.parse(
+							news.getContent(), regExp);
+					if (locations.size() > 0)
+						map.put(news, locations);
+					else
+						map.put(news, new ArrayList<ResolvedLocation>());
+				} catch (Exception ex) {
+					LOGGER.info("Se ha producido un error al obtener las localizaciones de la noticia");
+					LOGGER.debug(ex.getMessage());
+				}
 
+			}
+		} else {
+			LOGGER.error("Error iniciando Clavin");
 		}
 		return map;
 	}

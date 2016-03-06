@@ -1,5 +1,6 @@
 package com.ucm.ilsa.veterinaria.web.controller.impl.admin;
 
+import java.io.ByteArrayInputStream;
 import java.sql.Date;
 import java.util.List;
 
@@ -19,11 +20,19 @@ import com.ucm.ilsa.veterinaria.domain.Alert;
 import com.ucm.ilsa.veterinaria.domain.NewsDetect;
 import com.ucm.ilsa.veterinaria.domain.Risk;
 import com.ucm.ilsa.veterinaria.domain.Statistics;
+import com.ucm.ilsa.veterinaria.domain.topic.TopicManager;
 import com.ucm.ilsa.veterinaria.repository.NewsDetectRepository;
 import com.ucm.ilsa.veterinaria.repository.StatisticsRepository;
 import com.ucm.ilsa.veterinaria.service.impl.AlertServiceImpl;
 import com.ucm.ilsa.veterinaria.service.impl.RiskServiceImpl;
 import com.ucm.ilsa.veterinaria.web.controller.BaseController;
+
+import es.ucm.visavet.gbf.topics.validator.CyclicDependencyException;
+import es.ucm.visavet.gbf.topics.validator.ParseException;
+import es.ucm.visavet.gbf.topics.validator.TokenMgrError;
+import es.ucm.visavet.gbf.topics.validator.TopicDoesNotExistsException;
+import es.ucm.visavet.gbf.topics.validator.TopicValidator;
+import es.ucm.visavet.gbf.topics.validator.TopicValidatorSemantics;
 
 @Controller
 @RequestMapping("/admin/risks")
@@ -40,6 +49,9 @@ public class RiskAdminController extends BaseController {
 	@Autowired
 	private StatisticsRepository statsRepository;
 	
+	@Autowired
+	private TopicManager topicManager;
+	
 	public RiskAdminController() {
 		this.menu = "Otras Alertas";
 	}
@@ -53,14 +65,25 @@ public class RiskAdminController extends BaseController {
 	
 	@RequestMapping(value="/create", method=RequestMethod.POST)
 	public String createLocation(Model model, RedirectAttributes redirectAttributes, Risk wordFilter,BindingResult result) {
+		model.addAttribute("term", wordFilter);
 		if (result.hasErrors()) {
 			model.addAttribute("error", "Hay un error en el formulario");
             return FOLDER + "words";
         }
-		if (wordFilter.getTitle() == null) {
-			wordFilter.setTitle(wordFilter.getWords().split(",")[0]);
-		} else if (wordFilter.getTitle().isEmpty()) {
-			wordFilter.setTitle(wordFilter.getWords().split(",")[0]);
+		TopicValidator validator = new TopicValidator(
+				new TopicValidatorSemantics(wordFilter.getTitle(), topicManager),
+				new ByteArrayInputStream(wordFilter.getWords().getBytes()));
+		try {
+			validator.topic();
+		} catch (TopicDoesNotExistsException e) {
+			model.addAttribute("error", "El topic " + e.getTopic() + " no existe.");
+			return FOLDER + "words";
+		} catch (CyclicDependencyException e) {
+			model.addAttribute("error", e.toString());
+			return FOLDER + "words";
+		} catch (ParseException | TokenMgrError e) {
+			model.addAttribute("error", "Se ha producido un error al validar el topic.");
+			return FOLDER + "words";
 		}
 		wordService.create(wordFilter);
 		redirectAttributes.addFlashAttribute("info","Se ha a&ntilde;adido correctamente el filtro");
@@ -76,10 +99,26 @@ public class RiskAdminController extends BaseController {
 	
 	@RequestMapping(value="/get/{id}/edit", method=RequestMethod.POST)
 	public String updateLocation(Model model, RedirectAttributes redirectAttributes, Risk wordFilter, @PathVariable ("id") Risk before,BindingResult result) {
-        if (result.hasErrors()) {
+		model.addAttribute("term", wordFilter);
+		if (result.hasErrors()) {
         	model.addAttribute("error","Hay un error en el formulario");
             return FOLDER + "words";
         }
+		TopicValidator validator = new TopicValidator(
+				new TopicValidatorSemantics(wordFilter.getTitle(), topicManager),
+				new ByteArrayInputStream(wordFilter.getWords().getBytes()));
+		try {
+			validator.topic();
+		} catch (TopicDoesNotExistsException e) {
+			model.addAttribute("error", "El topic " + e.getTopic() + " no existe.");
+			return FOLDER + "words";
+		} catch (CyclicDependencyException e) {
+			model.addAttribute("error", e.toString());
+			return FOLDER + "words";
+		} catch (ParseException | TokenMgrError e) {
+			model.addAttribute("error", "Se ha producido un error al validar el topic.");
+			return FOLDER + "words";
+		}
 		wordService.create((Risk)wordFilter.bind(before));
 		redirectAttributes.addFlashAttribute("info","Se ha actualizado correctamente el filtro.");
 		return "redirect:/admin/risks/words";

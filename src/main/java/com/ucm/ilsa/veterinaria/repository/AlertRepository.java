@@ -4,7 +4,10 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.PagingAndSortingRepository;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.ucm.ilsa.veterinaria.domain.Alert;
@@ -13,7 +16,7 @@ import com.ucm.ilsa.veterinaria.domain.Feed;
 import com.ucm.ilsa.veterinaria.domain.Risk;
 
 @Repository
-public interface AlertRepository extends CrudRepository<Alert, Long> {
+public interface AlertRepository extends PagingAndSortingRepository<Alert, Long> {
 	public Set<Alert> readAllDistinctByNewsDetectHistoryFalseAndNewsDetectFalPositiveFalseAndNewsDetectDatePubGreaterThanEqualOrderByCreateDateDesc(Date date);
 	public Set<Alert> readAllDistinctByNewsDetectSite(Feed Site);
 	public Set<Alert> readAllDistinctByNewsDetectHistoryFalseAndNewsDetectFalPositiveFalse();

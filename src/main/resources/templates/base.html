@@ -29,15 +29,15 @@
 	rel="stylesheet" />
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
 	rel="stylesheet" />
-<link rel="stylesheet"
-	href="https://storage.googleapis.com/code.getmdl.io/1.0.4/material.deep_orange-orange.min.css" />
+<!--  <link rel="stylesheet"
+	href="https://code.getmdl.io/1.1.1/material.deep_orange-orange.min.css" />  -->
 <link href="https://cdnjs.cloudflare.com/ajax/libs/c3/0.4.10/c3.min.css"
 	rel="stylesheet" />
+<link th:href="@{/static/css/material.css}" href="style.css"
+	type="text/css" rel="stylesheet" media="screen,projection" />
 <link th:href="@{/static/css/style.css}" href="style.css"
 	type="text/css" rel="stylesheet" media="screen,projection" />
 <link th:href="@{/static/css/material.modal.css}"
-	href="material.modal.css" type="text/css" rel="stylesheet" />
-<link th:href="@{/static/css/material.snackbar.css}"
 	href="material.modal.css" type="text/css" rel="stylesheet" />
 <style>
 #view-source {
@@ -75,7 +75,7 @@
 			</div>
 		</header>
 		<div th:fragment="menu-izquierdo"
-			class="demo-drawer mdl-layout__drawer mdl-color--primary mdl-color-text--blue-grey-50">
+			class="demo-drawer mdl-layout__drawer mdl-color--blue-grey-800 mdl-color-text--primary">
 			<header sec:authorize="isAuthenticated()" class="demo-drawer-header">
 				<div class="demo-avatar-dropdown">
 					<span sec:authentication="principal.email">hello@example.com</span>
@@ -142,9 +142,9 @@
 					role="presentation">language</i>Provedores</a> <a
 					sec:authorize="isAuthenticated()" class="mdl-navigation__link"
 					th:class="${url == #httpServletRequest.requestURI ? 'mdl-navigation\_\_link mdl-navigation\_\_link--current' : 'mdl-navigation__link'}"
-					th:href="${url}" th:with="url=@{/admin/dictionary}" href=""><i
+					th:href="${url}" th:with="url=@{/admin/topic}" href=""><i
 					class="mdl-color-text--white material-icons"
-					role="presentation">book</i>Diccionarios</a>
+					role="presentation">book</i>Topics</a>
 				<div class="mdl-layout-spacer"></div>
 				<a class="mdl-navigation__link" href=""><i
 					class="mdl-color-text--white material-icons"
@@ -153,15 +153,17 @@
 		</div>
 		<main class="mdl-layout__content mdl-color--grey-100"> </main>
 		<footer>
-			<div aria-live="assertive" aria-atomic="true" aria-relevant="text"
-				class="mdl-js-snackbar"></div>
+				<div aria-live="assertive" aria-atomic="true" aria-relevant="text" class="mdl-snackbar mdl-js-snackbar">
+					<div class="mdl-snackbar__text"></div>
+  					<button class="mdl-snackbar__action" type="button"></button>
+				</div>
 			<!--  Scripts-->
 			<script th:src="@{/webjars/jquery/jquery.min.js}"
 				src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
 			<script
-				src="https://storage.googleapis.com/code.getmdl.io/1.0.4/material.min.js"></script>
-			<script th:src="@{/static/js/material.snackbar.js}"
-				src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+				src="https://code.getmdl.io/1.1.1/material.min.js"></script>
+			<!-- <script th:src="@{/static/js/material.snackbar.js}"
+				src="https://code.jquery.com/jquery-2.1.1.min.js"></script> -->
 			<script th:inline="javascript">
 				/*<![CDATA[*/
 				$(document).ready(

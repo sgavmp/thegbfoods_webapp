@@ -27,10 +27,12 @@ import com.ucm.ilsa.veterinaria.domain.CharsetEnum;
 import com.ucm.ilsa.veterinaria.domain.Feed;
 import com.ucm.ilsa.veterinaria.domain.FeedForm;
 import com.ucm.ilsa.veterinaria.domain.News;
+import com.ucm.ilsa.veterinaria.domain.ScrapStatistics;
 import com.ucm.ilsa.veterinaria.domain.Statistics;
 import com.ucm.ilsa.veterinaria.domain.builder.NewsBuilder;
 import com.ucm.ilsa.veterinaria.repository.FeedRepository;
 import com.ucm.ilsa.veterinaria.repository.NewsDetectRepository;
+import com.ucm.ilsa.veterinaria.repository.ScrapStatisticsRepository;
 import com.ucm.ilsa.veterinaria.repository.StatisticsRepository;
 import com.ucm.ilsa.veterinaria.service.FeedScraping;
 
@@ -44,12 +46,12 @@ public class FeedScrapingImpl implements FeedScraping {
 
 	private NewsDetectRepository repositoryNewsDetect;
 
-	private StatisticsRepository statisticsRepository;
+	private ScrapStatisticsRepository statisticsRepository;
 
 	@Autowired
 	public FeedScrapingImpl(FeedRepository repositoryFeed,
 			NewsDetectRepository repositoryNewsDetect,
-			StatisticsRepository statisticsRepository) {
+			ScrapStatisticsRepository statisticsRepository) {
 		this.repositoryFeed = repositoryFeed;
 		this.repositoryNewsDetect = repositoryNewsDetect;
 		this.statisticsRepository = statisticsRepository;
@@ -69,11 +71,11 @@ public class FeedScrapingImpl implements FeedScraping {
 		repositoryFeed.save((Feed) feed);
 		if (newsList != null) {
 			Date today = new Date(System.currentTimeMillis());
-			Statistics statistics = statisticsRepository.findOne(today);
+			ScrapStatistics statistics = statisticsRepository.findOne(today);
 			if (statistics != null) {
-				statistics.increment(0, newsList.size());
+				statistics.setTotal(statistics.getTotal()+newsList.size());
 			} else {
-				statistics = new Statistics(today, 0, newsList.size());
+				statistics = new ScrapStatistics(today, newsList.size());
 			}
 			statisticsRepository.save(statistics);
 		}

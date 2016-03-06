@@ -45,11 +45,11 @@ html, body {
 }
 
 .mdl-navigation__link--current {
-	color: rgb(255,87,34)!important;
+	color: rgb(242,118,6)!important;
 }
 
 .mdl-navigation__link--current .material-icons {
-	color: rgb(255,87,34)!important;
+	color: rgb(242,118,6)!important;
 }
 
 .mdl-navigation__sub_link {
@@ -79,8 +79,8 @@ html, body {
 	flex-direction: column;
 	justify-content: flex-end;
 	padding: 9px;
-	height: 185px;
-	background-image: url("../img/logo.png");
+	height: 225px;
+	background-image: url("../img/logo-color.png");
 	background-size: contain;
 	background-repeat: no-repeat;
 	margin: 10px;
@@ -285,4 +285,35 @@ _:-ms-input-placeholder, :root .demo-graph {
 	margin-top: 10px;
 	background-color: rgb(255, 87, 34);
 	text-align: center;
+}
+
+.text-underline {
+	text-decoration: underline;
+}
+
+table {
+	
+}
+
+.table-impar {
+	background: rgb(245,227,211);
+    color: rgb(121,67,20);
+}
+
+.table-par {
+    color: rgb(121,67,20);
+    
+}
+
+.table-par td:nth-child(1), .table-impar td:nth-child(1) {
+	font-weight: bold;
+	border-right: 1px solid rgb(121,67,20);
+}
+
+table thead tr:nth-child(2) {
+	border-top: 1px solid white;
+}
+
+.alerta-boton {
+	margin-top: 45px;
 }

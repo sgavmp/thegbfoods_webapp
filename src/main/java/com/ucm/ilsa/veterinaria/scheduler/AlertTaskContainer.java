@@ -8,25 +8,30 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.ucm.ilsa.veterinaria.domain.Feed;
 import com.ucm.ilsa.veterinaria.domain.News;
 import com.ucm.ilsa.veterinaria.domain.UpdateStateEnum;
+import com.ucm.ilsa.veterinaria.repository.NewsRepository;
 import com.ucm.ilsa.veterinaria.service.FeedService;
 import com.ucm.ilsa.veterinaria.service.NewsCheckFeedService;
+import com.ucm.ilsa.veterinaria.service.NewsIndexService;
 
 public class AlertTaskContainer implements Runnable {
 
 	private final static Logger LOGGER = Logger.getLogger(AlertTaskContainer.class);
-
-	private FeedService service;
+	
 	private Feed feed;
+	@Autowired
+	private FeedService service;
 	@Autowired
 	private SchedulerService schedulerService;
 	@Autowired
 	private NewsCheckFeedService newsCheckService;
-
-	public AlertTaskContainer(Feed feed, FeedService service, SchedulerService schedulerService, NewsCheckFeedService newsCheckService) {
+	@Autowired
+	private NewsIndexService newsIndexService;
+	@Autowired
+	private NewsRepository newsRepository;
+	
+	
+	public AlertTaskContainer(Feed feed) {
 		this.feed = feed;
-		this.service = service;
-		this.schedulerService = schedulerService;
-		this.newsCheckService = newsCheckService;
 	}
 
 	@Override
@@ -43,7 +48,14 @@ public class AlertTaskContainer implements Runnable {
 			if (listNews != null) {
 				if (!listNews.isEmpty()) {
 					LOGGER.info("Se han recuperado " + listNews.size() + " nuevas noticias del sitio: " + feed.getName());
-					newsCheckService.checkNews(listNews, feed);
+					//newsCheckService.checkNews(listNews, feed);
+					try {
+						newsRepository.save(listNews);
+						newsIndexService.markNewNews(feed);
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 				} else {
 					LOGGER.info("No se han recuperado nuevas noticias del sitio: " + feed.getName());
 				}

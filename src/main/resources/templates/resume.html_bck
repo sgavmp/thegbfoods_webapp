@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="es" xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
+<head th:include="base :: head">
+</head>
+<body>
+	<div
+		class="demo-layout mdl-layout mdl-js-layout mdl-layout--fixed-drawer mdl-layout--fixed-header">
+		<header
+			class="demo-header mdl-layout__header mdl-color--white mdl-color--grey-100 mdl-color-text--grey-600"
+			th:replace="base :: menu-superior"> </header>
+		<div
+			class="demo-drawer mdl-layout__drawer mdl-color--blue-grey-800 mdl-color-text--primary"
+			th:include="base :: menu-izquierdo"></div>
+		<main
+			class="mdl-layout__content mdl-color--grey-100 mdl-typography--text-center mdl-grid"
+			th:fragment="alerts">
+		<div class="mdl-cell--8-col">
+			<div
+				class="mdl-typography--display-1-color-contrast mdl-cell--12-col"
+				th:inline="text">Ultimas alertas:
+				[[${#dates.format(hoy,'dd/MM/yyyy')}]]</div>
+			<!--  Cuando hay alertas -->
+			<div class="mdl-grid">
+				<div th:if="${#lists.isEmpty(alertsActivateToday)}"
+					class="watermark">
+					<h1>No se ha detectado ninguna alerta hoy</h1>
+				</div>
+				<div th:fragment="card-alert"
+					th:if="${!#lists.isEmpty(alertsActivateToday)}"
+					th:with="numAlert=${alert.numNewsDetectInDateToday()}"
+					th:each="alert : ${alertsActivateToday}"
+					class="mdl-cell mdl-cell--3-col mdl-cell--4-col-tablet mdl-cell--4-col-phone mdl-card mdl-shadow--3dp">
+					<div class="mdl-card__title mdl-color--primary">
+						<h2 class="mdl-card__title-text  mdl-color-text--white" th:inline="text">[[${alert.title}]]</h2>
+						<span class="mdl-badge vet-alerta-num"
+							th:attr="data-badge=${numAlert}" data-badge="4"></span>
+					</div>
+					<div class="mdl-card__actions mdl-card--border">
+						<a th:href="@{/alerts/get/{id}(id=${alert.id})}"
+							class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">Ver
+							mas detalles</a>
+					</div>
+				</div>
+				<div
+					class="mdl-typography--display-1-color-contrast mdl-cell--12-col">Últimas
+					alertas no clasificadas:</div>
+				<!--  Cuando hay alertas -->
+				<div class="mdl-grid">
+					<div th:if="${#lists.isEmpty(alertsUncheck)}" class="watermark">
+						<h1>No hay alertas activas de los ultimos 30 días</h1>
+					</div>
+					<div th:include="resume :: card-alert"
+						th:if="${!#lists.isEmpty(alertsUncheck)}"
+						th:with="numAlert=${alert.numNewsDetectInDateLastWeek()}"
+						th:each="alert : ${alertsUncheck}"
+						class="mdl-cell mdl-cell--3-col mdl-cell--4-col-tablet mdl-cell--4-col-phone mdl-card mdl-shadow--3dp">
+						<div class="mdl-card__title mdl-color--primary">
+							<h2 class="mdl-card__title-text  mdl-color-text--white" th:inline="text">[[${alert.title}]]</h2>
+							<span class="mdl-badge vet-alerta-num"
+								th:attr="data-badge=${numAlert}" data-badge="4"></span>
+						</div>
+						<div class="mdl-card__actions mdl-card--border">
+							<a th:href="@{/alerts/get/{id}(id=${alert.id})}"
+								class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">Ver
+								mas detalles</a>
+						</div>
+					</div>
+					<div
+						class="mdl-color--white mdl-shadow--2dp mdl-cell mdl-cell--12-col mdl-grid mdl-typography--text-left">
+						<div
+							class="mdl-cell mdl-cell--12-col mdl-cell--12-col-desktop mdl-typography--display-1-color-contrast mdl-typography--text-center"
+							th:inline="text">Grafica de posibles riesgos futuros</div>
+						<div id="uv-div" style="width: 100%; height: 100%;"
+							class='rChart uvcharts'></div>
+					</div>
+				</div>
+			</div>
+			<div class="mdl-grid">
+				<div class="mdl-cell--6-col">
+					
+				</div>
+				<div class="mdl-cell--6-col">
+					<div
+						class="mdl-color--white mdl-shadow--2dp mdl-cell mdl-cell--12-col mdl-grid mdl-typography--text-left">
+						<div
+							class="mdl-cell mdl-cell--12-col mdl-cell--12-col-desktop mdl-typography--display-1-color-contrast mdl-typography--text-center"
+							th:inline="text">Mapa de posibles paises afectados</div>
+						<div id="container" style="width: 100%; height: 100%;"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="mdl-cell--4-col">
+			<div
+				class="mdl-typography--display-1-color-contrast mdl-cell--12-col">Estadística
+				semanal:</div>
+			<div
+				class="mdl-color--white mdl-shadow--2dp mdl-cell mdl-cell--12-col mdl-grid">
+				<div id="chart-semanal"
+					class="demo-chart mdl-cell mdl-cell--12-col mdl-cell--12-col-desktop"></div>
+			</div>
+			<div
+				class="mdl-typography--display-1-color-contrast mdl-cell--12-col">Estadística
+				mensual:</div>
+			<div
+				class="mdl-color--white mdl-shadow--2dp mdl-cell mdl-cell--12-col mdl-grid">
+				<div id="chart-mensual"
+					class="demo-chart mdl-cell mdl-cell--12-col mdl-cell--12-col-desktop"></div>
+			</div>
+			<div
+				class="mdl-typography--display-1-color-contrast mdl-cell--12-col">Estadística
+				anual:</div>
+			<div
+				class="mdl-color--white mdl-shadow--2dp mdl-cell mdl-cell--12-col mdl-grid">
+				<div id="chart-anual"
+					class="demo-chart mdl-cell mdl-cell--12-col mdl-cell--12-col-desktop"></div>
+			</div>
+		</div>
+		</main>
+		<footer th:include="base :: footer"> </footer>
+		<!-- Load d3.js and c3.js -->
+		<script
+			src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js"
+			charset="utf-8"></script>
+		<script
+			src="https://cdnjs.cloudflare.com/ajax/libs/c3/0.4.10/c3.min.js"></script>
+		<script
+			src="//cdnjs.cloudflare.com/ajax/libs/topojson/1.6.9/topojson.min.js"></script>
+		<script th:src="@{/static/js/datamaps.world.min.js}"
+			src="/datamaps.world.min.js"></script>
+		<script th:inline="javascript">
+		/*<![CDATA[*/
+		           $(document)
+				.ready( function(){
+					var countries = [[${allCountriesAfects}]];
+					var data = {}
+					for (var t in countries) {
+						var temp = {'fillKey' : t};
+						data[t] = temp;
+					}
+					var map = new Datamap({
+						element: document.getElementById('container'),
+						responsive: true,
+						fills: countries,
+				        data: data
+					});
+					//alternatively with d3
+				    d3.select(window).on('resize', function() {
+				        map.resize();
+				    });
+			var chart = c3.generate({
+				bindto : '#chart-semanal',
+				data : {
+					columns : [
+							[[${week.noticias}]],
+							[[${week.alertas}]],],
+					types : {
+						Noticias : 'area-spline',
+						Alertas : 'area-spline'
+					}
+				},
+				axis : {
+					x : {
+						type : 'category',
+						categories : [[${week.labels}]]
+					}
+				}
+			});
+			var chart = c3.generate({
+				bindto : '#chart-mensual',
+				data : {
+					columns : [
+							[[${month.noticias}]],
+							[[${month.alertas}]],],
+					types : {
+						Noticias : 'area-spline',
+						Alertas : 'area-spline'
+					}
+				},
+				axis : {
+					x : {
+						type : 'category',
+						categories : [[${month.labels}]]
+					}
+				}
+			});
+			var chart = c3.generate({
+				bindto : '#chart-anual',
+				data : {
+					columns : [
+							[[${year.noticias}]],
+							[[${year.alertas}]],],
+					types : {
+						Noticias : 'area-spline',
+						Alertas : 'area-spline'
+					}
+				},
+				axis : {
+					x : {
+						type : 'category',
+						categories : [[${year.labels}]]
+					}
+				}
+			});
+			var risks = [[${risksActivateInLast}]];
+			var col1 = ['x'];
+			var col2 = ['Riesgos'];
+			var url = [[@{/risks/get/}]];
+			var links = [];
+			var i = 0;
+			if (risks.length > 0) {
+				for (i = 0; i < (risks.length) ; i++) {
+					col1[i+1] = risks[i].title;
+					col2[i+1] = risks[i].newsDetect!=null?risks[i].newsDetect.length:0;
+					links[i] = url + risks[i].id;
+			    }
+			var chartRisks = c3.generate({
+                bindto: '#uv-div',
+                bar: {
+                    width: 20
+                },
+                padding: {
+                    left: 60
+                },
+                color: {
+                    pattern: ['#FABF62', '#ACB6DD']
+                },
+                data: {
+                    x: 'x',
+                    columns:
+                        [
+                      col1,
+                      col2,
+                      url
+                      ],
+
+                    type: 'bar',
+                   
+                    color: function(inColor, data) {
+                        var colors = ['#FABF62', '#ACB6DD'];
+                        if(data.index !== undefined) {
+                            return colors[data.index%2];
+                        }
+
+                        return inColor;
+                    },
+                	onclick: function(e) { window.location.href = links[e.index]; }
+                },
+                axis: {
+                    rotated: true,
+                    x: {
+                        type: 'category'
+                    }
+                },
+                tooltip: {
+                    format: {
+                        title: function (d) { return col1[d+1]; },
+                        value: function (value, ratio, id) {
+                            return value;
+                        }
+                    },
+                    contents: function (data, defaultTitleFormat, defaultValueFormat, color) {
+                        var $$ = this, config = $$.config,
+                            titleFormat = config.tooltip_format_title || defaultTitleFormat,
+                            nameFormat = config.tooltip_format_name || function (name) { return name; },
+                            valueFormat = config.tooltip_format_value || defaultValueFormat,
+                            text, i, title, value;
+                 
+                            for (i = 0; i < data.length; i++) {
+                                if (! (data[i] && (data[i].value || data[i].value === 0))) { continue; }
+                 
+                                if (! text) {
+                                  title = titleFormat ? titleFormat(data[i].x) : data[i].x;
+                                  text = "<div id='tooltip' class='d3-tip'>";
+                                }
+                                value = valueFormat(data[i].value, data[i].ratio, data[i].id, data[i].index);
+                 
+                                text += "<div class='info'>"+ title +"</div><br>";
+                                text += "<div class='value'>" + value + " coincidencias</div><br>";
+                                text += "<div class='more'>Pulsa sobre la barra<br> para ver mas detalles</div>";
+                                text += "</div>";
+                            }
+                 
+                        return text;
+                    }
+                },
+                legend: {
+                    show: false
+                }
+            });
+			}
+				});
+		           /*]]>*/
+		</script>
+	</div>
+</body>
+</html>

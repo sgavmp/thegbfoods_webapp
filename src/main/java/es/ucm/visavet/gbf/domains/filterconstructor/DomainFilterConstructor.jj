@@ -1,0 +1,42 @@
+options  {
+  STATIC=false;
+  UNICODE_INPUT=true;
+}  
+PARSER_BEGIN(DomainFilterConstructor)
+package es.ucm.visavet.gbf.domains.filterconstructor;
+import es.ucm.visavet.gbf.domains.filter.Filter;
+import java.io.InputStream;
+public class DomainFilterConstructor {
+    private DomainFilterConstructorSemantics sem;
+    public DomainFilterConstructor(DomainFilterConstructorSemantics sem, InputStream input) {
+	  this(input);
+	  this.sem = sem;
+	}
+  }  
+PARSER_END(DomainFilterConstructor)
+  TOKEN:{<PATTERN:(<LETTER>|<DIGIT>|"-"|"*"|".")+>}
+  TOKEN:{<AND: "&">}
+  TOKEN:{<OR:  "|">}
+  TOKEN:{<NOT: "!">}
+  TOKEN:{<#LETTER:["a"-"z"]|["A"-"Z"]>}
+  TOKEN:{<#DIGIT:["0"-"9"]>}
+  SKIP:{<["\t"," ","\r","\b","\n"]>}  
+
+  
+  Filter filter():  {Filter f;} {f=filter0() <EOF> {return f;}}
+  Filter filter0(): {Filter f1,f2;} {f1=filter1() ((<OR>)? f2=filter1() {f1=sem.buildOrFilter(f1,f2);})* {return f1;}}
+  Filter filter1(): {Filter f1,f2;} {f1=filter2() (<AND> f2=filter2() {f1=sem.buildAndFilter(f1,f2);})*  {return f1;}}
+  Filter filter2(): {Filter f;} {<NOT> f=filter2() {return sem.buildNotFilter(f);} | f=filter3() {return f;}}
+  Filter filter3(): {Token tk; Filter f;} 
+                    {tk=<PATTERN>     {return sem.buildPatternFilter(tk.image);}  | 
+		     "(" f=filter0() ")"  {return f;} } 
+  
+
+
+   
+   
+      
+
+      
+  
+ 

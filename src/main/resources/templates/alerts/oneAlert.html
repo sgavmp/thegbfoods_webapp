@@ -10,7 +10,7 @@
 			class="demo-header mdl-layout__header mdl-color--white mdl-color--grey-100 mdl-color-text--grey-600"
 			th:replace="base :: menu-superior"> </header>
 		<div
-			class="demo-drawer mdl-layout__drawer mdl-color--primary mdl-color-text--blue-grey-50"
+			class="demo-drawer mdl-layout__drawer mdl-color--blue-grey-800 mdl-color-text--primary"
 			th:include="base :: menu-izquierdo"></div>
 		<main
 			class="mdl-layout__content mdl-color--grey-100 mdl-typography--text-center">
@@ -66,44 +66,6 @@
 										<div class="mdl-tooltip" th:for="${news.id + '_' + news.site.id}" th:inline="text">
 										[[${news.site.urlSite}]]
 										</div>
-									</div>
-									<div class="mdl-cell mdl-cell--5-col">
-										<table
-											class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
-											<thead>
-												<tr>
-													<th class="mdl-data-table__cell--non-numeric">Termino
-														Encontrado</th>
-												</tr>
-											</thead>
-											<tbody>
-												<tr th:each="word : ${news.wordsDetect}">
-													<td th:text="${word}"
-														class="mdl-data-table__cell--non-numeric">Acrylic
-														(Transparent)</td>
-												</tr>
-											</tbody>
-										</table>
-									</div>
-									<div class="mdl-cell mdl-cell--7-col">
-										<table
-											class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
-											<thead>
-												<tr>
-													<th class="mdl-data-table__cell--non-numeric">Proveedor
-														afectado</th>
-													<th>Descartar</th>
-												</tr>
-											</thead>
-											<tbody>
-												<tr th:each="loc : ${news.getCountryWithLocations()}">
-													<td th:id="${loc.key}"
-														class="mdl-data-table__cell--non-numeric">Acrylic
-														(Transparent)</td>
-													<td>Pulsa</td>
-												</tr>
-											</tbody>
-										</table>
 									</div>
 								</div>
 							</div>
