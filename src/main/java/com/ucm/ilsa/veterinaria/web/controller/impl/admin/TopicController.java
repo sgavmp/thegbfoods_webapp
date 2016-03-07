@@ -113,7 +113,7 @@ public class TopicController extends BaseController {
 			model.addAttribute("error", "Se ha producido un error al validar el topic.");
 			return "topic";
 		}
-		if (before.getTitle().equals(wordFilter.getTitle()) {
+		if (before.getTitle().equals(wordFilter.getTitle())) {
 		    before.setWords(wordFilter.getWords());
 		    topicRepository.save(before);
 		    redirectAttributes.addFlashAttribute("info",
