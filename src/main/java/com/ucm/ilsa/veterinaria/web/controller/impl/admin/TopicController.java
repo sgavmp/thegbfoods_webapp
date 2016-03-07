@@ -113,10 +113,16 @@ public class TopicController extends BaseController {
 			model.addAttribute("error", "Se ha producido un error al validar el topic.");
 			return "topic";
 		}
-		topicRepository.save(wordFilter);
-		redirectAttributes.addFlashAttribute("info",
+		if (before.getTitle().equals(wordFilter.getTitle()) {
+		    before.setWords(wordFilter.getWords());
+		    topicRepository.save(before);
+		    redirectAttributes.addFlashAttribute("info",
 				"Se ha actualizado correctamente el topic.");
-		return "redirect:/admin/topic";
+		    return "redirect:/admin/topic";
+		} else {
+		    model.addAttribute("error", "No se puede editar el titulo.");
+			return "topic";
+		}
 	}
 
 	@RequestMapping(value = "/get/{id}/remove", method = RequestMethod.GET)
