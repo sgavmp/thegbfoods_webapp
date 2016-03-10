@@ -10,9 +10,11 @@ public interface QueryConstructorConstants {
   int AND = 4;
   int OR = 5;
   int DIF = 6;
-  int LETTER = 8;
-  int DIGIT = 9;
-  int WORD = 10;
+  int ATTYPE = 7;
+  int ATLOC = 8;
+  int LETTER = 10;
+  int DIGIT = 11;
+  int WORD = 12;
 
   int DEFAULT = 0;
 
@@ -24,7 +26,9 @@ public interface QueryConstructorConstants {
     "\"&\"",
     "\"|\"",
     "\"-\"",
-    "<token of kind 7>",
+    "<ATTYPE>",
+    "<ATLOC>",
+    "<token of kind 9>",
     "<LETTER>",
     "<DIGIT>",
     "<WORD>",

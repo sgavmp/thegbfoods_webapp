@@ -1,3 +1,4 @@
+
 package es.ucm.visavet.gbf.topics.queryconstructor;
 
 import es.ucm.visavet.gbf.topics.manager.ITopicsManager;
@@ -17,13 +18,19 @@ public class QueryConstructorSemantics {
    private ITopicsManager topicsManager;
    private String fieldCaseSensitive;
    private String fieldCaseNonsensitive;
+   private String fieldSourceLocation;
+   private String fieldSourceType;
    
    public QueryConstructorSemantics(ITopicsManager topicsManager,
                                     String fieldCaseSensitive,
-                                    String fieldCaseNonsensitive) {
+                                    String fieldCaseNonsensitive,
+                                    String fieldSourceLocation,
+                                    String fieldSourceType) {
      this.topicsManager = topicsManager;
      this.fieldCaseSensitive = fieldCaseSensitive;
      this.fieldCaseNonsensitive = fieldCaseNonsensitive;
+     this.fieldSourceLocation = fieldSourceLocation;
+     this.fieldSourceType = fieldSourceType;
    }         
    
    public Query buildTermQuery(String term) {
@@ -43,6 +50,17 @@ public class QueryConstructorSemantics {
      QueryConstructor queryConstructor = new QueryConstructor(this,topicStream);
      return queryConstructor.topic();
    } 
+   
+   public Query buildSourceTypeQuery(String type) throws ParseException {
+     String code = new Integer(topicsManager.getSourceType(type.substring(2))).toString();  
+     return new TermQuery(new Term(fieldSourceType,code));
+   }
+   
+   public Query buildSourceLocQuery(String loc) throws ParseException {
+     String code = new Integer(topicsManager.getSourceLocation(loc.substring(2))).toString();  
+     return new TermQuery(new Term(fieldSourceLocation,code));
+   }
+   
    public Query buildDifQuery(Query q1,Query q2) {
      BooleanClause op1 = new BooleanClause(q1,BooleanClause.Occur.MUST);  
      BooleanClause op2 = new BooleanClause(q2,BooleanClause.Occur.MUST_NOT);

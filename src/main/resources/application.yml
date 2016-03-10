@@ -21,7 +21,7 @@ spring:
       ddl-auto: update
     properties:
       hibernate:
-        dialect. org.hibernate.dialect.MySQL5Dialect
+        dialect org.hibernate.dialect.MySQL5Dialect
     database-platform: org.hibernate.dialect.MySQLDialect
 
 name: production
@@ -70,8 +70,6 @@ spring:
 name: test-db
 
 ---
-logging:
-  config: classpath:logback-local.xml
 
 spring:
   profiles: test

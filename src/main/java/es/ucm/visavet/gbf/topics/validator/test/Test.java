@@ -3,17 +3,36 @@ package es.ucm.visavet.gbf.topics.validator.test;
 import es.ucm.visavet.gbf.topics.manager.ITopicsManager;
 import es.ucm.visavet.gbf.topics.validator.TopicValidator;
 import es.ucm.visavet.gbf.topics.validator.TopicValidatorSemantics;
+
+import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.HashSet;
 import java.util.Set;
 
+
 class TestTopicsManager implements ITopicsManager {
+    
+  public boolean existsSourceType(String type) {
+      switch(type) {
+       case "per韔dico": return true;
+       case "revista": return true;
+       default: return false;       
+      } 
+  }
+  public boolean existsSourceLocation(String type) {
+      switch(type) {
+       case "es": return true;
+       case "usa": return true;
+       default: return false;       
+      } 
+  }
+   
   public boolean existsTopic(String topic) {
     switch(topic) {
         case "Enfermedad": return true;
         case "Dolencia": return true;
-        case "Desesperaci贸n": return true;
+        case "Desesperaci髇": return true;
         default: return false;    
     }  
   }
@@ -21,12 +40,12 @@ class TestTopicsManager implements ITopicsManager {
     Set dEnfermedad = new HashSet<String>();
       dEnfermedad.add("Dolencia");
     Set dDolencia = new HashSet<String>();
-      dDolencia.add("Desesperaci贸n");
+      dDolencia.add("Desesperaci髇");
     Set dDesesperacion = new HashSet<String>();      
     switch(topic) {
         case "Enfermedad": return dEnfermedad;
         case "Dolencia": return dDolencia;
-        case "Desesperaci贸n": return dDesesperacion;
+        case "Desesperaci髇": return dDesesperacion;
         default: return new HashSet<String>();    
     }
   } 
@@ -34,11 +53,23 @@ class TestTopicsManager implements ITopicsManager {
      System.out.println(topic+"--->"+ofTopic);  
    }       
   public InputStream getDefinition(String topic) {return null;}  
+
+    @Override
+    public int getSourceType(String type) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public int getSourceLocation(String type) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 }
 
 public class Test {
    public static void main(String[] args) throws Exception {
-      TopicValidator validator = new TopicValidator(new TopicValidatorSemantics("Desesperaci贸n",new TestTopicsManager()),
+	  String topic = "\"lengua azul\"  | triquinosis - ('fiebre porciona' & gripe  | fr韔 - calor - 裲馿r鞟 & ambig黣Da  AMbiG蹺D罝676 )      | Enfermedad | @Tper韔dico | @Lfr";
+	  InputStream stream = new ByteArrayInputStream(topic.getBytes());
+      TopicValidator validator = new TopicValidator(new TopicValidatorSemantics("Desesperaci髇",new TestTopicsManager()),
                                                     new FileInputStream(args[0]));
       validator.topic();
    } 

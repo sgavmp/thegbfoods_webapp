@@ -20,8 +20,10 @@ PARSER_END(QueryConstructor)
   TOKEN:{<AND: "&">}
   TOKEN:{<OR:  "|">}
   TOKEN:{<DIF: "-">}
+  TOKEN:{<ATTYPE: "@T"<WORD>>}
+  TOKEN:{<ATLOC: "@L"<WORD>>}
   SKIP:{<["\t"," ","\r","\b","\n"]>}  
-  TOKEN:{<#LETTER:["a"-"z"]|["A"-"Z"]|["Ã¡","Ã©","Ã­","Ã³","Ãº","Ã","Ã‰","Ã","Ã“","Ãš","Ã±","Ã‘","Ãœ","Ã¼"]>}
+  TOKEN:{<#LETTER:["a"-"z"]|["A"-"Z"]|["á","é","í","ó","ú","Á","É","Í","Ó","Ú","ñ","Ñ","Ü","ü"]>}
   TOKEN:{<#DIGIT:["0"-"9"]>}
   TOKEN:{<#WORD:(<LETTER>|<DIGIT>)+>}
   
@@ -32,10 +34,12 @@ PARSER_END(QueryConstructor)
   Query topic3(): {Token tk; Query q;} 
                     {tk=<TERM>   {return sem.buildTermQuery(tk.image);}                     | 
                      tk=<LITERAL_TERM>  {return sem.buildLiteralTermQuery(tk.image);}       | 
-                     tk= <TOPIC_NAME> {return sem.buildTopicRefQuery(tk.image);} | 
-		     "(" q=topic0() ")"  {return q;} } 
-  
-
+                     tk= <TOPIC_NAME> {return sem.buildTopicRefQuery(tk.image);} |
+                     tk= <ATTYPE>     {return sem.buildSourceTypeQuery(tk.image);} |
+                     tk= <ATLOC>     {return sem.buildSourceLocQuery(tk.image);} |
+		     "(" q=topic0() ")"  {return q;} }  
+ 
+ 
 
    
    

@@ -1,4 +1,4 @@
 "lengua azul"  |
 triquinosis - ('fiebre porciona' & gripe  |
-                frÃ­o - calor - Ã‘oÃ±erÃ­A & ambigÃ¼eDa  AMbiGÃœEDÃD676 )
-     | Enfermedad
+                frío - calor - ÑoñeríA & ambigüeDa  AMbiGÜEDÁD676 )
+     | Enfermedad | @Tperíodico | @Lfr

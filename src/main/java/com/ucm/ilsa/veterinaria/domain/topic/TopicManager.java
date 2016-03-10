@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Sets;
+import com.ucm.ilsa.veterinaria.domain.FeedPlaceEnum;
+import com.ucm.ilsa.veterinaria.domain.FeedTypeEnum;
 import com.ucm.ilsa.veterinaria.domain.Topic;
 import com.ucm.ilsa.veterinaria.repository.TopicRepository;
 
@@ -44,6 +46,36 @@ public class TopicManager implements ITopicsManager {
 	public InputStream getDefinition(String topic) {
 		Topic item = topicRepository.findOne(topic);
 		return new ByteArrayInputStream(item.getWords().getBytes());
+	}
+
+	@Override
+	public boolean existsSourceType(String type) {
+		try {
+			FeedTypeEnum eType = FeedTypeEnum.valueOf(type);
+			return (eType!=null)?true:false;
+		} catch (IllegalArgumentException ex) {
+			return false;
+		}
+	}
+
+	@Override
+	public boolean existsSourceLocation(String location) {
+		try {
+			FeedPlaceEnum eLoc = FeedPlaceEnum.valueOf(location);
+			return (eLoc!=null)?true:false;
+		} catch (IllegalArgumentException ex) {
+			return false;
+		}
+	}
+
+	@Override
+	public int getSourceType(String type) {
+		return FeedTypeEnum.valueOf(type).getValue();
+	}
+
+	@Override
+	public int getSourceLocation(String location) {
+		return FeedPlaceEnum.valueOf(location).getValue();
 	}
 
 }

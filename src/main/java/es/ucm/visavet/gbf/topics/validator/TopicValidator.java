@@ -22,7 +22,9 @@ public class TopicValidator implements TopicValidatorConstants {
       case LITERAL_TERM:
       case TOPIC_NAME:
       case OR:
-      case 11:
+      case ATTYPE:
+      case ATLOC:
+      case 13:
         ;
         break;
       default:
@@ -84,14 +86,22 @@ public class TopicValidator implements TopicValidatorConstants {
     case LITERAL_TERM:
       jj_consume_token(LITERAL_TERM);
       break;
+    case ATTYPE:
+      tk = jj_consume_token(ATTYPE);
+                                     sem.validateSourceType(tk.image);
+      break;
+    case ATLOC:
+      tk = jj_consume_token(ATLOC);
+                                        sem.validateSourceLocation(tk.image);
+      break;
     case TOPIC_NAME:
       tk = jj_consume_token(TOPIC_NAME);
                                         sem.validateReferenceToTopic(tk.image);
       break;
-    case 11:
-      jj_consume_token(11);
+    case 13:
+      jj_consume_token(13);
       topic0();
-      jj_consume_token(12);
+      jj_consume_token(14);
       break;
     default:
       jj_la1[4] = jj_gen;
@@ -111,7 +121,7 @@ public class TopicValidator implements TopicValidatorConstants {
       jj_la1_0();
    }
    private static void jj_la1_0() {
-      jj_la1_0 = new int[] {0x82e,0x20,0x10,0x40,0x80e,};
+      jj_la1_0 = new int[] {0x21ae,0x20,0x10,0x40,0x218e,};
    }
 
   public TopicValidator(java.io.InputStream stream) {
@@ -210,8 +220,8 @@ public class TopicValidator implements TopicValidatorConstants {
 
   public ParseException generateParseException() {
     jj_expentries.removeAllElements();
-    boolean[] la1tokens = new boolean[13];
-    for (int i = 0; i < 13; i++) {
+    boolean[] la1tokens = new boolean[15];
+    for (int i = 0; i < 15; i++) {
       la1tokens[i] = false;
     }
     if (jj_kind >= 0) {
@@ -227,7 +237,7 @@ public class TopicValidator implements TopicValidatorConstants {
         }
       }
     }
-    for (int i = 0; i < 13; i++) {
+    for (int i = 0; i < 15; i++) {
       if (la1tokens[i]) {
         jj_expentry = new int[1];
         jj_expentry[0] = i;

@@ -11,7 +11,7 @@ public class CyclicDependencyException extends ParseException {
    public List<String> getCyclicPath() {return cyclicPath;}
    public String toString() {
     StringBuffer sb = new StringBuffer();
-    sb.append("Encontrada la siguiente dependencia cÃ­clica entre tÃ³picos: ");
+    sb.append("Encontrada la siguiente dependencia cíclica entre tópicos: ");
     Iterator<String> it = cyclicPath.iterator();
     sb.append("#"+it.next());
     while(it.hasNext()) {

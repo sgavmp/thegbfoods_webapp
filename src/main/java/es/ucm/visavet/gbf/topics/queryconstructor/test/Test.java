@@ -3,13 +3,11 @@ package es.ucm.visavet.gbf.topics.queryconstructor.test;
 import es.ucm.visavet.gbf.topics.manager.ITopicsManager;
 import es.ucm.visavet.gbf.topics.queryconstructor.QueryConstructor;
 import es.ucm.visavet.gbf.topics.queryconstructor.QueryConstructorSemantics;
-
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.analysis.util.CharArraySet;
@@ -28,7 +26,8 @@ import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.RAMDirectory;
-import org.apache.lucene.util.Version;
+
+
 
 class TopicsManager implements ITopicsManager {
    public boolean existsTopic(String topic) {return false;}
@@ -46,6 +45,26 @@ class TopicsManager implements ITopicsManager {
    }
    return null;
   }        
+
+    @Override
+    public boolean existsSourceType(String type) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public boolean existsSourceLocation(String location) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public int getSourceType(String type) {
+        return 567;
+    }
+
+    @Override
+    public int getSourceLocation(String type) {
+       return 905; 
+    }
  }
 
 
@@ -53,14 +72,17 @@ public class Test {
    public static void main(String[] args) throws Exception {    
       String casesensitiveField = "bodycs";
       String casenonsensitiveField = "bodycns"; 
+      String sourceLocField = "sloc"; 
+      String typeLocField = "stype"; 
       QueryConstructor queryConstructor = new QueryConstructor(new QueryConstructorSemantics(new TopicsManager(),casesensitiveField,
-                                                               casenonsensitiveField),
+                                                               casenonsensitiveField,sourceLocField, typeLocField),
                                                                new FileInputStream(args[0]));
       Query q = queryConstructor.topic();
+      System.out.println(q);
       Directory index = new RAMDirectory();
       IndexWriterConfig config = new IndexWriterConfig(makeAnalyzer(casesensitiveField,casenonsensitiveField));
       IndexWriter w = new IndexWriter(index, config);      
-      addDocument(w,"El primer documento sobre la fiebre porcina. La fiebre porcina es muy daÃ±ina",casesensitiveField,casenonsensitiveField);
+      addDocument(w,"El primer documento sobre la fiebre porcina. La fiebre porcina es muy dañina",casesensitiveField,casenonsensitiveField);
       addDocument(w,"El primer documento sobre la fiebre porcina",casesensitiveField,casenonsensitiveField);
       w.close();
       search(q,index,casesensitiveField);

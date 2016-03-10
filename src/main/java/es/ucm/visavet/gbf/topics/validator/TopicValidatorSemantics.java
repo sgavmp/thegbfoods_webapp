@@ -20,6 +20,14 @@ public class TopicValidatorSemantics {
     if (cyclicDependency(refName,cyclicPath)) errorCyclicDependency(cyclicPath);
     topicsManager.addDependency(definedTopic,refName);
   }   
+  public void validateSourceType(String sourceType) throws ParseException {
+    String type = sourceType.substring(2);
+    if (! topicsManager.existsSourceType(type)) errorSourceTypeDoesNotExists(type);
+  }
+  public void validateSourceLocation(String sourceLoc) throws ParseException {
+    String loc = sourceLoc.substring(2);
+    if (! topicsManager.existsSourceLocation(loc)) errorSourceLocationDoesNotExists(loc);
+  }
   private boolean cyclicDependency(String topic, List<String> path) {
     path.add(topic);  
     if (topic.equals(definedTopic)) return true;
@@ -36,5 +44,11 @@ public class TopicValidatorSemantics {
   }
   private void errorCyclicDependency(List<String>cyclicPath) throws ParseException {
     throw new CyclicDependencyException(cyclicPath);  
+  }
+  private void errorSourceTypeDoesNotExists(String type) throws ParseException {
+    throw new SourceTypeDoesNotExistsException(type);  
+  }
+  private void errorSourceLocationDoesNotExists(String loc) throws ParseException {
+    throw new SourceLocationDoesNotExistsException(loc);  
   }
 }

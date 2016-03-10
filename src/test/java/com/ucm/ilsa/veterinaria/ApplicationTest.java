@@ -3,7 +3,9 @@ package com.ucm.ilsa.veterinaria;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
+import java.io.InputStream;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Future;
@@ -59,20 +61,12 @@ import es.ucm.visavet.gbf.topics.validator.TopicValidatorSemantics;
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(Application.class)
 @WebAppConfiguration 
-@ActiveProfiles("test-db")
+//@ActiveProfiles("test-db")
+@ActiveProfiles("test")
 public class ApplicationTest  {
 	
 	@Autowired
-	TopicRepository topicRepository;
-	
-	@Autowired
 	TopicManager topicManager;
-	
-	@Autowired
-	NewsIndexService indexService;
-	
-	@Autowired
-	NewsRepository newsRepository;
 
 
     @Before
@@ -82,20 +76,26 @@ public class ApplicationTest  {
 
     @Test
     public void canFetchMickey() {
-//    	Feed feed = new Feed();
-//    	feed.setForAlerts(false);
-//    	feed.setForRisks(true);
-//    	boolean result = indexService.markNewNews(feed);
-//    	feed.setForRisks(true);
-//    	feed.setForAlerts(true);
-//    	boolean result2 = indexService.markNewNews(feed);
-//    		if(result) {
-//    			feed.setForRisks(false);
-//    			result = indexService.markNewNews(feed);
-//    		}
-//    		assertFalse(result2);
-    	News news = new News();
-    	newsRepository.save(news);
+    	String topic = "\"lengua azul\"  | triquinosis - ('fiebre porciona' & gripe  | frío - calor - ÑoñeríA & ambigüeDa  AMbiGÜEDÁD676 )      | Enfermedad | @Tperiodico | @Lespaña";
+  	  	InputStream stream = new ByteArrayInputStream(topic.getBytes());
+//    	TopicValidator validator = new TopicValidator(new TopicValidatorSemantics("Desesperación",topicManager), stream);
+//    	try {
+//			validator.topic();
+//		} catch (ParseException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+    	
+    	QueryConstructor queryConstructor = new QueryConstructor(new QueryConstructorSemantics(topicManager,News.fieldBody,
+                News.fieldBodyNoCase,News.fieldSiteLoc, News.fieldSiteType),stream);
+    	Query q = null;
+		try {
+			q = queryConstructor.topic();
+		} catch (es.ucm.visavet.gbf.topics.queryconstructor.ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        System.out.println(q);
     	
     }
     

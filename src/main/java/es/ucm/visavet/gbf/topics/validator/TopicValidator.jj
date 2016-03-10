@@ -19,8 +19,10 @@ PARSER_END(TopicValidator)
   TOKEN:{<AND: "&">}
   TOKEN:{<OR:  "|">}
   TOKEN:{<DIF: "-">}
+  TOKEN:{<ATTYPE: "@T"<WORD>>}
+  TOKEN:{<ATLOC: "@L"<WORD>>}
   SKIP:{<["\t"," ","\r","\b","\n"]>}  
-  TOKEN:{<#LETTER:["a"-"z"]|["A"-"Z"]|["Ã¡","Ã©","Ã­","Ã³","Ãº","Ã","Ã‰","Ã","Ã“","Ãš","Ã±","Ã‘","Ãœ","Ã¼"]>}
+  TOKEN:{<#LETTER:["a"-"z"]|["A"-"Z"]|["á","é","í","ó","ú","Á","É","Í","Ó","Ú","ñ","Ñ","Ü","ü"]>}
   TOKEN:{<#DIGIT:["0"-"9"]>}
   TOKEN:{<#WORD:(<LETTER>|<DIGIT>)+>}
   
@@ -30,7 +32,9 @@ PARSER_END(TopicValidator)
   void topic2(): {} {topic3() (<DIF> topic3())* }
   void topic3(): {Token tk;} 
                     {<TERM>         | 
-                     <LITERAL_TERM> | 
+                     <LITERAL_TERM> |
+                     tk= <ATTYPE>   {sem.validateSourceType(tk.image);}          |
+                     tk=<ATLOC>        {sem.validateSourceLocation(tk.image);}      | 					 
                      tk= <TOPIC_NAME>  {sem.validateReferenceToTopic(tk.image);} | 
 		     "(" topic0() ")" } 
   

@@ -31,6 +31,8 @@ public class News extends BaseEntity {
 	public static String fieldDatePub = "datePub";
 	public static String fieldUrl = "url";
 	public static String fieldSite = "site";
+	public static String fieldSiteLoc = "siteLoc";
+	public static String fieldSiteType = "siteType";
 	
 	@Id
 	@GeneratedValue(strategy=GenerationType.TABLE)
