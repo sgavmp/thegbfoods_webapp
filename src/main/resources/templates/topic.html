@@ -32,7 +32,7 @@
 						class="mdl-cell mdl-cell--10-col mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
 						<label class="mdl-textfield__label" for="title">Introduce
 							el titulo del topic</label> <input class="mdl-textfield__input"
-							type="text" th:field="*{title}" th:disabled="! *{title!=null}"/>
+							type="text" th:field="*{title}" th:readOnly="! *{title==null}"/>
 					</div>
 					<div
 						class="mdl-cell mdl-cell--10-col mdl-textfield mdl-js-textfield mdl-textfield--floating-label">

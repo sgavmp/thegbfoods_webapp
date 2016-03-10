@@ -90,9 +90,6 @@ public class AlertAdminController extends BaseController {
 		} while (exist);
 		service.update(word);
 		repository.delete(news.getId());
-		Statistics stat = statsRepository.findOne(new Date(news.getCreateDate().getTime()));
-		stat.setNumAlerts(stat.getNumAlerts()-1);
-		statsRepository.save(stat);
 		redirectAttributes.addFlashAttribute("info", "La noticia se ha borrado correctamente.");
 		return "redirect:/alerts/get/" + word.getId();
 	}

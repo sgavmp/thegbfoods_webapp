@@ -23,5 +23,5 @@ public interface NewsIndexService {
 	public void emptyNewsIndexBefore(Integer days);
 	public List<News> search(AlertAbstract alert);
 	public void resetAllAlerts() throws IOException;
-	public void resetAlert(AlertAbstract alert);
+	public void resetAlert(AlertAbstract alert) throws IOException;
 }

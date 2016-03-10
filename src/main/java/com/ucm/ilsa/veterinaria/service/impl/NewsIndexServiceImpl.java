@@ -410,38 +410,17 @@ public class NewsIndexServiceImpl implements NewsIndexService, Runnable {
 		} catch (IOException e1) {
 			LOGGER.error("Error al abrir el indice para realizar la busqueda.");
 		}
-		LOGGER.info("Se borran todas las alertas detectadas.");
-		newsDetectRepository.deleteAll();
+		//newsDetectRepository.deleteAll();
 		IndexSearcher searcher = new IndexSearcher(reader);
 		Set<Alert> alertas = alertService.getAllAlert();
 		Set<Risk> riesgos = riskService.getAllAlert();
 		LOGGER.info("Hay " + alertas.size() + " alertas para analizar.");
 		LOGGER.info("Hay " + riesgos.size() + " riesgos para analizar.");
 		for (Alert alert : alertas) {
-			Query q = createQuery(alert);
-			try {
-				List<NewsDetect> listNewsDetect = search(q, searcher, alert);
-				newsDetectRepository.save(listNewsDetect);
-				if (listNewsDetect.size() > 0)
-					LOGGER.info("Se han detectado: " + listNewsDetect.size()
-							+ " posibles alertas de: " + alert.getTitle());
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			resetAlertInter(alert,searcher);
 		}
 		for (Risk alert : riesgos) {
-			Query q = createQuery(alert);
-			try {
-				List<NewsDetect> listNewsDetect = search(q, searcher, alert);
-				newsDetectRepository.save(listNewsDetect);
-				if (listNewsDetect.size() > 0)
-					LOGGER.info("Se han detectado: " + listNewsDetect.size()
-							+ " posibles alertas de: " + alert.getTitle());
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			resetAlertInter(alert,searcher);
 		}
 		try {
 			reader.close();
@@ -456,10 +435,57 @@ public class NewsIndexServiceImpl implements NewsIndexService, Runnable {
 
 	}
 
-	@Override
-	public void resetAlert(AlertAbstract alert) {
-		// TODO Auto-generated method stub
-
+	private void resetAlertInter(AlertAbstract alert, IndexSearcher searcher) {
+		Query q = createQuery(alert);
+		try {
+			List<NewsDetect> listNewsDetect = search(q, searcher, alert);
+			LOGGER.info("Se borran todas las alertas detectadas anteriores.");
+			List<NewsDetect> newsToRemove = Lists.newArrayList(alert.getNewsDetect());
+			newsDetectRepository.save(listNewsDetect);
+			alert.getNewsDetect().clear();
+			alert.getNewsDetect().addAll(listNewsDetect);
+			if (alert instanceof Alert)
+				alertService.update((Alert) alert);
+			else
+				riskService.update((Risk) alert);
+			for (NewsDetect news : newsToRemove) {
+				newsDetectRepository.delete(news.getId());
+			}
+			if (listNewsDetect.size() > 0)
+				LOGGER.info("Se han detectado: " + listNewsDetect.size()
+						+ " posibles alertas de: " + alert.getTitle());
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	public void resetAlert(AlertAbstract alert) throws IOException {
+		LOGGER.info("Se inicia el proceso de busqueda de alertas en todo el indice.");
+		boolean closed = allIndex == null ? false : allIndex.isOpen();
+		if (!closed) {
+			this.allDirectory = FSDirectory.open(new File(configuracion
+					.getConfiguracion().getPathIndexNews().concat("/all"))
+					.toPath());
+		}
+		IndexReader reader = null;
+		try {
+			reader = DirectoryReader.open(allDirectory);
+		} catch (IOException e1) {
+			LOGGER.error("Error al abrir el indice para realizar la busqueda.");
+		}
+		IndexSearcher searcher = new IndexSearcher(reader);
+		resetAlertInter(alert, searcher);
+		try {
+			reader.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		if (!closed) {
+			this.allDirectory.close();
+		}
+		LOGGER.info("Finaliza el proceso de busqueda de alertas en todo el indice.");
 	}
 
 }

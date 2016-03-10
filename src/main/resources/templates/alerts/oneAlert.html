@@ -23,8 +23,12 @@
 					class="mdl-card__actions mdl-card--border">
 					<a
 						class="confirm-del mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect"
-						th:href="@{/admin/alerts/get/{id}/remove(id=${alert.id})}">
+						th:href="@{/admin/words/get/{id}/remove(id=${alert.id})}">
 						Borrar </a>
+					<a
+						class="confirm-reset mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect"
+						th:href="@{/admin/words/get/{id}/reset(id=${alert.id})}">
+						Reset </a>
 				</div>
 			</div>
 		</div>
@@ -380,6 +384,32 @@
 										});
 								return false;
 							});
+			$(".confirm-reset")
+			.click(
+					function(e) {
+						var notification = document
+								.querySelector('.mdl-js-snackbar');
+						var url = e
+								&& (('string' === typeof e && e) || (e.currentTarget && e.currentTarget.attributes['href'].value));
+						notification.MaterialSnackbar
+								.showSnackbar({
+									message : "¿Estas seguro de resetear la alerta seleccionada?Esto eliminará todas las alertas almacenadas y creara nuevas.",
+									cssColor : 'mdl-color--primary',
+									timeout : 300000,
+									actionHandler : function(event) {
+										window.location = url;
+										notification.MaterialSnackbar
+												.cleanup_();
+									},
+									actionText : 'Si',
+									actionHandler2 : function(event) {
+										notification.MaterialSnackbar
+												.cleanup_();
+									},
+									actionText2 : 'No'
+								});
+						return false;
+					});
 			// ]]>
 		</script>
 	</div>

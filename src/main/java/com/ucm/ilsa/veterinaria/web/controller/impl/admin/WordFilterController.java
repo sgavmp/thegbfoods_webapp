@@ -1,6 +1,7 @@
 package com.ucm.ilsa.veterinaria.web.controller.impl.admin;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.util.List;
 
 import javax.validation.Valid;
@@ -18,6 +19,7 @@ import com.google.common.collect.Lists;
 import com.ucm.ilsa.veterinaria.domain.Alert;
 import com.ucm.ilsa.veterinaria.domain.NewsDetect;
 import com.ucm.ilsa.veterinaria.domain.topic.TopicManager;
+import com.ucm.ilsa.veterinaria.service.NewsIndexService;
 import com.ucm.ilsa.veterinaria.service.impl.AlertServiceImpl;
 import com.ucm.ilsa.veterinaria.web.controller.BaseController;
 
@@ -39,6 +41,9 @@ public class WordFilterController extends BaseController {
 	
 	@Autowired
 	private TopicManager topicManager;
+	
+	@Autowired
+	private NewsIndexService newsIndexService;
 	
 	public WordFilterController() {
 		this.menu = "Alertas Sanitarias";
@@ -72,7 +77,12 @@ public class WordFilterController extends BaseController {
 			model.addAttribute("error", "Se ha producido un error al validar el topic.");
 			return FOLDER + "words";
 		}
-		wordService.create(wordFilter);
+		try {
+			wordService.create(wordFilter);
+		} catch (IOException e) {
+			redirectAttributes.addFlashAttribute("error","Error al detectar posibles alertas con la alerta almacenada.");
+			return "redirect:/alerts/words";
+		}
 		redirectAttributes.addFlashAttribute("info","Se ha a&ntilde;adido correctamente el filtro");
 		return "redirect:/alerts/words";
 	}
@@ -108,9 +118,21 @@ public class WordFilterController extends BaseController {
 			model.addAttribute("error", "Se ha producido un error al validar el topic.");
 			return FOLDER + "words";
 		}
-		wordService.create((Alert)wordFilter.bind(before));
+		wordFilter = wordService.update((Alert)wordFilter.bind(before));
 		redirectAttributes.addFlashAttribute("info","Se ha actualizado correctamente el filtro.");
 		return "redirect:/admin/words";
+	}
+	
+	@RequestMapping(value = "/get/{id}/reset", method=RequestMethod.GET)
+	public String resetNewsByFeed(Model model, RedirectAttributes redirectAttributes, @PathVariable ("id") Alert word) {
+		try {
+			newsIndexService.resetAlert(word);
+		} catch (IOException e) {
+			redirectAttributes.addFlashAttribute("error","Error al detectar posibles alertas con la alerta almacenada.");
+			return "redirect:/alerts/get/"+word.getId();
+		}
+		redirectAttributes.addFlashAttribute("info","Se han reseteado las alertas detectadas.");
+		return "redirect:/alerts/get/"+word.getId();
 	}
 	
 	@RequestMapping(value = "/get/{id}/remove", method=RequestMethod.GET)

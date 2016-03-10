@@ -1,6 +1,7 @@
 package com.ucm.ilsa.veterinaria.web.controller.impl.admin;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.sql.Date;
 import java.util.List;
 
@@ -23,6 +24,7 @@ import com.ucm.ilsa.veterinaria.domain.Statistics;
 import com.ucm.ilsa.veterinaria.domain.topic.TopicManager;
 import com.ucm.ilsa.veterinaria.repository.NewsDetectRepository;
 import com.ucm.ilsa.veterinaria.repository.StatisticsRepository;
+import com.ucm.ilsa.veterinaria.service.NewsIndexService;
 import com.ucm.ilsa.veterinaria.service.impl.AlertServiceImpl;
 import com.ucm.ilsa.veterinaria.service.impl.RiskServiceImpl;
 import com.ucm.ilsa.veterinaria.web.controller.BaseController;
@@ -51,6 +53,9 @@ public class RiskAdminController extends BaseController {
 	
 	@Autowired
 	private TopicManager topicManager;
+	
+	@Autowired
+	private NewsIndexService newsIndexService;
 	
 	public RiskAdminController() {
 		this.menu = "Otras Alertas";
@@ -85,9 +90,14 @@ public class RiskAdminController extends BaseController {
 			model.addAttribute("error", "Se ha producido un error al validar el topic.");
 			return FOLDER + "words";
 		}
-		wordService.create(wordFilter);
+		try {
+			wordFilter = wordService.create(wordFilter);
+		} catch (IOException e) {
+			redirectAttributes.addFlashAttribute("error","Error al detectar posibles alertas con la alerta almacenada.");
+			return "redirect:/alerts/risks/get/"+wordFilter.getTitle();
+		}
 		redirectAttributes.addFlashAttribute("info","Se ha a&ntilde;adido correctamente el filtro");
-		return "redirect:/admin/risks/words";
+		return "redirect:/admin/risks/get/"+wordFilter.getTitle();
 	}
 	
 	@RequestMapping(value = "/get/{id}/edit", method=RequestMethod.GET)
@@ -119,9 +129,21 @@ public class RiskAdminController extends BaseController {
 			model.addAttribute("error", "Se ha producido un error al validar el topic.");
 			return FOLDER + "words";
 		}
-		wordService.create((Risk)wordFilter.bind(before));
+		wordService.update((Risk)wordFilter.bind(before));
 		redirectAttributes.addFlashAttribute("info","Se ha actualizado correctamente el filtro.");
 		return "redirect:/admin/risks/words";
+	}
+	
+	@RequestMapping(value = "/get/{id}/reset", method=RequestMethod.GET)
+	public String resetNewsByFeed(Model model, RedirectAttributes redirectAttributes, @PathVariable ("id") Risk word) {
+		try {
+			newsIndexService.resetAlert(word);
+		} catch (IOException e) {
+			redirectAttributes.addFlashAttribute("error","Error al detectar posibles alertas.");
+			return "redirect:/admin/words/get/"+word.getId();
+		}
+		redirectAttributes.addFlashAttribute("info","Se han reseteado las alertas detectadas.");
+		return "redirect:/admin/risks/get/"+word.getId();
 	}
 	
 	@RequestMapping(value = "/get/{id}/remove", method=RequestMethod.GET)

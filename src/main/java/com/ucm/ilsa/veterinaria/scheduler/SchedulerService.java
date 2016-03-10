@@ -34,11 +34,12 @@ public class SchedulerService {
 	@Autowired
 	private TaskScheduler scheduler;
 	@Autowired
-	private FeedService serviceFeed;
-	private Map<Long, ScheduledFuture<?>> tasks = Maps.newLinkedHashMap();
+	private AutowireCapableBeanFactory beanFactory;
 	private static final int MIN_MILIS = 60000;
 	@Autowired
-	private AutowireCapableBeanFactory beanFactory;
+	private FeedService serviceFeed;
+	private Map<Long, ScheduledFuture<?>> tasks = Maps.newLinkedHashMap();
+	
 
 	@PostConstruct
 	public void init() {

@@ -1,8 +1,10 @@
 package com.ucm.ilsa.veterinaria.service.impl;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.SortedMap;
@@ -12,17 +14,23 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.ucm.ilsa.veterinaria.domain.Alert;
 import com.ucm.ilsa.veterinaria.domain.Feed;
+import com.ucm.ilsa.veterinaria.domain.NewsDetect;
 import com.ucm.ilsa.veterinaria.domain.Risk;
 import com.ucm.ilsa.veterinaria.repository.AlertRepository;
 import com.ucm.ilsa.veterinaria.repository.RiskRepository;
+import com.ucm.ilsa.veterinaria.service.NewsIndexService;
 
 @Service
 public class RiskServiceImpl {
 	
 	@Autowired
 	private RiskRepository repository;
+	
+	@Autowired
+	private NewsIndexService newsIndexService;
 	
 	public Set<Risk> getAllAlert() {
 		return repository.findAllByOrderByTitleAsc();
@@ -36,8 +44,11 @@ public class RiskServiceImpl {
 		return repository.save(word);
 	}
 	
-	public Risk create(Risk word) {
-		return repository.save(word);
+	public Risk create(Risk word) throws IOException {
+		Risk risk = repository.save(word);
+		risk.setNewsDetect(new HashSet<NewsDetect>());
+		newsIndexService.resetAlert(risk);
+		return risk;
 	}
 	
 	public void remove(Risk word) {

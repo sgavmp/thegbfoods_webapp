@@ -40,7 +40,7 @@
 						</tr>
 					</thead>
 					<tbody>
-						<tr th:if="${#lists.isEmpty(alertsScoreToday)}" th:each="alert,stat : ${alertsScoreToday}" th:class="${stat.count}%2==0?'table-par':'table-impar'" class="table-impar">
+						<tr th:unless="${#lists.isEmpty(alertsScoreToday)}" th:each="alert,stat : ${alertsScoreToday}" th:class="${stat.count}%2==0?'table-par':'table-impar'" class="table-impar">
 							<td class="mdl-data-table__cell--non-numeric"><a th:text="${alert[1]}" th:href="@{/alerts/get/{id}(id=${alert[0]})}">Acrylic</a></td>
 							<td th:text="${#numbers.formatDecimal(alert[4],1,2)}">250</td>
 						</tr>
@@ -106,7 +106,7 @@
 						</tr>
 					</thead>
 					<tbody>
-						<tr th:if="${!#lists.isEmpty(risksScoreToday)}" th:each="alert,stat : ${risksScoreToday}" th:class="${stat.count}%2==0?'table-par':'table-impar'" class="table-impar">
+						<tr th:unless="${!#lists.isEmpty(risksScoreToday)}" th:each="alert,stat : ${risksScoreToday}" th:class="${stat.count}%2==0?'table-par':'table-impar'" class="table-impar">
 							<td class="mdl-data-table__cell--non-numeric"><a th:text="${alert[1]}" th:href="@{/alerts/get/{id}(id=${alert[0]})}">Acrylic</a></td>
 							<td>Edulcorante</td>
 							<td th:text="${#numbers.formatDecimal(alert[4],1,2)}">250</td>
