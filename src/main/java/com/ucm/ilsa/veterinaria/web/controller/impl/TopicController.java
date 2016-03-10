@@ -1,4 +1,4 @@
-package com.ucm.ilsa.veterinaria.web.controller.impl.admin;
+package com.ucm.ilsa.veterinaria.web.controller.impl;
 
 import java.io.ByteArrayInputStream;
 import java.util.List;
@@ -31,7 +31,7 @@ import es.ucm.visavet.gbf.topics.validator.TopicValidator;
 import es.ucm.visavet.gbf.topics.validator.TopicValidatorSemantics;
 
 @Controller
-@RequestMapping("/admin/topic")
+@RequestMapping("/topic")
 public class TopicController extends BaseController {
 
 	@Autowired
@@ -75,10 +75,11 @@ public class TopicController extends BaseController {
 			model.addAttribute("error", "Se ha producido un error al validar el topic.");
 			return "topic";
 		}
+		wordFilter.setReferences(validator.getReferences());
 		topicRepository.save(wordFilter);
 		redirectAttributes.addFlashAttribute("info",
 				"Se ha a&ntilde;adido correctamente el topic");
-		return "redirect:/admin/topic";
+		return "redirect:/topic";
 	}
 
 	@RequestMapping(value = "/get/{id}/edit", method = RequestMethod.GET)
@@ -118,7 +119,7 @@ public class TopicController extends BaseController {
 		    topicRepository.save(before);
 		    redirectAttributes.addFlashAttribute("info",
 				"Se ha actualizado correctamente el topic.");
-		    return "redirect:/admin/topic";
+		    return "redirect:/topic";
 		} else {
 		    model.addAttribute("error", "No se puede editar el titulo.");
 			return "topic";
@@ -128,7 +129,7 @@ public class TopicController extends BaseController {
 	@RequestMapping(value = "/get/{id}/remove", method = RequestMethod.GET)
 	public String updateNewsByFeed(Model model, @PathVariable("id") Topic word) {
 		topicRepository.delete(word);
-		return "redirect:/admin/topic";
+		return "redirect:/topic";
 	}
 
 }

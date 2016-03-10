@@ -1,4 +1,4 @@
-package com.ucm.ilsa.veterinaria.web.controller.impl.admin;
+package com.ucm.ilsa.veterinaria.web.controller.impl;
 
 import java.io.IOException;
 import java.util.List;
@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.bericotech.clavin.resolver.ResolvedLocation;
 import com.google.common.collect.Lists;
 import com.ucm.ilsa.veterinaria.domain.Alert;
 import com.ucm.ilsa.veterinaria.domain.Configuracion;
@@ -34,7 +33,7 @@ import com.ucm.ilsa.veterinaria.service.impl.NewsIndexServiceImpl;
 import com.ucm.ilsa.veterinaria.web.controller.BaseController;
 
 @Controller
-@RequestMapping("/admin/configuracion")
+@RequestMapping("/configuracion")
 public class ConfiguracionController extends BaseController {
 	
 	@Autowired
@@ -42,9 +41,6 @@ public class ConfiguracionController extends BaseController {
 	
 	@Autowired
 	private FeedService feedService;
-	
-	@Autowired
-	private NewsCheckFeedService feedNewsCheckService;
 	
 	@Autowired
 	private FeedScraping feedScraping;
@@ -83,23 +79,7 @@ public class ConfiguracionController extends BaseController {
 			e.printStackTrace();
 		}
 		redirectAttributes.addFlashAttribute("info","Se ha actualizado correctamente la configuración");
-		return "redirect:/admin/configuracion";
-	}
-	
-	@RequestMapping(value="**", method=RequestMethod.POST, params={"testRegExp"})
-	public String testRegExp(Model model, RedirectAttributes redirectAttributes, Configuracion configuracion,BindingResult result) {
-        if (result.hasErrors()) {
-            return "conf";
-        }
-		News news = feedScraping.getNewsFromSite(configuracion.getUrl(), configuracion.getFeed());
-		if (news!=null) {
-			Map<News,List<ResolvedLocation>> lugares = feedNewsCheckService.getLocations(Lists.newArrayList(news), configuracion.getTestReg());
-			if (lugares.containsKey(news)) {
-				model.addAttribute("lugares", lugares.get(news));
-			}
-		}
-		model.addAttribute("conf", configuracionService.getConfiguracion());
-		return "conf";
+		return "redirect:/configuracion";
 	}
 	
 	@RequestMapping(value="/resetAlerts")

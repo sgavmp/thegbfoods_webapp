@@ -301,7 +301,7 @@ public class NewsIndexServiceImpl implements NewsIndexService, Runnable {
 				.getBytes());
 		QueryConstructor queryConstructorBody = new QueryConstructor(
 				new QueryConstructorSemantics(topicManager, News.fieldBody,
-						News.fieldBodyNoCase), alertDefinition);
+						News.fieldBodyNoCase, News.fieldSiteLoc, News.fieldSiteType), alertDefinition);
 		Query q = null;
 		try {
 			q = queryConstructorBody.topic();
@@ -312,7 +312,7 @@ public class NewsIndexServiceImpl implements NewsIndexService, Runnable {
 		alertDefinition = new ByteArrayInputStream(alert.getWords().getBytes());
 		QueryConstructor queryConstructorTitle = new QueryConstructor(
 				new QueryConstructorSemantics(topicManager, News.fieldTitle,
-						News.fieldTitleNoCase), alertDefinition);
+						News.fieldTitleNoCase, News.fieldSiteLoc, News.fieldSiteType), alertDefinition);
 		Query q1 = null;
 		try {
 			q1 = queryConstructorTitle.topic();

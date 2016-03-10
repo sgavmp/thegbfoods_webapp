@@ -67,6 +67,9 @@ public class ApplicationTest  {
 	
 	@Autowired
 	TopicManager topicManager;
+	
+	@Autowired
+	TopicRepository topicRepository;
 
 
     @Before
@@ -76,27 +79,42 @@ public class ApplicationTest  {
 
     @Test
     public void canFetchMickey() {
-    	String topic = "\"lengua azul\"  | triquinosis - ('fiebre porciona' & gripe  | frío - calor - ÑoñeríA & ambigüeDa  AMbiGÜEDÁD676 )      | Enfermedad | @Tperiodico | @Lespaña";
-  	  	InputStream stream = new ByteArrayInputStream(topic.getBytes());
-//    	TopicValidator validator = new TopicValidator(new TopicValidatorSemantics("Desesperación",topicManager), stream);
-//    	try {
-//			validator.topic();
-//		} catch (ParseException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-    	
-    	QueryConstructor queryConstructor = new QueryConstructor(new QueryConstructorSemantics(topicManager,News.fieldBody,
-                News.fieldBodyNoCase,News.fieldSiteLoc, News.fieldSiteType),stream);
-    	Query q = null;
-		try {
-			q = queryConstructor.topic();
-		} catch (es.ucm.visavet.gbf.topics.queryconstructor.ParseException e) {
+    	Topic topic1 = new Topic();
+    	topic1.setTitle("lenguaAzul");
+    	topic1.setWords("'lengua azul'");
+  	  	InputStream stream1 = new ByteArrayInputStream(topic1.getWords().getBytes());
+    	TopicValidator validator = new TopicValidator(new TopicValidatorSemantics("lenguaAzul",topicManager), stream1);
+    	try {
+			validator.topic();
+		} catch (ParseException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-        System.out.println(q);
-    	
+    	topic1.setReferences(validator.getReferences());
+    	topic1 = topicRepository.save(topic1);
+    	Topic topic2 = new Topic();
+    	topic2.setTitle("lenguaAzulAlerta");
+    	topic2.setWords("#lenguaAzul");
+    	InputStream stream2 = new ByteArrayInputStream(topic2.getWords().getBytes());
+    	validator = new TopicValidator(new TopicValidatorSemantics("lenguaAzulAlerta",topicManager), stream2);
+    	try {
+			validator.topic();
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    	topic2.setReferences(validator.getReferences());
+    	topic2 = topicRepository.save(topic2);
+    	topic2.getReferences().contains(topic1);
+    	topic1.setWords("'lengua azul' #lenguaAzulAlerta");
+  	  	stream1 = new ByteArrayInputStream(topic1.getWords().getBytes());
+    	validator = new TopicValidator(new TopicValidatorSemantics("lenguaAzul",topicManager), stream1);
+    	try {
+			validator.topic();
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
     }
     
 }

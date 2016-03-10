@@ -1,4 +1,4 @@
-package com.ucm.ilsa.veterinaria.web.controller.impl.admin;
+package com.ucm.ilsa.veterinaria.web.controller.impl;
 
 import java.util.List;
 
@@ -21,7 +21,7 @@ import com.ucm.ilsa.veterinaria.service.impl.AlertServiceImpl;
 import com.ucm.ilsa.veterinaria.web.controller.BaseController;
 
 @Controller
-@RequestMapping("/admin/locations")
+@RequestMapping("/locations")
 public class LocationsController extends BaseController {
 	
 	@Autowired
@@ -45,7 +45,7 @@ public class LocationsController extends BaseController {
         }
 		serviceLocation.createLocation(location);
 		redirectAttributes.addFlashAttribute("info","Se ha a&ntilde;adido correctamente la nueva localizaci&oacute;n");
-		return "redirect:/admin/locations";
+		return "redirect:/locations";
 	}
 	
 	@RequestMapping(value = "/get/{id}/edit", method=RequestMethod.GET)
@@ -63,13 +63,13 @@ public class LocationsController extends BaseController {
         }
 		serviceLocation.createLocation(location.bind(before));
 		redirectAttributes.addFlashAttribute("info","Se ha actualizado correctamente la localizaci&oacute;n");
-		return "redirect:/admin/locations";
+		return "redirect:/locations";
 	}
 	
 	@RequestMapping(value = "/get/{id}/remove", method=RequestMethod.GET)
 	public String updateNewsByFeed(Model model, @PathVariable ("id") Location location) {
 		serviceLocation.removeLocation(location);
-		return "redirect:/admin/locations";
+		return "redirect:/locations";
 	}
 	
 }

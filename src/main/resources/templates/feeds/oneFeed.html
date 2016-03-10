@@ -23,7 +23,7 @@
 					class="mdl-card__actions mdl-card--border">
 					<h5>Comprueba una noticia</h5>
 					<form method="post"
-						th:action="@{/admin/feeds/get/{id}/check(id=${feed.id})}">
+						th:action="@{/feeds/get/{id}/check(id=${feed.id})}">
 						<input type="hidden" th:name="${_csrf.parameterName}"
 							th:value="${_csrf.token}" />
 						<div
@@ -38,7 +38,7 @@
 					</form>
 				</div>
 				<div sec:authorize="isAuthenticated()" class="mdl-card__menu">
-					<a th:href="@{/admin/feeds/get/{id}/edit(id=${feed.id})}"
+					<a th:href="@{/feeds/get/{id}/edit(id=${feed.id})}"
 						class="mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect">
 						<i class="material-icons">create</i>
 					</a>
@@ -55,7 +55,7 @@
 			<div class="mdl-grid">
 				<div class="mdl-cell mdl-cell--12-col mdl-card mdl-shadow--3dp">
 					<div class="mdl-card__title mdl-color--primary">
-						<a class="mdl-card__title-text  mdl-color-text--white mdl-color-text--white" th:href="@{/risks/get/{id}(id=${alert.id})}" th:inline="text">[[${alert.title}]]</a>
+						<a class="mdl-card__title-text  mdl-color-text--white mdl-color-text--white" th:href="@{/alerts/get/{id}(id=${alert.id})}" th:inline="text">[[${alert.title}]]</a>
 					</div>
 					<div class="mdl-card__actions mdl-card--border">
 						<div th:each="day : ${alert.getAllNewsDetectOrderByDate()}"
@@ -72,14 +72,24 @@
 								th:text="${#dates.format(day.key, 'dd/MM/yyyy')}">Ayer</span>
 							<div th:each="news : ${day.value}"
 								class="mdl-cell mdl-cell--6-col mdl-card mdl-shadow--3dp">
-								<div class="mdl-card__title mdl-color--primary">
+								<div class="mdl-card__title mdl-color--primary" th:class="${news.mark?'mdl-card\_\_title mdl-color--green-800':'mdl-card\_\_title mdl-color--primary'}">
 									<h2 class="mdl-card__title-text  mdl-color-text--white" th:inline="text">
-										<a class="mdl-color-text--white" th:href="${news.link}"
-											href="http://www.google.es">[[${news.title}]]</a>
-									</h2>
-								</div>
-								<div class="mdl-card__actions mdl-card--border">
-									<div class="mdl-grid">
+										<a th:id="${news.id}" class="mdl-color-text--white" target="_blank" th:href="${news.link}"
+										href="http://www.google.es">[[${news.title}]]</a>
+									<div class="mdl-tooltip" th:for="${news.id}" th:inline="text">
+										[[${news.link}]]
+										</div>
+								</h2>
+							</div>
+							<div class="mdl-card__supporting-text">
+								<div class="mdl-grid">
+									<div class="mdl-cell mdl-cell--12-col">
+										Sitio: <a th:id="${news.id + '_' + news.site.id}" class="mdl-color-text--primary" target="_blank" th:inline="text" th:href="${news.site.urlSite}"
+										href="http://www.google.es">[[${news.site.name}]]</a>
+										<div class="mdl-tooltip" th:for="${news.id + '_' + news.site.id}" th:inline="text">
+										[[${news.site.urlSite}]]
+										</div>
+									</div>
 										<div class="mdl-cell mdl-cell--5-col">
 											<table
 												class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
@@ -131,7 +141,7 @@
 			<div class="mdl-grid">
 				<div class="mdl-cell mdl-cell--12-col mdl-card mdl-shadow--3dp">
 					<div class="mdl-card__title mdl-color--primary">
-						<a class="mdl-card__title-text  mdl-color-text--white mdl-color-text--white" th:href="@{/risks/get/{id}(id=${alert.id})}" th:inline="text">[[${alert.title}]]</a>
+						<a class="mdl-card__title-text  mdl-color-text--white mdl-color-text--white" th:href="@{/alerts/get/{id}(id=${alert.id})}" th:inline="text">[[${alert.title}]]</a>
 					</div>
 					<div class="mdl-card__actions mdl-card--border">
 						<div th:each="day : ${alert.getAllNewsDetectOrderByDate()}"
@@ -148,14 +158,24 @@
 								th:text="${#dates.format(day.key, 'dd/MM/yyyy')}">Ayer</span>
 							<div th:each="news : ${day.value}"
 								class="mdl-cell mdl-cell--6-col mdl-card mdl-shadow--3dp">
-								<div class="mdl-card__title mdl-color--primary">
+								<div class="mdl-card__title mdl-color--primary" th:class="${news.mark?'mdl-card\_\_title mdl-color--green-800':'mdl-card\_\_title mdl-color--primary'}">
 									<h2 class="mdl-card__title-text  mdl-color-text--white" th:inline="text">
-										<a class="mdl-color-text--white" th:href="${news.link}"
-											href="http://www.google.es">[[${news.title}]]</a>
-									</h2>
-								</div>
-								<div class="mdl-card__actions mdl-card--border">
-									<div class="mdl-grid">
+										<a th:id="${news.id}" class="mdl-color-text--white" target="_blank" th:href="${news.link}"
+										href="http://www.google.es">[[${news.title}]]</a>
+									<div class="mdl-tooltip" th:for="${news.id}" th:inline="text">
+										[[${news.link}]]
+										</div>
+								</h2>
+							</div>
+							<div class="mdl-card__supporting-text">
+								<div class="mdl-grid">
+									<div class="mdl-cell mdl-cell--12-col">
+										Sitio: <a th:id="${news.id + '_' + news.site.id}" class="mdl-color-text--primary" target="_blank" th:inline="text" th:href="${news.site.urlSite}"
+										href="http://www.google.es">[[${news.site.name}]]</a>
+										<div class="mdl-tooltip" th:for="${news.id + '_' + news.site.id}" th:inline="text">
+										[[${news.site.urlSite}]]
+										</div>
+									</div>
 										<div class="mdl-cell mdl-cell--5-col">
 											<table
 												class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">

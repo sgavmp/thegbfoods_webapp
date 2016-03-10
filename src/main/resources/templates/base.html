@@ -114,7 +114,7 @@
 					role="presentation">add_alert</i>Activas</a><a
 					sec:authorize="isAuthenticated()" class="mdl-navigation__link mdl-navigation__sub_link"
 					th:class="${url == #httpServletRequest.requestURI ? 'mdl-navigation\_\_link mdl-navigation\_\_link--current mdl-navigation\_\_sub_link' : 'mdl-navigation\_\_link mdl-navigation\_\_sub_link'}"
-					th:href="${url}" th:with="url=@{/admin/words}" href=""><i
+					th:href="${url}" th:with="url=@{/alerts}" href=""><i
 					class="mdl-color-text--white material-icons"
 					role="presentation">create</i>Listado</a>
 					<div class="mdl-navigation__group">Otros Alertas</div>
@@ -127,7 +127,7 @@
 					<a
 					sec:authorize="isAuthenticated()" class="mdl-navigation__link mdl-navigation__sub_link"
 					th:class="${url == #httpServletRequest.requestURI ? 'mdl-navigation\_\_link mdl-navigation\_\_link--current mdl-navigation\_\_sub_link' : 'mdl-navigation\_\_link mdl-navigation\_\_sub_link'}"
-					th:href="${url}" th:with="url=@{/admin/risks}" href=""><i
+					th:href="${url}" th:with="url=@{/risks}" href=""><i
 					class="mdl-color-text--white material-icons"
 					role="presentation">create</i>Listado</a> <a
 					class="mdl-navigation__link"
@@ -137,12 +137,12 @@
 					role="presentation">storage</i>Websites</a> <a
 					sec:authorize="isAuthenticated()" class="mdl-navigation__link"
 					th:class="${url == #httpServletRequest.requestURI ? 'mdl-navigation\_\_link mdl-navigation\_\_link--current' : 'mdl-navigation__link'}"
-					th:href="${url}" th:with="url=@{/admin/locations}" href=""><i
+					th:href="${url}" th:with="url=@{/locations}" href=""><i
 					class="mdl-color-text--white material-icons"
 					role="presentation">language</i>Provedores</a> <a
 					sec:authorize="isAuthenticated()" class="mdl-navigation__link"
 					th:class="${url == #httpServletRequest.requestURI ? 'mdl-navigation\_\_link mdl-navigation\_\_link--current' : 'mdl-navigation__link'}"
-					th:href="${url}" th:with="url=@{/admin/topic}" href=""><i
+					th:href="${url}" th:with="url=@{/topic}" href=""><i
 					class="mdl-color-text--white material-icons"
 					role="presentation">book</i>Topics</a>
 				<div class="mdl-layout-spacer"></div>

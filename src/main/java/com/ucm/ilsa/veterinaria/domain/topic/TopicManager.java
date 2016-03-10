@@ -78,4 +78,9 @@ public class TopicManager implements ITopicsManager {
 		return FeedPlaceEnum.valueOf(location).getValue();
 	}
 
+	@Override
+	public Topic getTopic(String topic) {
+		return topicRepository.findOne(topic);
+	}
+
 }

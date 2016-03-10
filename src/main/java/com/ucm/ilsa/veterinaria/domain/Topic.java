@@ -13,6 +13,8 @@ import javax.persistence.Lob;
 import javax.persistence.ManyToMany;
 import javax.validation.constraints.NotNull;
 
+import com.google.common.collect.Lists;
+
 @Entity
 public class Topic extends BaseEntity {
 	@Id
@@ -37,6 +39,8 @@ public class Topic extends BaseEntity {
 		this.words = words;
 	}
 	public List<Topic> getReferences() {
+		if (references==null)
+			references = Lists.newArrayList();
 		return references;
 	}
 	public void setReferences(List<Topic> references) {

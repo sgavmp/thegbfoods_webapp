@@ -14,21 +14,22 @@
 			th:include="base :: menu-izquierdo"></div>
 		<main
 			class="mdl-layout__content mdl-color--grey-100 mdl-typography--text-center"
-			th:fragment="alerts">
-		<!--  Cuando hay alertas -->
+			th:fragment="alerts"> <!--  Cuando hay alertas -->
 		<div th:if="${!#lists.isEmpty(alertsUncheck)}" class="mdl-grid">
 			<div th:if="${#lists.isEmpty(alertsUncheck)}" class="watermark">
 				<h1>No hay alertas activas de los ultimos 30 días</h1>
 			</div>
-			<div th:with="numAlert=${alert.getNewsDetect().size()}" th:each="alert : ${alertsUncheck}"
+			<div th:with="numAlert=${alert.getNewsDetect().size()}"
+				th:each="alert : ${alertsUncheck}"
 				class="mdl-cell mdl-cell--3-col mdl-cell--4-col-tablet mdl-cell--4-col-phone mdl-card mdl-shadow--3dp">
 				<div class="mdl-card__title mdl-color--primary">
-					<h2 class="mdl-card__title-text  mdl-color-text--white" th:inline="text">[[${alert.title}]]</h2>
+					<h2 class="mdl-card__title-text  mdl-color-text--white"
+						th:inline="text">[[${alert.title}]]</h2>
 					<span class="mdl-badge vet-alerta-num"
 						th:attr="data-badge=${numAlert}" data-badge="4"></span>
 				</div>
 				<div class="mdl-card__actions mdl-card--border">
-					<a th:href="@{/risks/get/{id}(id=${alert.id})}"
+					<a th:href="@{/{folder}/get/{id}(folder=${folder},id=${alert.id})}"
 						class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">Ver
 						mas detalles</a>
 				</div>
@@ -42,8 +43,10 @@
 			charset="utf-8"></script>
 		<script
 			src="https://cdnjs.cloudflare.com/ajax/libs/c3/0.4.10/c3.min.js"></script>
-		<script src="//cdnjs.cloudflare.com/ajax/libs/topojson/1.6.9/topojson.min.js"></script>
-		<script th:src="@{/static/js/datamaps.world.min.js}" src="/datamaps.world.min.js"></script>
+		<script
+			src="//cdnjs.cloudflare.com/ajax/libs/topojson/1.6.9/topojson.min.js"></script>
+		<script th:src="@{/static/js/datamaps.world.min.js}"
+			src="/datamaps.world.min.js"></script>
 		<script th:inline="javascript">
 		/*<![CDATA[*/
 		           $(document)

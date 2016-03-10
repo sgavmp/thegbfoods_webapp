@@ -10,6 +10,8 @@ import java.io.InputStream;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.ucm.ilsa.veterinaria.domain.Topic;
+
 
 class TestTopicsManager implements ITopicsManager {
     
@@ -63,6 +65,11 @@ class TestTopicsManager implements ITopicsManager {
     public int getSourceLocation(String type) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
+	@Override
+	public Topic getTopic(String topic) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }
 
 public class Test {

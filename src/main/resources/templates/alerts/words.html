@@ -23,7 +23,7 @@
 					th:inline="text">[[${term.id==null?'Crear alerta':'Editar
 					alerta'}]]</div>
 				<form action="#"
-					th:action="${term.id==null}?@{/admin/words/create}:@{/admin/words/get/{id}/edit(id=${term.id})}"
+					th:action="${term.id==null}?@{/{folder}/create}:@{/{folder}/get/{id}/edit(id=${alert.id},id=${term.id})}"
 					val:validate="${term}" th:object="${term}" method="post">
 
 					<input type="hidden" th:name="${_csrf.parameterName}"
@@ -38,8 +38,8 @@
 					<div
 						class="mdl-cell mdl-cell--10-col mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
 						<label class="mdl-textfield__label" for="titleEn">Introduce
-							el titulo de la alerta en ingles</label> <input class="mdl-textfield__input"
-							type="text" th:field="*{titleEn}" />
+							el titulo de la alerta en ingles</label> <input
+							class="mdl-textfield__input" type="text" th:field="*{titleEn}" />
 					</div>
 					<div
 						class="mdl-cell mdl-cell--10-col mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
@@ -51,7 +51,8 @@
 					<div
 						class="mdl-cell mdl-cell--10-col mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
 						<label class="mdl-textfield__label" for="wordsNegative">Introduce
-							las palabras de filtro negativo(no tienen que estar) para la alerta separadas por coma</label>
+							las palabras de filtro negativo(no tienen que estar) para la
+							alerta separadas por coma</label>
 						<textarea class="mdl-textfield__input" rows="6" type="text"
 							th:field="*{wordsNegative}"></textarea>
 					</div>
@@ -71,7 +72,7 @@
 							<button class="mdl-button mdl-js-button mdl-color--primary"
 								type="submit">Enviar</button>
 							<a th:if="${term.id!=null}" class="mdl-button mdl-js-button"
-								th:href="@{/admin/words}" href="#">Cancelar</a>
+								th:href="@{/alerts}" href="#">Cancelar</a>
 						</div>
 					</div>
 				</form>
@@ -92,18 +93,17 @@
 				</thead>
 				<tbody>
 					<tr th:each="word : ${allWords}">
-						<td class="mdl-data-table__cell--non-numeric"
-							th:inline="text"><a th:href="@{/alerts/get/{id}(id=${word.id})}">[[${word.title}]]</a></td>
-						<td class="mdl-data-table__cell--non-numeric"
-							th:inline="text"><a th:href="@{/alerts/get/{id}(id=${word.id})}">[[${word.titleEn!=null?word.titleEn:'-'}]]</a></td>
+						<td class="mdl-data-table__cell--non-numeric" th:inline="text"><a
+							th:href="@{/{folder}/get/{id}(id=${alert.id},id=${word.id})}">[[${word.title}]]</a></td>
+						<td class="mdl-data-table__cell--non-numeric" th:inline="text"><a
+							th:href="@{/alerts/get/{id}(id=${word.id})}">[[${word.titleEn!=null?word.titleEn:'-'}]]</a></td>
 						<td class="mdl-data-table__cell--non-numeric"
 							th:text="${word.type}"></td>
 						<td><a href="#"
-							th:href="@{/admin/words/get/{id}/edit(id=${word.id})}"><i
-								class="mdl-color-text--black material-icons"
-								role="presentation">mode-edit</i></a></td>
+							th:href="@{/{folder}/get/{id}/edit(id=${alert.id},id=${word.id})}"><i
+								class="mdl-color-text--black material-icons" role="presentation">mode-edit</i></a></td>
 						<td><a class="confirm" href="#"
-							th:href="@{/admin/words/get/{id}/remove(id=${word.id})}"><i
+							th:href="@{/{folder}/get/{id}/remove(id=${alert.id},id=${word.id})}"><i
 								class="mdl-color-text--black material-icons confirm"
 								role="presentation">delete</i></a></td>
 					</tr>
@@ -114,21 +114,33 @@
 		</main>
 		<footer th:include="base :: footer"> </footer>
 		<script type="text/javascript">
-		// <![CDATA[
-			$(".confirm").click(function(e) {
-				var notification = document.querySelector('.mdl-js-snackbar');
-				var url = e && (('string' === typeof e && e) || (e.currentTarget && e.currentTarget.attributes['href'].value));
-				notification.MaterialSnackbar.showSnackbar({
-					message : "¿Estas seguro de borrar la alerta seleccionada?",
-					cssColor : 'mdl-color--primary',
-					timeout : 300000,
-					actionHandler: function(event) {window.location = url; notification.MaterialSnackbar.cleanup_();},
-					  actionText: 'Si',
-					  actionHandler2: function(event) {notification.MaterialSnackbar.cleanup_();},
-					  actionText2: 'No'
-				});
-				return false;
-			});
+			// <![CDATA[
+			$(".confirm")
+					.click(
+							function(e) {
+								var notification = document
+										.querySelector('.mdl-js-snackbar');
+								var url = e
+										&& (('string' === typeof e && e) || (e.currentTarget && e.currentTarget.attributes['href'].value));
+								notification.MaterialSnackbar
+										.showSnackbar({
+											message : "¿Estas seguro de borrar la alerta seleccionada?",
+											cssColor : 'mdl-color--primary',
+											timeout : 300000,
+											actionHandler : function(event) {
+												window.location = url;
+												notification.MaterialSnackbar
+														.cleanup_();
+											},
+											actionText : 'Si',
+											actionHandler2 : function(event) {
+												notification.MaterialSnackbar
+														.cleanup_();
+											},
+											actionText2 : 'No'
+										});
+								return false;
+							});
 			// ]]>
 		</script>
 	</div>

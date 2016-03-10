@@ -27,6 +27,8 @@ import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.RAMDirectory;
 
+import com.ucm.ilsa.veterinaria.domain.Topic;
+
 
 
 class TopicsManager implements ITopicsManager {
@@ -65,6 +67,11 @@ class TopicsManager implements ITopicsManager {
     public int getSourceLocation(String type) {
        return 905; 
     }
+	@Override
+	public Topic getTopic(String topic) {
+		// TODO Auto-generated method stub
+		return null;
+	}
  }
 
 

@@ -40,7 +40,7 @@ import com.ucm.ilsa.veterinaria.repository.StatisticsRepository;
 import com.ucm.ilsa.veterinaria.service.ConfiguracionService;
 import com.ucm.ilsa.veterinaria.service.impl.AlertServiceImpl;
 import com.ucm.ilsa.veterinaria.service.impl.RiskServiceImpl;
-import com.ucm.ilsa.veterinaria.web.controller.impl.admin.ConfiguracionController;
+import com.ucm.ilsa.veterinaria.web.controller.impl.ConfiguracionController;
 
 @Controller
 public class MainController extends BaseController {

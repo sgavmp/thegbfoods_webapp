@@ -17,18 +17,17 @@
 		<div class="mdl-grid">
 			<div class="mdl-cell mdl-cell--12-col mdl-card mdl-shadow--3dp">
 				<div class="mdl-card__title mdl-color--primary">
-					<h2 class="mdl-card__title-text  mdl-color-text--white" th:inline="text">[[${alert.title}]]</h2>
+					<h2 class="mdl-card__title-text  mdl-color-text--white"
+						th:inline="text">[[${alert.title}]]</h2>
 				</div>
 				<div sec:authorize="isAuthenticated()"
 					class="mdl-card__actions mdl-card--border">
 					<a
 						class="confirm-del mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect"
-						th:href="@{/admin/words/get/{id}/remove(id=${alert.id})}">
-						Borrar </a>
+						th:href="@{/{folder}/get/{id}/remove(folder=${folder},id=${alert.id})}"> Borrar </a>
 					<a
 						class="confirm-reset mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect"
-						th:href="@{/admin/words/get/{id}/reset(id=${alert.id})}">
-						Reset </a>
+						th:href="@{/{folder}/get/{id}/reset(folder=${folder},id=${alert.id})}"> Reset </a>
 				</div>
 			</div>
 		</div>
@@ -53,23 +52,27 @@
 					<div class="mdl-grid">
 						<div th:each="news : ${day.value}"
 							class="mdl-cell mdl-cell--6-col mdl-card mdl-shadow--3dp">
-							<div class="mdl-card__title mdl-color--primary" th:class="${news.mark?'mdl-card\_\_title mdl-color--green-800':'mdl-card\_\_title mdl-color--primary'}">
-								<h2 class="mdl-card__title-text  mdl-color-text--white" th:inline="text">
-									<a th:id="${news.id}" class="mdl-color-text--white" target="_blank" th:href="${news.link}"
+							<div class="mdl-card__title mdl-color--primary"
+								th:class="${news.mark?'mdl-card\_\_title mdl-color--green-800':'mdl-card\_\_title mdl-color--primary'}">
+								<h2 class="mdl-card__title-text  mdl-color-text--white"
+									th:inline="text">
+									<a th:id="${news.id}" class="mdl-color-text--white"
+										target="_blank" th:href="${news.link}"
 										href="http://www.google.es">[[${news.title}]]</a>
 									<div class="mdl-tooltip" th:for="${news.id}" th:inline="text">
-										[[${news.link}]]
-										</div>
+										[[${news.link}]]</div>
 								</h2>
 							</div>
 							<div class="mdl-card__supporting-text">
 								<div class="mdl-grid">
 									<div class="mdl-cell mdl-cell--12-col">
-										Sitio: <a th:id="${news.id + '_' + news.site.id}" class="mdl-color-text--primary" target="_blank" th:inline="text" th:href="${news.site.urlSite}"
-										href="http://www.google.es">[[${news.site.name}]]</a>
-										<div class="mdl-tooltip" th:for="${news.id + '_' + news.site.id}" th:inline="text">
-										[[${news.site.urlSite}]]
-										</div>
+										Sitio: <a th:id="${news.id + '_' + news.site.id}"
+											class="mdl-color-text--primary" target="_blank"
+											th:inline="text" th:href="${news.site.urlSite}"
+											href="http://www.google.es">[[${news.site.name}]]</a>
+										<div class="mdl-tooltip"
+											th:for="${news.id + '_' + news.site.id}" th:inline="text">
+											[[${news.site.urlSite}]]</div>
 									</div>
 								</div>
 							</div>
@@ -77,13 +80,13 @@
 								class="mdl-card__actions mdl-card--border">
 								<a
 									class="confirm-del mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect"
-									th:href="@{/admin/alerts/get/{id}/news/{idNews}/remove(id=${alert.id},idNews=${news.id})}">
+									th:href="@{/{folder}/get/{id}/news/{idNews}/remove(id=${alert.id},idNews=${news.id})}">
 									Borrar </a> <a
 									class="confirm-false mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect"
-									th:href="@{/admin/alerts/get/{id}/news/{idNews}/false(id=${alert.id},idNews=${news.id})}">
+									th:href="@{/{folder}/get/{id}/news/{idNews}/false(id=${alert.id},idNews=${news.id})}">
 									Marcar falso positivo</a> <a
 									class="confirm-history mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect"
-									th:href="@{/admin/alerts/get/{id}/news/{idNews}/history(id=${alert.id},idNews=${news.id})}">
+									th:href="@{/{folder}/get/{id}/news/{idNews}/history(id=${alert.id},idNews=${news.id})}">
 									Marcar como pasado </a>
 							</div>
 						</div>
@@ -104,7 +107,8 @@
 						<div th:each="news : ${day.value}"
 							class="mdl-cell mdl-cell--6-col mdl-card mdl-shadow--3dp">
 							<div class="mdl-card__title mdl-color--primary">
-								<h2 class="mdl-card__title-text  mdl-color-text--white" th:inline="text">
+								<h2 class="mdl-card__title-text  mdl-color-text--white"
+									th:inline="text">
 									<a class="mdl-color-text--white" th:href="${news.link}"
 										href="http://www.google.es">[[${news.title}]]</a>
 								</h2>
@@ -129,39 +133,19 @@
 											</tbody>
 										</table>
 									</div>
-									<div class="mdl-cell mdl-cell--7-col">
-										<table
-											class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
-											<thead>
-												<tr>
-													<th class="mdl-data-table__cell--non-numeric">Proveedor
-														afectado</th>
-													<th>Descartar</th>
-												</tr>
-											</thead>
-											<tbody>
-												<tr th:each="loc : ${news.getCountryWithLocations()}">
-													<td th:id="${loc.key}"
-														class="mdl-data-table__cell--non-numeric">Acrylic
-														(Transparent)</td>
-													<td>Pulsa</td>
-												</tr>
-											</tbody>
-										</table>
-									</div>
 								</div>
 							</div>
 							<div sec:authorize="isAuthenticated()"
 								class="mdl-card__actions mdl-card--border">
 								<a
 									class="confirm-del mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect"
-									th:href="@{/admin/alerts/get/{id}/news/{idNews}/remove(id=${alert.id},idNews=${news.id})}">
+									th:href="@{/{folder}/get/{id}/news/{idNews}/remove(id=${alert.id},id=${alert.id},idNews=${news.id})}">
 									Borrar </a> <a
 									class="confirm-false mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect"
-									th:href="@{/admin/alerts/get/{id}/news/{idNews}/false(id=${alert.id},idNews=${news.id})}">
+									th:href="@{/{folder}/get/{id}/news/{idNews}/false(id=${alert.id},id=${alert.id},idNews=${news.id})}">
 									Marcar falso positivo</a> <a
 									class="confirm-active mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect"
-									th:href="@{/admin/alerts/get/{id}/news/{idNews}/active(id=${alert.id},idNews=${news.id})}">
+									th:href="@{/{folder}/get/{id}/news/{idNews}/active(id=${alert.id},id=${alert.id},idNews=${news.id})}">
 									Marcar como activo </a>
 							</div>
 						</div>
@@ -183,7 +167,8 @@
 						<div th:each="news : ${day.value}"
 							class="mdl-cell mdl-cell--6-col mdl-card mdl-shadow--3dp">
 							<div class="mdl-card__title mdl-color--primary">
-								<h2 class="mdl-card__title-text  mdl-color-text--white" th:inline="text">
+								<h2 class="mdl-card__title-text  mdl-color-text--white"
+									th:inline="text">
 									<a class="mdl-color-text--white" th:href="${news.link}"
 										href="http://www.google.es">[[${news.title}]]</a>
 								</h2>
@@ -208,39 +193,19 @@
 											</tbody>
 										</table>
 									</div>
-									<div class="mdl-cell mdl-cell--7-col">
-										<table
-											class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
-											<thead>
-												<tr>
-													<th class="mdl-data-table__cell--non-numeric">Proveedor
-														afectado</th>
-													<th>Descartar</th>
-												</tr>
-											</thead>
-											<tbody>
-												<tr th:each="loc : ${news.getCountryWithLocations()}">
-													<td th:id="${loc.key}"
-														class="mdl-data-table__cell--non-numeric">Acrylic
-														(Transparent)</td>
-													<td>Pulsa</td>
-												</tr>
-											</tbody>
-										</table>
-									</div>
 								</div>
 							</div>
 							<div sec:authorize="isAuthenticated()"
 								class="mdl-card__actions mdl-card--border">
 								<a
 									class="confirm-del mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect"
-									th:href="@{/admin/alerts/get/{id}/news/{idNews}/remove(id=${alert.id},idNews=${news.id})}">
+									th:href="@{/{folder}/get/{id}/news/{idNews}/remove(id=${alert.id},id=${alert.id},idNews=${news.id})}">
 									Borrar </a> <a
 									class="confirm-active mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect"
-									th:href="@{/admin/alerts/get/{id}/news/{idNews}/active(id=${alert.id},idNews=${news.id})}">
+									th:href="@{/{folder}/get/{id}/news/{idNews}/active(id=${alert.id},id=${alert.id},idNews=${news.id})}">
 									Marcar como activo</a> <a
 									class="confirm-history mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect"
-									th:href="@{/admin/alerts/get/{id}/news/{idNews}/history(id=${alert.id},idNews=${news.id})}">
+									th:href="@{/{folder}/get/{id}/news/{idNews}/history(id=${alert.id},id=${alert.id},idNews=${news.id})}">
 									Marcar como pasado </a>
 							</div>
 						</div>
@@ -249,7 +214,6 @@
 			</div>
 
 		</div>
-
 		</main>
 		<footer th:include="base :: footer"> </footer>
 		<script type="text/javascript">
@@ -281,83 +245,83 @@
 								return false;
 							});
 			$(".confirm-active")
-			.click(
-					function(e) {
-						var notification = document
-								.querySelector('.mdl-js-snackbar');
-						var url = e
-								&& (('string' === typeof e && e) || (e.currentTarget && e.currentTarget.attributes['href'].value));
-						notification.MaterialSnackbar
-								.showSnackbar({
-									message : "¿Estas seguro de marcar la noticia indicada a activa?",
-									cssColor : 'mdl-color--primary',
-									timeout : 300000,
-									actionHandler : function(event) {
-										window.location = url;
-										notification.MaterialSnackbar
-												.cleanup_();
-									},
-									actionText : 'Si',
-									actionHandler2 : function(event) {
-										notification.MaterialSnackbar
-												.cleanup_();
-									},
-									actionText2 : 'No'
-								});
-						return false;
-					});
+					.click(
+							function(e) {
+								var notification = document
+										.querySelector('.mdl-js-snackbar');
+								var url = e
+										&& (('string' === typeof e && e) || (e.currentTarget && e.currentTarget.attributes['href'].value));
+								notification.MaterialSnackbar
+										.showSnackbar({
+											message : "¿Estas seguro de marcar la noticia indicada a activa?",
+											cssColor : 'mdl-color--primary',
+											timeout : 300000,
+											actionHandler : function(event) {
+												window.location = url;
+												notification.MaterialSnackbar
+														.cleanup_();
+											},
+											actionText : 'Si',
+											actionHandler2 : function(event) {
+												notification.MaterialSnackbar
+														.cleanup_();
+											},
+											actionText2 : 'No'
+										});
+								return false;
+							});
 			$(".confirm-history")
-			.click(
-					function(e) {
-						var notification = document
-								.querySelector('.mdl-js-snackbar');
-						var url = e
-								&& (('string' === typeof e && e) || (e.currentTarget && e.currentTarget.attributes['href'].value));
-						notification.MaterialSnackbar
-								.showSnackbar({
-									message : "¿Estas seguro de marcar la noticia como pasada?",
-									cssColor : 'mdl-color--primary',
-									timeout : 300000,
-									actionHandler : function(event) {
-										window.location = url;
-										notification.MaterialSnackbar
-												.cleanup_();
-									},
-									actionText : 'Si',
-									actionHandler2 : function(event) {
-										notification.MaterialSnackbar
-												.cleanup_();
-									},
-									actionText2 : 'No'
-								});
-						return false;
-					});
+					.click(
+							function(e) {
+								var notification = document
+										.querySelector('.mdl-js-snackbar');
+								var url = e
+										&& (('string' === typeof e && e) || (e.currentTarget && e.currentTarget.attributes['href'].value));
+								notification.MaterialSnackbar
+										.showSnackbar({
+											message : "¿Estas seguro de marcar la noticia como pasada?",
+											cssColor : 'mdl-color--primary',
+											timeout : 300000,
+											actionHandler : function(event) {
+												window.location = url;
+												notification.MaterialSnackbar
+														.cleanup_();
+											},
+											actionText : 'Si',
+											actionHandler2 : function(event) {
+												notification.MaterialSnackbar
+														.cleanup_();
+											},
+											actionText2 : 'No'
+										});
+								return false;
+							});
 			$(".confirm-false")
-			.click(
-					function(e) {
-						var notification = document
-								.querySelector('.mdl-js-snackbar');
-						var url = e
-								&& (('string' === typeof e && e) || (e.currentTarget && e.currentTarget.attributes['href'].value));
-						notification.MaterialSnackbar
-								.showSnackbar({
-									message : "¿Estas seguro de marcar la noticia como falso positivo?",
-									cssColor : 'mdl-color--primary',
-									timeout : 300000,
-									actionHandler : function(event) {
-										window.location = url;
-										notification.MaterialSnackbar
-												.cleanup_();
-									},
-									actionText : 'Si',
-									actionHandler2 : function(event) {
-										notification.MaterialSnackbar
-												.cleanup_();
-									},
-									actionText2 : 'No'
-								});
-						return false;
-					});
+					.click(
+							function(e) {
+								var notification = document
+										.querySelector('.mdl-js-snackbar');
+								var url = e
+										&& (('string' === typeof e && e) || (e.currentTarget && e.currentTarget.attributes['href'].value));
+								notification.MaterialSnackbar
+										.showSnackbar({
+											message : "¿Estas seguro de marcar la noticia como falso positivo?",
+											cssColor : 'mdl-color--primary',
+											timeout : 300000,
+											actionHandler : function(event) {
+												window.location = url;
+												notification.MaterialSnackbar
+														.cleanup_();
+											},
+											actionText : 'Si',
+											actionHandler2 : function(event) {
+												notification.MaterialSnackbar
+														.cleanup_();
+											},
+											actionText2 : 'No'
+										});
+								return false;
+							});
 			$(".confirm-res")
 					.click(
 							function(e) {
@@ -385,31 +349,31 @@
 								return false;
 							});
 			$(".confirm-reset")
-			.click(
-					function(e) {
-						var notification = document
-								.querySelector('.mdl-js-snackbar');
-						var url = e
-								&& (('string' === typeof e && e) || (e.currentTarget && e.currentTarget.attributes['href'].value));
-						notification.MaterialSnackbar
-								.showSnackbar({
-									message : "¿Estas seguro de resetear la alerta seleccionada?Esto eliminará todas las alertas almacenadas y creara nuevas.",
-									cssColor : 'mdl-color--primary',
-									timeout : 300000,
-									actionHandler : function(event) {
-										window.location = url;
-										notification.MaterialSnackbar
-												.cleanup_();
-									},
-									actionText : 'Si',
-									actionHandler2 : function(event) {
-										notification.MaterialSnackbar
-												.cleanup_();
-									},
-									actionText2 : 'No'
-								});
-						return false;
-					});
+					.click(
+							function(e) {
+								var notification = document
+										.querySelector('.mdl-js-snackbar');
+								var url = e
+										&& (('string' === typeof e && e) || (e.currentTarget && e.currentTarget.attributes['href'].value));
+								notification.MaterialSnackbar
+										.showSnackbar({
+											message : "¿Estas seguro de resetear la alerta seleccionada?Esto eliminará todas las alertas almacenadas y creara nuevas.",
+											cssColor : 'mdl-color--primary',
+											timeout : 300000,
+											actionHandler : function(event) {
+												window.location = url;
+												notification.MaterialSnackbar
+														.cleanup_();
+											},
+											actionText : 'Si',
+											actionHandler2 : function(event) {
+												notification.MaterialSnackbar
+														.cleanup_();
+											},
+											actionText2 : 'No'
+										});
+								return false;
+							});
 			// ]]>
 		</script>
 	</div>
