@@ -41,7 +41,7 @@ import com.ucm.ilsa.veterinaria.repository.NewsDetectRepository;
 import com.ucm.ilsa.veterinaria.scheduler.SchedulerService;
 import com.ucm.ilsa.veterinaria.service.FeedScraping;
 import com.ucm.ilsa.veterinaria.service.FeedService;
-import com.ucm.ilsa.veterinaria.service.NewsCheckFeedService;
+import com.ucm.ilsa.veterinaria.service.NewsIndexService;
 
 @Service
 public class FeedServiceImpl implements FeedService {
@@ -51,11 +51,11 @@ public class FeedServiceImpl implements FeedService {
 	@Autowired
 	private FeedScraping scrapingFeed;
 	@Autowired
-	private NewsCheckFeedService newsCheckService;
-	@Autowired
 	private NewsDetectRepository newsDetectRepository;
-	
+	@Autowired
 	private SchedulerService schedulerService;
+	@Autowired
+	private NewsIndexService newsIndexService;
 
 	@Override
 	public List<News> scrapFeed(Feed feed, Date after, boolean withOutLimit) {
@@ -95,6 +95,13 @@ public class FeedServiceImpl implements FeedService {
 	public Feed updateFeed(Feed feed) {
 		Feed feedU = repositoryFeed.save(feed);
 		schedulerService.updateFeedTask(feed);
+		if (feed.isUpdateIndex())
+			try {
+				newsIndexService.updateIndex(feed);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		return feedU;
 	}
 
@@ -108,12 +115,6 @@ public class FeedServiceImpl implements FeedService {
 	
 	public List<NewsDetect> findAllDistinctNewsDetectByFeedOrderByDatePub(Feed feed) {
 		return newsDetectRepository.findAllDistinctBySiteOrderByDatePubDesc(feed);
-	}
-	
-	public Set<AlertAbstract> checkNewsLinkOnFeed(String link, Feed feed) {
-		News news = scrapingFeed.getNewsFromSite(link, feed);
-		Set<AlertAbstract> alertasDetectadas = newsCheckService.checkNews(news, feed);
-		return alertasDetectadas;
 	}
 	
 	public Feed setSateOfFeed(Feed feed, UpdateStateEnum state) {

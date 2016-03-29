@@ -23,8 +23,11 @@ import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.OrderColumn;
+import javax.persistence.Transient;
 
 import org.hibernate.annotations.GenericGenerator;
+
+import com.google.common.collect.Lists;
 
 @Entity
 public class Feed extends BaseEntity {
@@ -44,6 +47,11 @@ public class Feed extends BaseEntity {
 	private boolean isRSS = true;
 	@Enumerated(EnumType.ORDINAL)
 	private WebLevel type;
+	@Enumerated(EnumType.ORDINAL)
+	private FeedTypeEnum feedType = FeedTypeEnum.general;
+	@Enumerated(EnumType.ORDINAL)
+	@ElementCollection(fetch = FetchType.EAGER)
+	private List<FeedPlaceEnum> feedPlace = Lists.newArrayList();
 	private Integer numNewNews;
 	private Date dateFirstNews;
 	private Timestamp ultimaRecuperacion;
@@ -65,6 +73,10 @@ public class Feed extends BaseEntity {
 	private CharsetEnum charSet = CharsetEnum.UTF8;
 	@Enumerated(EnumType.ORDINAL)
 	private UpdateStateEnum state = UpdateStateEnum.WAIT;
+	@Transient
+	private boolean updateIndex=false;
+	@Transient
+	private String nextExecution="";
 
 	// Solo sitios sin RSS
 	@ElementCollection(fetch = FetchType.EAGER)
@@ -101,9 +113,13 @@ public class Feed extends BaseEntity {
 		this.charSet = feed.getCharSet();
 		this.forAlerts = feed.getForAlerts();
 		this.forRisks = feed.getForRisks();
+		this.feedPlace = feed.getFeedPlace();
+		this.feedType = feed.getFeedType();
 	}
 
 	public void changeValues(FeedForm feed) {
+		if (this.feedPlace.hashCode() != feed.getFeedPlace().hashCode())
+			this.updateIndex=true;
 		this.name = feed.getName();
 		this.dateFormat = feed.getDateFormat();
 		this.languaje = feed.getLanguaje();
@@ -127,6 +143,8 @@ public class Feed extends BaseEntity {
 		this.charSet = feed.getCharSet();
 		this.forAlerts = feed.getForAlerts();
 		this.forRisks = feed.getForRisks();
+		this.feedPlace = feed.getFeedPlace();
+		this.feedType = feed.getFeedType();
 	}
 	
 
@@ -377,5 +395,39 @@ public class Feed extends BaseEntity {
 	public void setForRisks(boolean forRisks) {
 		this.forRisks = forRisks;
 	}
+
+	public FeedTypeEnum getFeedType() {
+		return feedType;
+	}
+
+	public void setFeedType(FeedTypeEnum feedType) {
+		this.feedType = feedType;
+	}
+
+	public List<FeedPlaceEnum> getFeedPlace() {
+		return feedPlace;
+	}
+
+	public void setFeedPlace(List<FeedPlaceEnum> feedPlace) {
+		this.feedPlace = feedPlace;
+	}
+
+	public boolean isUpdateIndex() {
+		return updateIndex;
+	}
+
+	public void setUpdateIndex(boolean updateIndex) {
+		this.updateIndex = updateIndex;
+	}
+
+	public String getNextExecution() {
+		return nextExecution;
+	}
+
+	public void setNextExecution(String nextExecution) {
+		this.nextExecution = nextExecution;
+	}
+	
+	
 	
 }

@@ -10,7 +10,6 @@ import com.ucm.ilsa.veterinaria.domain.News;
 import com.ucm.ilsa.veterinaria.domain.UpdateStateEnum;
 import com.ucm.ilsa.veterinaria.repository.NewsRepository;
 import com.ucm.ilsa.veterinaria.service.FeedService;
-import com.ucm.ilsa.veterinaria.service.NewsCheckFeedService;
 import com.ucm.ilsa.veterinaria.service.NewsIndexService;
 
 public class AlertTaskContainer implements Runnable {
@@ -22,8 +21,6 @@ public class AlertTaskContainer implements Runnable {
 	private FeedService service;
 	@Autowired
 	private SchedulerService schedulerService;
-	@Autowired
-	private NewsCheckFeedService newsCheckService;
 	@Autowired
 	private NewsIndexService newsIndexService;
 	@Autowired
@@ -71,10 +68,6 @@ public class AlertTaskContainer implements Runnable {
 
 	public void setSchedulerService(SchedulerService schedulerService) {
 		this.schedulerService = schedulerService;
-	}
-
-	public void setNewsCheckService(NewsCheckFeedService newsCheckService) {
-		this.newsCheckService = newsCheckService;
 	}
 
 }

@@ -2,7 +2,7 @@ package com.ucm.ilsa.veterinaria.domain;
 
 public enum FeedTypeEnum {
 	
-	periodico(1), revistaCientifica(21), revista(2), blogNutricional(31), blog(3), institucional(4);
+	general(0),periodico(10), revistaCientifica(21), revista(20), blogNutricional(31), blog(30), institucional(40);
 	
 	private Integer value;
 

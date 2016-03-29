@@ -32,7 +32,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.ucm.ilsa.veterinaria.domain.News;
 import com.ucm.ilsa.veterinaria.service.NewsIndexService;
-import com.ucm.ilsa.veterinaria.service.impl.NewsCheckFeedServiceImpl;
 
 public class LuceneItemWriter implements ItemWriter<List<News>> {
 	

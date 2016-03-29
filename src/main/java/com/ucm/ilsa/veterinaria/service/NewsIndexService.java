@@ -7,6 +7,7 @@ import java.util.concurrent.Future;
 import com.ucm.ilsa.veterinaria.domain.AlertAbstract;
 import com.ucm.ilsa.veterinaria.domain.Feed;
 import com.ucm.ilsa.veterinaria.domain.News;
+import com.ucm.ilsa.veterinaria.domain.NewsDetect;
 
 public interface NewsIndexService {
 
@@ -19,9 +20,9 @@ public interface NewsIndexService {
 	public void removeNews(List<News> news);
 	public void updateNews(News news);
 	public void updateNews(List<News> news);
-	public void emptyRamIndex() throws IOException;
-	public void emptyNewsIndexBefore(Integer days);
+	public void updateIndex(Feed feed) throws Exception;
 	public List<News> search(AlertAbstract alert);
 	public void resetAllAlerts() throws IOException;
 	public void resetAlert(AlertAbstract alert) throws IOException;
+	public List<NewsDetect> search(String query) throws Exception;
 }

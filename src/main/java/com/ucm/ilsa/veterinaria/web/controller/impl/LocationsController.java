@@ -1,5 +1,6 @@
 package com.ucm.ilsa.veterinaria.web.controller.impl;
 
+import java.io.ByteArrayInputStream;
 import java.util.List;
 
 import javax.validation.Valid;
@@ -16,9 +17,17 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.ucm.ilsa.veterinaria.domain.Location;
 import com.google.common.collect.Lists;
 import com.ucm.ilsa.veterinaria.domain.Alert;
+import com.ucm.ilsa.veterinaria.domain.topic.TopicManager;
 import com.ucm.ilsa.veterinaria.service.impl.PlaceAlertServiceImpl;
 import com.ucm.ilsa.veterinaria.service.impl.AlertServiceImpl;
 import com.ucm.ilsa.veterinaria.web.controller.BaseController;
+
+import es.ucm.visavet.gbf.topics.validator.CyclicDependencyException;
+import es.ucm.visavet.gbf.topics.validator.ParseException;
+import es.ucm.visavet.gbf.topics.validator.TokenMgrError;
+import es.ucm.visavet.gbf.topics.validator.TopicDoesNotExistsException;
+import es.ucm.visavet.gbf.topics.validator.TopicValidator;
+import es.ucm.visavet.gbf.topics.validator.TopicValidatorSemantics;
 
 @Controller
 @RequestMapping("/locations")
@@ -26,6 +35,9 @@ public class LocationsController extends BaseController {
 	
 	@Autowired
 	private PlaceAlertServiceImpl serviceLocation;
+	
+	@Autowired
+	private TopicManager topicManager;
 	
 	public LocationsController() {
 		this.menu = "Proveedores";
@@ -61,7 +73,22 @@ public class LocationsController extends BaseController {
         	redirectAttributes.addFlashAttribute("error","Hay un error en el formulario");
             return "locations";
         }
-		serviceLocation.createLocation(location.bind(before));
+        TopicValidator validator = new TopicValidator(
+				new TopicValidatorSemantics(location.getName(), topicManager),
+				new ByteArrayInputStream(location.getQuery().getBytes()));
+		try {
+			validator.topic();
+		} catch (TopicDoesNotExistsException e) {
+			model.addAttribute("error", "El topic " + e.getTopic() + " no existe.");
+			return "locations";
+		} catch (CyclicDependencyException e) {
+			model.addAttribute("error", e.toString());
+			return "locations";
+		} catch (ParseException | TokenMgrError e) {
+			model.addAttribute("error", "Se ha producido un error al validar el topic.");
+			return "locations";
+		}
+		serviceLocation.createLocation(before.bind(location));
 		redirectAttributes.addFlashAttribute("info","Se ha actualizado correctamente la localizaci&oacute;n");
 		return "redirect:/locations";
 	}

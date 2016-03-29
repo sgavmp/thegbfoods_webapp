@@ -31,9 +31,6 @@ public class NewsDetect extends BaseEntity {
 	@Lob
 	private String link;
 	private Date datePub;
-	@ElementCollection(fetch = FetchType.LAZY)
-	@CollectionTable(name = "news_detect_locations", joinColumns = @JoinColumn(name = "NEWS_ID"))
-	private Set<PointLocation> locations;
 	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
 	@JoinColumn(name = "alert_detect_id")
 	private AlertAbstract alertDetect;
@@ -89,14 +86,6 @@ public class NewsDetect extends BaseEntity {
 
 	public void setAlertDetect(AlertAbstract alertDetect) {
 		this.alertDetect = alertDetect;
-	}
-
-	public Set<PointLocation> getLocations() {
-		return locations;
-	}
-
-	public void setLocations(Set<PointLocation> locations) {
-		this.locations = locations;
 	}
 
 	public boolean getHistory() {

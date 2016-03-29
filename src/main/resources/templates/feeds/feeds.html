@@ -17,8 +17,6 @@
 		<div sec:authorize="isAuthenticated()" class="doc-page">
 				<a class="mdl-button mdl-js-button mdl-color--primary"
 					th:href="@{/feeds/create}" href="#">Añadir nuevo sitio</a>
-				<a class="mdl-button mdl-js-button mdl-color--primary"
-					th:href="@{/feeds/update/all}" href="#">Actualizar todos los websites ahora</a>
 		</div>
 		<div th:if="${#lists.isEmpty(feeds)}" class="watermark">
 			<h1>No hay sitios</h1>
@@ -32,6 +30,7 @@
 						<th class="mdl-data-table__cell--non-numeric">Nombre</th>
 						<th>Tipo</th>
 						<th>Activado</th>
+						<th>Proxima ex.</th>
 						<th sec:authorize="isAuthenticated()">Editar</th>
 					</tr>
 				</thead>
@@ -48,6 +47,8 @@
 						<td class="mdl-data-table__cell--non-numeric"
 							th:unless="${feed.actived}"><i
 								class="mdl-color-text--red material-icons" role="presentation">remove</i></td>
+						<td class="mdl-data-table__cell--non-numeric"
+							th:text="${feed.nextExecution}">Pescados manolo</td>
 						<td sec:authorize="isAuthenticated()"><a href="#"
 							th:href="@{/feeds/get/{id}/edit(id=${feed.id})}"><i
 								class="mdl-color-text--black material-icons" role="presentation">mode-edit</i></a></td>

@@ -106,8 +106,8 @@
 						</tr>
 					</thead>
 					<tbody>
-						<tr th:unless="${!#lists.isEmpty(risksScoreToday)}" th:each="alert,stat : ${risksScoreToday}" th:class="${stat.count}%2==0?'table-par':'table-impar'" class="table-impar">
-							<td class="mdl-data-table__cell--non-numeric"><a th:text="${alert[1]}" th:href="@{/alerts/get/{id}(id=${alert[0]})}">Acrylic</a></td>
+						<tr th:unless="${#lists.isEmpty(risksScoreToday)}" th:each="alert,stat : ${risksScoreToday}" th:class="${stat.count}%2==0?'table-par':'table-impar'" class="table-impar">
+							<td class="mdl-data-table__cell--non-numeric"><a th:text="${alert[1]}" th:href="@{/risks/get/{id}(id=${alert[0]})}">Acrylic</a></td>
 							<td>Edulcorante</td>
 							<td th:text="${#numbers.formatDecimal(alert[4],1,2)}">250</td>
 						</tr>
@@ -136,7 +136,7 @@
 					</thead>
 					<tbody>
 						<tr th:each="alert,stat : ${risksScoreWeek}" th:class="${stat.count}%2==0?'table-par':'table-impar'" class="table-impar">
-							<td class="mdl-data-table__cell--non-numeric"><a th:text="${alert[1]}" th:href="@{/alerts/get/{id}(id=${alert[0]})}">Acrylic</a></td>
+							<td class="mdl-data-table__cell--non-numeric"><a th:text="${alert[1]}" th:href="@{/risks/get/{id}(id=${alert[0]})}">Acrylic</a></td>
 							<td>Edulcorante</td>
 							<td th:text="${#numbers.formatDecimal(alert[4],1,2)}">250</td>
 						</tr>
@@ -159,46 +159,30 @@
 			</div>
 			<div class="mdl-card__supporting-text mdl-grid">
 				<table
-					class="mdl-cell mdl-cell--9-col mdl-data-table mdl-js-data-table mdl-data-table mdl-shadow--2dp">
+					class="mdl-cell mdl-cell--12-col mdl-data-table mdl-js-data-table mdl-data-table mdl-shadow--2dp">
 					<thead class="mdl-color--grey">
 						<tr>
 							<th
 								class="mdl-data-table__cell--non-numeric mdl-color-text--white">Fecha
 								y Hora</th>
 							<th
-								class="mdl-data-table__cell--non-numeric mdl-color-text--white">#Noticias</th>
+								class="mdl-color-text--white">#Noticias</th>
 							<th
-								class="mdl-data-table__cell--non-numeric mdl-color-text--white">#Alertas</th>
+								class="mdl-color-text--white">#Alertas</th>
 							<th
-								class="mdl-data-table__cell--non-numeric mdl-color-text--white">#Riesgos</th>
+								class="mdl-color-text--white">#Riesgos</th>
 						</tr>
 					</thead>
 					<tbody>
-						<tr class="table-impar">
-							<td class="mdl-data-table__cell--non-numeric">Acrylic
+						<tr th:each="scrap,stat : ${scrapStat}" th:class="${stat.count}%2==0?'table-par':'table-impar'" class="table-impar">
+							<td class="mdl-data-table__cell--non-numeric" th:text="${scrap.fecha}">Acrylic
 								(Transparent)</td>
-							<td>250</td>
-							<td>250</td>
-							<td>60</td>
-						</tr>
-						<tr class="table-par">
-							<td class="mdl-data-table__cell--non-numeric">Plywood
-								(Birch)</td>
-							<td>250</td>
-							<td>250</td>
-							<td>60</td>
-						</tr>
-						<tr class="table-impar">
-							<td class="mdl-data-table__cell--non-numeric">Laminate (Gold
-								on Blue)</td>
-							<td>250</td>
-							<td>250</td>
-							<td>60</td>
+							<td th:text="${scrap.noticias}">250</td>
+							<td th:text="${scrap.alertas}">250</td>
+							<td th:text="${scrap.riesgos}">60</td>
 						</tr>
 					</tbody>
 				</table>
-				<div class="mdl-cell mdl-cell--3-col">Estadisticas de
-					recuperacion y detección</div>
 			</div>
 		</div>
 		<div id="lugares"

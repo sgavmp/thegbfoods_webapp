@@ -36,14 +36,20 @@ import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.index.SegmentInfos;
+import org.apache.lucene.index.Term;
+import org.apache.lucene.queries.TermsQuery;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser;
+import org.apache.lucene.queryparser.xml.builders.TermQueryBuilder;
 import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.NumericRangeQuery;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.SimpleCollector;
+import org.apache.lucene.search.TermQuery;
+import org.apache.lucene.search.TermRangeQuery;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
@@ -64,11 +70,15 @@ import com.ucm.ilsa.veterinaria.domain.Alert;
 import com.ucm.ilsa.veterinaria.domain.AlertAbstract;
 import com.ucm.ilsa.veterinaria.domain.Configuracion;
 import com.ucm.ilsa.veterinaria.domain.Feed;
+import com.ucm.ilsa.veterinaria.domain.FeedPlaceEnum;
+import com.ucm.ilsa.veterinaria.domain.FeedTypeEnum;
+import com.ucm.ilsa.veterinaria.domain.Location;
 import com.ucm.ilsa.veterinaria.domain.News;
 import com.ucm.ilsa.veterinaria.domain.NewsDetect;
 import com.ucm.ilsa.veterinaria.domain.Risk;
 import com.ucm.ilsa.veterinaria.domain.topic.AllHitsCollector;
 import com.ucm.ilsa.veterinaria.domain.topic.TopicManager;
+import com.ucm.ilsa.veterinaria.repository.LocationRepository;
 import com.ucm.ilsa.veterinaria.repository.NewsDetectRepository;
 import com.ucm.ilsa.veterinaria.repository.NewsRepository;
 import com.ucm.ilsa.veterinaria.scheduler.AlertTaskContainer;
@@ -86,12 +96,10 @@ public class NewsIndexServiceImpl implements NewsIndexService, Runnable {
 	private final static Logger LOGGER = Logger
 			.getLogger(NewsIndexServiceImpl.class);
 
-	private Directory ramDirectory, activeDirectory, allDirectory;
-	private IndexWriter ramIndex, activeIndex, allIndex;
-	private IndexReader readRamIndex, readActiveIndex, readAllIndex;
-	private boolean newsPending = false;
-	private Set<AlertAbstract> taskRunning = Sets.newHashSet(),
-			taskPending = Sets.newHashSet();
+	private Directory allDirectory;
+	private IndexWriter allIndex;
+	private IndexReader readAllIndex;
+	private boolean newsPending = false, taskScheduled = false;
 
 	@Autowired
 	private ConfiguracionService configuracion;
@@ -119,31 +127,56 @@ public class NewsIndexServiceImpl implements NewsIndexService, Runnable {
 
 	@Autowired
 	private AutowireCapableBeanFactory beanFactory;
+	
+	@Autowired
+	private LocationRepository locationRepository;
 
 	@PostConstruct
 	public void initDirectory() {
 		if (!"".equals(configuracion.getConfiguracion().getPathIndexNews())
 				&& null != configuracion.getConfiguracion().getPathIndexNews()) {
-			try {
-				this.ramDirectory = new RAMDirectory();
-				// this.activeDirectory = new MMapDirectory(new
-				// File(configuracion.getConfiguracion().getPathIndexNews().concat("/daily")).toPath());
-				this.allDirectory = FSDirectory.open(new File(configuracion
-						.getConfiguracion().getPathIndexNews().concat("/all"))
-						.toPath());
-				this.ramIndex = new IndexWriter(ramDirectory,
-						new IndexWriterConfig(getAnalyzer()));
-				// this.activeIndex = new IndexWriter(activeDirectory, new
-				// IndexWriterConfig(makeAnalyzer()));
-				this.allIndex = new IndexWriter(allDirectory,
-						new IndexWriterConfig(getAnalyzer()));
-			} catch (IOException ex) {
-				// TODO
-			}
+			getDirectory();
+			getWriter();
 			LOGGER.info("Indexado de noticias activado.");
 		} else {
 			LOGGER.info("Indexado de noticias no activado. Activelo en Configuración.");
 		}
+	}
+
+	private Directory getDirectory() {
+		if (this.allDirectory == null) {
+			try {
+				this.allDirectory = FSDirectory.open(new File(configuracion
+						.getConfiguracion().getPathIndexNews().concat("/all"))
+						.toPath());
+			} catch (IOException e) {
+				LOGGER.error("Error al abrir el indice o el directorio -> "
+						+ e.getMessage());
+			}
+		}
+		return this.allDirectory;
+	}
+
+	private IndexWriter getWriter() {
+		if (this.allIndex == null) {
+			try {
+				this.allIndex = new IndexWriter(getDirectory(),
+						new IndexWriterConfig(getAnalyzer()));
+			} catch (IOException e) {
+				LOGGER.error("Error al abrir el indice o el directorio -> "
+						+ e.getMessage());
+			}
+		} else if (!this.allIndex.isOpen()) {
+			try {
+				this.allIndex = new IndexWriter(getDirectory(),
+						new IndexWriterConfig(getAnalyzer()));
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				LOGGER.error("Error al abrir el indice o el directorio -> "
+						+ e.getMessage());
+			}
+		}
+		return this.allIndex;
 	}
 
 	public static Analyzer getAnalyzer() {
@@ -173,10 +206,24 @@ public class NewsIndexServiceImpl implements NewsIndexService, Runnable {
 						Field.Store.YES));
 				d.add(new StringField("dateCreate", DateTools.dateToString(
 						new Date(), Resolution.MINUTE), Field.Store.YES));
-				// ramIndex.addDocument(d);
-				// activeIndex.addDocument(d);
-				// activeIndex.commit();
-				allIndex.addDocument(d);
+				Feed feed = feedService.getFeedByCodeName(news.getSite());
+				if (feed.getFeedType() == null) {
+					feed.setFeedType(FeedTypeEnum.general);
+				}
+				if (feed.getFeedPlace() != null) {
+					if (feed.getFeedPlace().isEmpty()) {
+						feed.getFeedPlace().add(FeedPlaceEnum.general);
+					}
+				} else {
+					feed.setFeedPlace(Lists.newArrayList(FeedPlaceEnum.general));
+				}
+				d.add(new StringField(News.fieldSiteType, feed.getFeedType()
+						.getValue().toString(), Field.Store.YES));
+				for (FeedPlaceEnum type : feed.getFeedPlace())
+					d.add(new StringField(News.fieldSiteLoc, type.getValue()
+							.toString(), Field.Store.YES));
+				getWriter().addDocument(d);
+				feedService.updateFeed(feed);
 			} catch (NullPointerException ex) {
 				LOGGER.error("Error al almacenar noticia.");
 			}
@@ -207,6 +254,7 @@ public class NewsIndexServiceImpl implements NewsIndexService, Runnable {
 	@Override
 	public void indexNews(News news) throws Exception {
 		addDocument(news);
+		getWriter().commit();
 	}
 
 	@Override
@@ -214,7 +262,7 @@ public class NewsIndexServiceImpl implements NewsIndexService, Runnable {
 		for (News news : lNews) {
 			addDocument(news);
 		}
-		allIndex.commit();
+		getWriter().commit();
 	}
 
 	@Override
@@ -242,17 +290,6 @@ public class NewsIndexServiceImpl implements NewsIndexService, Runnable {
 	}
 
 	@Override
-	public void emptyRamIndex() throws IOException {
-		ramIndex.deleteAll();
-		ramIndex.commit();
-	}
-
-	@Override
-	public void emptyNewsIndexBefore(Integer days) {
-
-	}
-
-	@Override
 	public List<News> search(AlertAbstract alert) {
 		// TODO Auto-generated method stub
 		return null;
@@ -260,11 +297,10 @@ public class NewsIndexServiceImpl implements NewsIndexService, Runnable {
 
 	@Override
 	public void stopDirectory() throws IOException {
-		allIndex.commit();
-		allIndex.close();
-		allDirectory.close();
-		ramIndex.close();
-		ramDirectory.close();
+		getWriter().commit();
+		getWriter().close();
+		getDirectory().close();
+		this.allDirectory=null;
 		LOGGER.info("Se han cerrado los indices");
 	}
 
@@ -272,36 +308,22 @@ public class NewsIndexServiceImpl implements NewsIndexService, Runnable {
 	@Override
 	public boolean markNewNews(Feed feed) {
 		this.newsPending = true;
-		Set<AlertAbstract> tasks = Sets.newHashSet();
-		if (feed.getForAlerts()) {
-			tasks.addAll(alertService.getAllAlert());
+		if (!taskScheduled) {
+			Date startTime = new Date();
+			startTime.setTime(startTime.getTime() + 1000 * 300);
+			scheduler.schedule(this, startTime);
+			taskScheduled = true;
 		}
-		if (feed.getForRisks()) {
-			tasks.addAll(riskService.getAllAlert());
-		}
-		if (taskRunning.isEmpty()) {
-			if (taskPending.isEmpty()) {
-				taskRunning.addAll(tasks);
-				Date startTime = new Date();
-				startTime.setTime(startTime.getTime() + 1000 * 300);
-				scheduler.schedule(this, startTime);
-				return true;
-			} else {
-				taskPending.addAll(tasks);
-				return false;
-			}
-		} else {
-			taskPending.addAll(tasks);
-			return false;
-		}
+		return true;
 	}
 
-	private Query createQuery(AlertAbstract alert) {
+	private Query createQuery(AlertAbstract alert, Long from, Long to) {
 		InputStream alertDefinition = new ByteArrayInputStream(alert.getWords()
 				.getBytes());
 		QueryConstructor queryConstructorBody = new QueryConstructor(
 				new QueryConstructorSemantics(topicManager, News.fieldBody,
-						News.fieldBodyNoCase, News.fieldSiteLoc, News.fieldSiteType), alertDefinition);
+						News.fieldBodyNoCase, News.fieldSiteLoc,
+						News.fieldSiteType), alertDefinition);
 		Query q = null;
 		try {
 			q = queryConstructorBody.topic();
@@ -312,7 +334,8 @@ public class NewsIndexServiceImpl implements NewsIndexService, Runnable {
 		alertDefinition = new ByteArrayInputStream(alert.getWords().getBytes());
 		QueryConstructor queryConstructorTitle = new QueryConstructor(
 				new QueryConstructorSemantics(topicManager, News.fieldTitle,
-						News.fieldTitleNoCase, News.fieldSiteLoc, News.fieldSiteType), alertDefinition);
+						News.fieldTitleNoCase, News.fieldSiteLoc,
+						News.fieldSiteType), alertDefinition);
 		Query q1 = null;
 		try {
 			q1 = queryConstructorTitle.topic();
@@ -320,17 +343,73 @@ public class NewsIndexServiceImpl implements NewsIndexService, Runnable {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		Query q2 = TermRangeQuery.newStringRange("dateCreate",
+				DateTools.timeToString(from, Resolution.MINUTE),
+				DateTools.timeToString(to, Resolution.MINUTE), false, true);
 		BooleanClause op1 = new BooleanClause(q, BooleanClause.Occur.SHOULD);
 		BooleanClause op2 = new BooleanClause(q1, BooleanClause.Occur.SHOULD);
+		BooleanClause op = new BooleanClause(q2, BooleanClause.Occur.MUST);
 		BooleanQuery.Builder b = new BooleanQuery.Builder();
 		b.add(op1);
 		b.add(op2);
+		Query qS = b.build();
+		BooleanClause opS = new BooleanClause(qS, BooleanClause.Occur.MUST);
+		BooleanClause opC = new BooleanClause(q2, BooleanClause.Occur.MUST);
+		b = new BooleanQuery.Builder();
+		b.add(opS);
+		b.add(opC);
+		Query query = b.build();
+		return query;
+	}
+	
+	private Query createQuery(Location location, Long from, Long to) {
+		InputStream alertDefinition = new ByteArrayInputStream(location.getQuery()
+				.getBytes());
+		QueryConstructor queryConstructorBody = new QueryConstructor(
+				new QueryConstructorSemantics(topicManager, News.fieldBody,
+						News.fieldBodyNoCase, News.fieldSiteLoc,
+						News.fieldSiteType), alertDefinition);
+		Query q = null;
+		try {
+			q = queryConstructorBody.topic();
+		} catch (es.ucm.visavet.gbf.topics.queryconstructor.ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		alertDefinition = new ByteArrayInputStream(location.getQuery().getBytes());
+		QueryConstructor queryConstructorTitle = new QueryConstructor(
+				new QueryConstructorSemantics(topicManager, News.fieldTitle,
+						News.fieldTitleNoCase, News.fieldSiteLoc,
+						News.fieldSiteType), alertDefinition);
+		Query q1 = null;
+		try {
+			q1 = queryConstructorTitle.topic();
+		} catch (es.ucm.visavet.gbf.topics.queryconstructor.ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		Query q2 = TermRangeQuery.newStringRange("dateCreate",
+				DateTools.timeToString(from, Resolution.MINUTE),
+				DateTools.timeToString(to, Resolution.MINUTE), false, true);
+		BooleanClause op1 = new BooleanClause(q, BooleanClause.Occur.SHOULD);
+		BooleanClause op2 = new BooleanClause(q1, BooleanClause.Occur.SHOULD);
+		BooleanClause op = new BooleanClause(q2, BooleanClause.Occur.MUST);
+		BooleanQuery.Builder b = new BooleanQuery.Builder();
+		b.add(op1);
+		b.add(op2);
+		Query qS = b.build();
+		BooleanClause opS = new BooleanClause(qS, BooleanClause.Occur.MUST);
+		BooleanClause opC = new BooleanClause(q2, BooleanClause.Occur.MUST);
+		b = new BooleanQuery.Builder();
+		b.add(opS);
+		b.add(opC);
 		Query query = b.build();
 		return query;
 	}
 
 	@Override
 	public void run() {
+		taskScheduled = false;
 		LOGGER.info("Se inicia el proceso de busqueda de alertas.");
 		if (this.newsPending) {
 			try {
@@ -342,44 +421,83 @@ public class NewsIndexServiceImpl implements NewsIndexService, Runnable {
 		}
 		IndexReader reader = null;
 		try {
-			reader = DirectoryReader.open(ramDirectory);
+			reader = DirectoryReader.open(getDirectory());
 		} catch (IOException e1) {
 			LOGGER.error("Error al abrir el indice para realizar la busqueda.");
 		}
 		IndexSearcher searcher = new IndexSearcher(reader);
-		if (taskRunning.isEmpty()) {
-			LOGGER.error("Se añaden las tareas a la cola de tareas a ejecutar.");
-			taskRunning.addAll(taskPending);
-			taskPending.clear();
-		}
-		LOGGER.error("Hay " + taskRunning.size() + " alertas para analizar.");
-		for (AlertAbstract alert : taskRunning) {
-			Query q = createQuery(alert);
+		//Proceso de detección de localizaciones
+		Iterable<Location> locations = locationRepository.findAll();
+		for (Location loc : locations) {
+			Long from = loc.getUltimaRecuperacion() != null ? loc
+					.getUltimaRecuperacion().getTime() : 0;
+			Long to = new Date().getTime();
+			Query q = createQuery(loc, from, to);
 			try {
-				List<NewsDetect> listNewsDetect = search(q, searcher, alert);
-
-				LOGGER.info("Se han detectado: " + listNewsDetect.size()
-						+ " posibles alertas de: " + alert.getTitle());
+				List<String> listNewsDetect = searchLocation(q, searcher, loc);
+				loc = locationRepository.findOne(loc.getId());
+				loc.setUltimaRecuperacion(new Timestamp(to));
+				loc.getNews().addAll(listNewsDetect);
+				locationRepository.save(loc);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
-		taskRunning.clear();
+		//Proceso de detección de alertas
+		Set<AlertAbstract> tasks = Sets.newHashSet();
+		tasks.addAll(alertService.getAllAlert());
+		tasks.addAll(riskService.getAllAlert());
+		LOGGER.error("Hay " + tasks.size() + " alertas para analizar.");
+		for (AlertAbstract alert : tasks) {
+			Long from = alert.getUltimaRecuperacion() != null ? alert
+					.getUltimaRecuperacion().getTime() : 0;
+			Long to = new Date().getTime();
+			Query q = createQuery(alert, from, to);
+			try {
+				List<NewsDetect> listNewsDetect = search(q, searcher, alert);
+				if (!listNewsDetect.isEmpty()) {
+					LOGGER.info("Se han detectado: " + listNewsDetect.size()
+							+ " posibles alertas de: " + alert.getTitle());
+					newsDetectRepository.save(listNewsDetect);
+				}
+				alert.setUltimaRecuperacion(new Timestamp(to));
+				if (alert instanceof Alert) {
+					alert = alertService.getOneById(alert.getId());
+					alert.setUltimaRecuperacion(new Timestamp(to));
+					alertService.update((Alert) alert);
+				} else {
+					alert = riskService.getOneById(alert.getId());
+					alert.setUltimaRecuperacion(new Timestamp(to));
+					riskService.update((Risk) alert);
+				}
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 		try {
 			reader.close();
-			emptyRamIndex();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		if (!taskPending.isEmpty()) {
-			// Reprogramamos la tarea para dentro de 5 minutos
-			Date startTime = new Date();
-			startTime.setTime(startTime.getTime() + 1000 * 300);
-			scheduler.schedule(this, startTime);
-		}
 		LOGGER.info("Finaliza el proceso de busqueda de alertas.");
+	}
+
+	private List<String> searchLocation(Query q, IndexSearcher searcher,
+			Location loc) throws Exception {
+		TopDocs docs = searcher.search(q, Integer.MAX_VALUE);
+		ScoreDoc[] docsA = docs.scoreDocs;
+		List<String> listNewsDetect = Lists.newArrayList();
+		for (int i = 0; i < docs.totalHits; ++i) {
+			int docId = docsA[i].doc;
+			Document d = searcher.doc(docId);
+			NewsDetect newsDocument = new NewsDetect();
+			newsDocument.setTitle(d.get("title"));
+			listNewsDetect.add(d.get("id"));
+		}
+		return listNewsDetect;
 	}
 
 	private void updateIndex() throws Exception {
@@ -390,37 +508,35 @@ public class NewsIndexServiceImpl implements NewsIndexService, Runnable {
 			i++;
 			newsRepository.delete(news);
 		}
-		ramIndex.commit();
-		allIndex.commit();
+		getWriter().commit();
 		LOGGER.info("Se han añadido " + i + " noticias al indice.");
 	}
 
 	@Override
+	@Transactional
 	public void resetAllAlerts() throws IOException {
 		LOGGER.info("Se inicia el proceso de busqueda de alertas en todo el indice.");
-		boolean closed = allIndex == null ? false : allIndex.isOpen();
+		boolean closed = getWriter() == null ? false : getWriter().isOpen();
 		if (!closed) {
-			this.allDirectory = FSDirectory.open(new File(configuracion
-					.getConfiguracion().getPathIndexNews().concat("/all"))
-					.toPath());
+			getDirectory();
 		}
 		IndexReader reader = null;
 		try {
-			reader = DirectoryReader.open(allDirectory);
+			reader = DirectoryReader.open(getDirectory());
 		} catch (IOException e1) {
 			LOGGER.error("Error al abrir el indice para realizar la busqueda.");
 		}
-		//newsDetectRepository.deleteAll();
+		// newsDetectRepository.deleteAll();
 		IndexSearcher searcher = new IndexSearcher(reader);
 		Set<Alert> alertas = alertService.getAllAlert();
 		Set<Risk> riesgos = riskService.getAllAlert();
 		LOGGER.info("Hay " + alertas.size() + " alertas para analizar.");
 		LOGGER.info("Hay " + riesgos.size() + " riesgos para analizar.");
 		for (Alert alert : alertas) {
-			resetAlertInter(alert,searcher);
+			resetAlertInter(alert, searcher);
 		}
 		for (Risk alert : riesgos) {
-			resetAlertInter(alert,searcher);
+			resetAlertInter(alert, searcher);
 		}
 		try {
 			reader.close();
@@ -429,25 +545,33 @@ public class NewsIndexServiceImpl implements NewsIndexService, Runnable {
 			e.printStackTrace();
 		}
 		if (!closed) {
-			this.allDirectory.close();
+			getDirectory().close();
+			this.allDirectory=null;
 		}
 		LOGGER.info("Finaliza el proceso de busqueda de alertas en todo el indice.");
 
 	}
 
 	private void resetAlertInter(AlertAbstract alert, IndexSearcher searcher) {
-		Query q = createQuery(alert);
+		Long to = new Date().getTime();
+		Query q = createQuery(alert, 0L, to);
 		try {
 			List<NewsDetect> listNewsDetect = search(q, searcher, alert);
 			LOGGER.info("Se borran todas las alertas detectadas anteriores.");
-			List<NewsDetect> newsToRemove = Lists.newArrayList(alert.getNewsDetect());
+			List<NewsDetect> newsToRemove = Lists.newArrayList(alert
+					.getNewsDetect());
 			newsDetectRepository.save(listNewsDetect);
 			alert.getNewsDetect().clear();
 			alert.getNewsDetect().addAll(listNewsDetect);
-			if (alert instanceof Alert)
+			if (alert instanceof Alert) {
+				alert = alertService.getOneById(alert.getId());
+				alert.setUltimaRecuperacion(new Timestamp(to));
 				alertService.update((Alert) alert);
-			else
+			} else {
+				alert = riskService.getOneById(alert.getId());
+				alert.setUltimaRecuperacion(new Timestamp(to));
 				riskService.update((Risk) alert);
+			}
 			for (NewsDetect news : newsToRemove) {
 				newsDetectRepository.delete(news.getId());
 			}
@@ -459,18 +583,16 @@ public class NewsIndexServiceImpl implements NewsIndexService, Runnable {
 			e.printStackTrace();
 		}
 	}
-	
+
 	public void resetAlert(AlertAbstract alert) throws IOException {
 		LOGGER.info("Se inicia el proceso de busqueda de alertas en todo el indice.");
-		boolean closed = allIndex == null ? false : allIndex.isOpen();
+		boolean closed = getWriter() == null ? false : getWriter().isOpen();
 		if (!closed) {
-			this.allDirectory = FSDirectory.open(new File(configuracion
-					.getConfiguracion().getPathIndexNews().concat("/all"))
-					.toPath());
+			getDirectory();
 		}
 		IndexReader reader = null;
 		try {
-			reader = DirectoryReader.open(allDirectory);
+			reader = DirectoryReader.open(getDirectory());
 		} catch (IOException e1) {
 			LOGGER.error("Error al abrir el indice para realizar la busqueda.");
 		}
@@ -483,9 +605,156 @@ public class NewsIndexServiceImpl implements NewsIndexService, Runnable {
 			e.printStackTrace();
 		}
 		if (!closed) {
-			this.allDirectory.close();
+			getDirectory().close();
+			this.allDirectory=null;
 		}
 		LOGGER.info("Finaliza el proceso de busqueda de alertas en todo el indice.");
+	}
+	
+	private void resetLocationInter(Location loc, IndexSearcher searcher) {
+		Long to = new Date().getTime();
+		Query q = createQuery(loc, 0L, to);
+		try {
+			List<String> listNewsDetect = searchLocation(q, searcher, loc);
+			loc = locationRepository.findOne(loc.getId());
+			loc.setUltimaRecuperacion(new Timestamp(to));
+			loc.getNews().addAll(listNewsDetect);
+			locationRepository.save(loc);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	public void resetAllLocation() throws IOException {
+		LOGGER.info("Se inicia el proceso de busqueda de localizaciones en todo el indice.");
+		boolean closed = getWriter() == null ? false : getWriter().isOpen();
+		if (!closed) {
+			getDirectory();
+		}
+		IndexReader reader = null;
+		try {
+			reader = DirectoryReader.open(getDirectory());
+		} catch (IOException e1) {
+			LOGGER.error("Error al abrir el indice para realizar la busqueda.");
+		}
+		// newsDetectRepository.deleteAll();
+		IndexSearcher searcher = new IndexSearcher(reader);
+		//Proceso de detección de localizaciones
+				Iterable<Location> locations = locationRepository.findAll();
+				for (Location loc : locations) {
+					resetLocationInter(loc, searcher);
+				}
+		try {
+			reader.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		if (!closed) {
+			getDirectory().close();
+			this.allDirectory=null;
+		}
+		LOGGER.info("Finaliza el proceso de busqueda de localizaciones en todo el indice.");
+
+	}
+	
+	public void resetLocation(Location loc) throws IOException {
+		LOGGER.info("Se inicia el proceso de busqueda de alertas en todo el indice.");
+		boolean closed = getWriter() == null ? false : getWriter().isOpen();
+		if (!closed) {
+			getDirectory();
+		}
+		IndexReader reader = null;
+		try {
+			reader = DirectoryReader.open(getDirectory());
+		} catch (IOException e1) {
+			LOGGER.error("Error al abrir el indice para realizar la busqueda.");
+		}
+		IndexSearcher searcher = new IndexSearcher(reader);
+		resetLocationInter(loc, searcher);
+		try {
+			reader.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		if (!closed) {
+			getDirectory().close();
+			this.allDirectory=null;
+		}
+		LOGGER.info("Finaliza el proceso de busqueda de alertas en todo el indice.");
+	}
+
+	@Override
+	public void updateIndex(Feed feed) throws Exception {
+		IndexReader reader = null;
+		try {
+			reader = DirectoryReader.open(getDirectory());
+		} catch (IOException e1) {
+			LOGGER.error("Error al abrir el indice para realizar la busqueda.");
+		}
+		IndexSearcher searcher = new IndexSearcher(reader);
+		Query q = new TermQuery(new Term(News.fieldSite, feed.getId()
+				.toString()));
+		TopDocs docs = searcher.search(q, Integer.MAX_VALUE);
+		ScoreDoc[] docsA = docs.scoreDocs;
+		List<NewsDetect> listNewsDetect = Lists.newArrayList();
+		for (int i = 0; i < docs.totalHits; ++i) {
+			int docId = docsA[i].doc;
+			Document doc = searcher.doc(docId);
+			doc.removeFields(News.fieldSiteType);
+			doc.removeFields(News.fieldSiteLoc);
+			doc.add(new StringField(News.fieldSiteType, feed.getFeedType()
+					.getValue().toString(), Field.Store.YES));
+			for (FeedPlaceEnum type : feed.getFeedPlace())
+				doc.add(new StringField(News.fieldSiteLoc, type.getValue()
+						.toString(), Field.Store.YES));
+			String url = doc.get("id").toString();
+			try {
+			getWriter().updateDocument(new Term("id", url), doc);
+			} catch (Exception e) {
+				LOGGER.error("Error al actualizar el documento con id " + docId + " y url " + url);
+			}
+		}
+		reader.close();
+		getWriter().commit();
+	}
+
+	@Override
+	public List<NewsDetect> search(String query) throws Exception {
+		LOGGER.info("Se inicia el proceso de busqueda de alertas de prueba.");
+		Alert alert = new Alert();
+		alert.setWords(query);
+		IndexReader reader = null;
+		try {
+			reader = DirectoryReader.open(getDirectory());
+		} catch (IOException e1) {
+			LOGGER.error("Error al abrir el indice para realizar la busqueda.");
+		}
+		IndexSearcher searcher = new IndexSearcher(reader);
+		Long to = new Date().getTime();
+		Query q = createQuery(alert, 0L, to);
+		List<NewsDetect> listNewsDetect = Lists.newArrayList();
+		try {
+			listNewsDetect = search(q, searcher, alert);
+			LOGGER.info("Se han detectado: " + listNewsDetect.size()
+					+ " posibles alertas de prueba");
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		try {
+			reader.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		LOGGER.info("Finaliza el proceso de busqueda de alertas de prueba.");
+		if (listNewsDetect.size() > 21)
+			return listNewsDetect.subList(0, 20);
+		else
+			return listNewsDetect;
 	}
 
 }

@@ -42,22 +42,22 @@
 							class="mdl-switch__label">&iquest;Está activado?</span>
 						</label>
 					</div> 
-					<div class="mdl-cell mdl-cell--3-col">
-						<label class="mdl-switch mdl-js-switch mdl-js-ripple-effect"
-							for="forAlerts"> <input type="checkbox"
-							class="mdl-switch__input" id="forAlerts" name="forAlerts"
-							th:checked="*{forAlerts}" th:field="*{forAlerts}" /> <span
-							class="mdl-switch__label">Para alertas</span>
-						</label>
-					</div>  
-					<div class="mdl-cell mdl-cell--3-col">
-						<label class="mdl-switch mdl-js-switch mdl-js-ripple-effect"
-							for="forRisks"> <input type="checkbox"
-							class="mdl-switch__input" id="forRisks" name="forRisks"
-							th:checked="*{forRisks}" th:field="*{forRisks}" /> <span
-							class="mdl-switch__label">Para riesgos</span>
-						</label>
-					</div> 
+					<div
+						class="mdl-cell mdl-cell--10-col mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+						<select class="mdl-textfield__input" th:field="*{feedPlace}" multiple="multiple">
+							<option value="" disabled="disabled" selected="selected">Lugares del Sitio</option>
+							<option th:each="type : ${enumPlace}" th:value="${type}"
+								th:text="${type}">Wireframe</option>
+						</select> <label class="mdl-textfield__label">Lugar del Sitio</label>
+					</div>
+					<div
+						class="mdl-cell mdl-cell--6-col mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+						<select class="mdl-textfield__input" th:field="*{feedType}" >
+							<option value="" disabled="disabled" selected="selected">Tipo del Sitio</option>
+							<option th:each="type : ${enumType}" th:value="${type}"
+								th:text="${type}">Wireframe</option>
+						</select> <label class="mdl-textfield__label">Tipo de Sitio</label>
+					</div>
 					<!-- 
 					Quitar espacio entre guiones en las clases
 					<div class="mdl-cell mdl-cell- -3-col">
@@ -69,13 +69,13 @@
 						</label>
 					</div> -->
 					<div
-						class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+						class="mdl-cell mdl-cell--5-col mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
 						<input class="mdl-textfield__input" type="text" th:field="*{name}" />
 						<label class="mdl-textfield__label" for="name">Nombre del
 							sitio</label>
 					</div>
 					<div
-						class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+						class="mdl-cell mdl-cell--6-col mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
 						<select class="mdl-textfield__input" th:field="*{type}">
 							<option value="" disabled="disabled" selected="selected">Fiabilidad
 								del Sitio</option>
@@ -84,7 +84,7 @@
 						</select> <label class="mdl-textfield__label">Fiabilidad del Sitio</label>
 					</div>
 					<div
-						class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+						class="mdl-cell mdl-cell--5-col mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
 						<select class="mdl-textfield__input" th:field="*{languaje}">
 							<option value="" disabled="disabled" selected="selected">Idioma
 								del sitio</option>
@@ -93,20 +93,20 @@
 						</select> <label class="mdl-textfield__label">Idioma del Sitio</label>
 					</div>
 					<div
-						class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+						class="mdl-cell mdl-cell--6-col mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
 						<input class="mdl-textfield__input" type="text" th:field="*{url}" />
 						<label class="mdl-textfield__label" for="url">Url del
 							sitio</label>
 					</div>
 					<div
-						class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+						class="mdl-cell mdl-cell--5-col mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
 						<input class="mdl-textfield__input" type="text"
 							th:field="*{dateFormat}" /> <label class="mdl-textfield__label"
 							for="dateFormat">Formato de la fecha(si hay que parsear
 							de texto)</label>
 					</div>
 					<div
-						class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+						class="mdl-cell mdl-cell--6-col mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
 						<input class="mdl-textfield__input" type="text"
 							th:field="*{urlNews}" /> <label class="mdl-textfield__label"
 							id="labelUrl" for="urlRSS"
@@ -114,7 +114,7 @@
 						</label>
 					</div>
 					<div
-						class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+						class="mdl-cell mdl-cell--5-col mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
 						<input class="mdl-textfield__input" type="text"
 							th:field="*{newsLink}" /> <label class="mdl-textfield__label"
 							for="newsLink">Clase CSS para seleccionar las noticias</label>

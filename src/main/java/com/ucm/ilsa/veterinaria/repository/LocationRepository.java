@@ -11,5 +11,6 @@ import com.ucm.ilsa.veterinaria.domain.Location;
 public interface LocationRepository extends CrudRepository<Location, Long> {
 
 	public Set<Location> findAllByOrderByNameAsc();
+	public List<Location> findAllByNews(String news);
 	
 }

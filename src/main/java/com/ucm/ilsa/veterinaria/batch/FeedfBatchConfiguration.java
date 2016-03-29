@@ -14,6 +14,7 @@ import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.batch.item.data.RepositoryItemReader;
+import org.springframework.batch.item.data.RepositoryItemWriter;
 import org.springframework.batch.item.support.ListItemReader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -45,13 +46,15 @@ public class FeedfBatchConfiguration {
     }
 
     @Bean
-    public ItemProcessor<Feed, List<News>> processor() {
+    public ItemProcessor<Feed, Feed> processor() {
         return new FeedItemProcessor();
     }
 
     @Bean
-    public ItemWriter<List<News>> writer() {
-        LuceneItemWriter writer = new LuceneItemWriter();
+    public ItemWriter<Feed> writer() {
+        RepositoryItemWriter<Feed> writer = new RepositoryItemWriter<Feed>();
+        writer.setRepository(repositoryFeed);
+        writer.setMethodName("save");
         return writer;
     }
     // end::readerwriterprocessor[]
@@ -69,9 +72,9 @@ public class FeedfBatchConfiguration {
 
     @Bean
     public Step step1(StepBuilderFactory stepBuilderFactory, ItemReader<Feed> reader,
-            ItemWriter<List<News>> writer, ItemProcessor<Feed, List<News>> processor) {
+            ItemWriter<Feed> writer, ItemProcessor<Feed, Feed> processor) {
         return stepBuilderFactory.get("step1")
-                .<Feed, List<News>> chunk(100)
+                .<Feed, Feed> chunk(100)
                 .reader(reader)
                 .processor(processor)
                 .writer(writer)

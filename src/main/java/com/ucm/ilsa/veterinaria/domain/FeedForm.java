@@ -31,6 +31,8 @@ public class FeedForm {
 	private boolean selectorDescriptionMeta;
 	private boolean selectorContentMeta;
 	private boolean selectorPubDateMeta;
+	private FeedTypeEnum feedType;
+	private List<FeedPlaceEnum> feedPlace;
 	private CharsetEnum charSet = CharsetEnum.UTF8;
 	
 	@URL
@@ -67,6 +69,8 @@ public class FeedForm {
 		this.charSet = feed.getCharSet();
 		this.forAlerts = feed.getForAlerts();
 		this.forRisks = feed.getForRisks();
+		this.feedPlace = feed.getFeedPlace();
+		this.feedType = feed.getFeedType();
 	}
 
 	public String getName() {
@@ -265,4 +269,21 @@ public class FeedForm {
 		this.forRisks = forRisks;
 	}
 
+	public FeedTypeEnum getFeedType() {
+		return feedType;
+	}
+
+	public void setFeedType(FeedTypeEnum feedType) {
+		this.feedType = feedType;
+	}
+
+	public List<FeedPlaceEnum> getFeedPlace() {
+		return feedPlace;
+	}
+
+	public void setFeedPlace(List<FeedPlaceEnum> feedPlace) {
+		this.feedPlace = feedPlace;
+	}
+
+	
 }

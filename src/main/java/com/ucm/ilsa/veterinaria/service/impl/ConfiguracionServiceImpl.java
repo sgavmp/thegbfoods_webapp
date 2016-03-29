@@ -45,7 +45,8 @@ public class ConfiguracionServiceImpl implements ConfiguracionService {
 	public void setConfiguracion(Configuracion configuracion) throws IOException {
 		repository.save(configuracion);
 		if (configuracion.getRunService() != this.configuracion.getRunService()) {
-			if (configuracion.getRunService()) {
+			this.configuracion = configuracion;
+			if (this.configuracion.getRunService()) {
 				schedulerService.init();
 				newsIndexService.initDirectory();
 			} else {

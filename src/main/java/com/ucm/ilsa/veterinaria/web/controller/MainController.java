@@ -38,9 +38,15 @@ import com.ucm.ilsa.veterinaria.domain.Statistics;
 import com.ucm.ilsa.veterinaria.repository.ConfiguracionRepository;
 import com.ucm.ilsa.veterinaria.repository.StatisticsRepository;
 import com.ucm.ilsa.veterinaria.service.ConfiguracionService;
+import com.ucm.ilsa.veterinaria.service.NewsIndexService;
 import com.ucm.ilsa.veterinaria.service.impl.AlertServiceImpl;
 import com.ucm.ilsa.veterinaria.service.impl.RiskServiceImpl;
 import com.ucm.ilsa.veterinaria.web.controller.impl.ConfiguracionController;
+
+import es.ucm.visavet.gbf.topics.validator.CyclicDependencyException;
+import es.ucm.visavet.gbf.topics.validator.ParseException;
+import es.ucm.visavet.gbf.topics.validator.TokenMgrError;
+import es.ucm.visavet.gbf.topics.validator.TopicDoesNotExistsException;
 
 @Controller
 public class MainController extends BaseController {
@@ -63,6 +69,9 @@ public class MainController extends BaseController {
 	
 	@Autowired 
 	private ConfiguracionService configuracion;
+	
+	@Autowired
+	private NewsIndexService newsIndexService;
 
 	public MainController() {
 		this.assetLocator = new WebJarAssetLocator();
@@ -129,6 +138,11 @@ public class MainController extends BaseController {
 		return lista;
 	}
 	
+	@ModelAttribute("scrapStat")
+	public List<Statistics> getScrapStatLastWeek() {
+		return statisticsRepository.getStatsLastWeek();
+	}
+	
 
 	@ModelAttribute("allCountriesAfects")
 	public Map<String, String> getAllCountriesAfects() {
@@ -181,9 +195,9 @@ public class MainController extends BaseController {
 			stats.add(statistics);
 		}
 		for (Statistics stat : stats) {
-			graph.alertas.add(stat.getNumAlerts());
+			graph.alertas.add(stat.getAlertas());
 			graph.noticias.add(stat.getNumNews());
-			graph.labels.add(dias.get(stat.getDate().getDay()).concat(" ").concat(String.valueOf(stat.getDate().getDate())));
+			graph.labels.add(dias.get(stat.getFecha().getDay()).concat(" ").concat(String.valueOf(stat.getFecha().getDate())));
 		}
 		graph.labels.remove(graph.labels.size()-1);
 		graph.labels.add("Hoy");
@@ -246,6 +260,33 @@ public class MainController extends BaseController {
 					HttpStatus.OK);
 		} catch (Exception e) {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		}
+	}
+	
+	@RequestMapping(value = "/query", method = RequestMethod.GET)
+	public String searchQueryTestForm(HttpServletRequest request, String query, Model model) {
+		model.addAttribute("query", "");
+		return "query";
+	}
+	
+	@RequestMapping(value = "/query", method = RequestMethod.POST)
+	public String searchQueryTest(HttpServletRequest request, String query, Model model) {
+		model.addAttribute("query",query);
+		try {
+			model.addAttribute("result",newsIndexService.search(query));
+			return "query";
+		} catch (TopicDoesNotExistsException e) {
+			model.addAttribute("error", "El topic " + e.getTopic() + " no existe.");
+			return "query";
+		} catch (CyclicDependencyException e) {
+			model.addAttribute("error", e.toString());
+			return "query";
+		} catch (ParseException | TokenMgrError e) {
+			model.addAttribute("error", "Se ha producido un error al validar la query.");
+			return "query";
+		} catch (Exception e) {
+			model.addAttribute("error", "Se ha producido un error al buscar.");
+			return "query";
 		}
 	}
 }

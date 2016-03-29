@@ -26,7 +26,6 @@ import com.ucm.ilsa.veterinaria.scheduler.SchedulerService;
 import com.ucm.ilsa.veterinaria.service.ConfiguracionService;
 import com.ucm.ilsa.veterinaria.service.FeedScraping;
 import com.ucm.ilsa.veterinaria.service.FeedService;
-import com.ucm.ilsa.veterinaria.service.NewsCheckFeedService;
 import com.ucm.ilsa.veterinaria.service.NewsIndexService;
 import com.ucm.ilsa.veterinaria.service.impl.AlertServiceImpl;
 import com.ucm.ilsa.veterinaria.service.impl.NewsIndexServiceImpl;

@@ -29,6 +29,8 @@ import com.ucm.ilsa.veterinaria.domain.Alert;
 import com.ucm.ilsa.veterinaria.domain.AlertAbstract;
 import com.ucm.ilsa.veterinaria.domain.Feed;
 import com.ucm.ilsa.veterinaria.domain.FeedForm;
+import com.ucm.ilsa.veterinaria.domain.FeedPlaceEnum;
+import com.ucm.ilsa.veterinaria.domain.FeedTypeEnum;
 import com.ucm.ilsa.veterinaria.domain.Language;
 import com.ucm.ilsa.veterinaria.domain.News;
 import com.ucm.ilsa.veterinaria.domain.NewsDetect;
@@ -58,7 +60,11 @@ public class FeedController extends BaseController {
 	
 	@ModelAttribute("feeds")
 	public List<Feed> getAllFeeds() {
-		return serviceFeed.getAllFeed();
+		List<Feed> feeds = serviceFeed.getAllFeed();
+		for (Feed feed : feeds) {
+			feed.setNextExecution(schedulerService.getNextExecution(feed));
+		}
+		return feeds;
 	}
 
 	@RequestMapping("**")
@@ -91,6 +97,16 @@ public class FeedController extends BaseController {
 	@ModelAttribute("enumLanguaje")
 	public Language[] getValuesOfLanguaje() {
 		return Language.values();
+	}
+	
+	@ModelAttribute("enumType")
+	public FeedTypeEnum[] getValuesOfType() {
+		return FeedTypeEnum.values();
+	}
+	
+	@ModelAttribute("enumPlace")
+	public FeedPlaceEnum[] getValuesOfPlace() {
+		return FeedPlaceEnum.values();
 	}
 
 	@RequestMapping("/get/{codeName}/update/ajax")
@@ -219,34 +235,6 @@ public class FeedController extends BaseController {
 			return "oneFeed";
 		}
 		return "redirect:/feeds";
-	}
-
-	@RequestMapping(value = "/get/{codeName}/check", method = RequestMethod.POST)
-	public String checkNewsOnFeed(Model model,
-			RedirectAttributes redirectAttributes,
-			@PathVariable("codeName") Feed feed,
-			@ModelAttribute(value = "link") String link) {
-		if (link == "") {
-			redirectAttributes.addFlashAttribute("error",
-					"Debes de introducir la URL de una noticia del sitio.");
-		} else
-			try {
-				if (!feed.linkIsFromSite(link)) {
-					redirectAttributes
-							.addFlashAttribute("error",
-									"La noticia introducida no pertenece a este sitio.");
-				} else {
-					Set<AlertAbstract> alertas = serviceFeed
-							.checkNewsLinkOnFeed(link, feed);
-					model.addAttribute(feed);
-					model.addAttribute("alertasDetectadas", alertas);
-					return FOLDER + "oneFeed";
-				}
-			} catch (MalformedURLException e) {
-				redirectAttributes.addFlashAttribute("error",
-						"No es una URL valida.");
-			}
-		return "redirect:/feeds/get/" + feed.getId();
 	}
 
 	@RequestMapping("/update/all")

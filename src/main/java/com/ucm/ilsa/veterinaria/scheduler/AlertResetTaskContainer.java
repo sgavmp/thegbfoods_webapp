@@ -12,7 +12,6 @@ import com.ucm.ilsa.veterinaria.domain.News;
 import com.ucm.ilsa.veterinaria.domain.UpdateStateEnum;
 import com.ucm.ilsa.veterinaria.repository.NewsRepository;
 import com.ucm.ilsa.veterinaria.service.FeedService;
-import com.ucm.ilsa.veterinaria.service.NewsCheckFeedService;
 import com.ucm.ilsa.veterinaria.service.NewsIndexService;
 
 public class AlertResetTaskContainer implements Runnable {

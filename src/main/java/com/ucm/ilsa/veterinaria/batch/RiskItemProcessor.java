@@ -24,6 +24,7 @@ import com.ucm.ilsa.veterinaria.domain.News;
 import com.ucm.ilsa.veterinaria.domain.NewsDetect;
 import com.ucm.ilsa.veterinaria.domain.Risk;
 import com.ucm.ilsa.veterinaria.domain.builder.NewsBuilder;
+import com.ucm.ilsa.veterinaria.domain.topic.TopicManager;
 import com.ucm.ilsa.veterinaria.repository.NewsDetectRepository;
 import com.ucm.ilsa.veterinaria.service.impl.FeedScrapingImpl;
 
@@ -32,34 +33,6 @@ import es.ucm.visavet.gbf.topics.validator.ParseException;
 import es.ucm.visavet.gbf.topics.validator.TokenMgrError;
 import es.ucm.visavet.gbf.topics.validator.TopicValidator;
 import es.ucm.visavet.gbf.topics.validator.TopicValidatorSemantics;
-
-class TestTopicsManager2 implements ITopicsManager {
-	  public boolean existsTopic(String topic) {
-	    switch(topic) {
-	        case "Enfermedad": return true;
-	        case "Dolencia": return true;
-	        case "Desesperación": return true;
-	        default: return false;    
-	    }  
-	  }
-	  public Set<String> getDependencies(String topic) {
-	    Set dEnfermedad = new HashSet<String>();
-	      dEnfermedad.add("Dolencia");
-	    Set dDolencia = new HashSet<String>();
-	      dDolencia.add("Desesperación");
-	    Set dDesesperacion = new HashSet<String>();      
-	    switch(topic) {
-	        case "Enfermedad": return dEnfermedad;
-	        case "Dolencia": return dDolencia;
-	        case "Desesperación": return dDesesperacion;
-	        default: return new HashSet<String>();    
-	    }
-	  } 
-	  public void addDependency(String topic, String ofTopic) {
-	     System.out.println(topic+"--->"+ofTopic);  
-	   }       
-	  public InputStream getDefinition(String topic) {return null;}  
-	}
 
 public class RiskItemProcessor implements ItemProcessor<Risk, Risk> {
 
@@ -70,6 +43,9 @@ public class RiskItemProcessor implements ItemProcessor<Risk, Risk> {
 
 	@Autowired
 	private NewsDetectRepository repository;
+	
+	@Autowired
+	private TopicManager topicManager;
 
 	@Override
 	public Risk process(Risk item)  {
@@ -85,7 +61,7 @@ public class RiskItemProcessor implements ItemProcessor<Risk, Risk> {
 //			temp = temp.trim();
 //			item.setWords(temp);
 //		}
-		TopicValidator validator = new TopicValidator(new TopicValidatorSemantics(item.getTitle(),new TestTopicsManager2()), new ByteArrayInputStream(item.getWords().getBytes()));
+		TopicValidator validator = new TopicValidator(new TopicValidatorSemantics(item.getTitle(), topicManager), new ByteArrayInputStream(item.getWords().getBytes()));
 		try {
 			validator.topic();
 		} catch (TokenMgrError | ParseException e) {

@@ -5,7 +5,8 @@ spring:
     active: production
   datasource:
     testWhileIdle: true
-    timeBetweenEvictionRunsMillis: 1800000
+    test-on-borrow: true
+    time-between-eviction-runs-millis: 18000
     validationQuery: SELECT 1
   
 ---
@@ -16,6 +17,10 @@ spring:
   datasource:
     jndi-name: java:comp/env/jdbc/veterinaria
     driverClassName: com.mysql.jdbc.Driver
+    testWhileIdle: true
+    test-on-borrow: true
+    time-between-eviction-runs-millis: 18000
+    validationQuery: SELECT 1
   jpa:
     hibernate:
       ddl-auto: update
@@ -44,6 +49,9 @@ spring:
     password: root
     driverClassName: com.mysql.jdbc.Driver
     continueOnError: true
+    testWhileIdle: true
+    timeBetweenEvictionRunsMillis: 18000
+    validationQuery: SELECT 1
 
 name: local
 

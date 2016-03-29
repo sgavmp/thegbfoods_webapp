@@ -151,15 +151,15 @@ public class FeedScrapingImpl implements FeedScraping {
 			return listNews;
 		} catch (MalformedURLException e) {
 			LOGGER.error("Error al generar a la URL. Mas Info-> "
-					+ e.getMessage());
+					+ e.getMessage() + " -> " + feed.getNewsLink());
 			return null;
 		} catch (IOException e) {
 			LOGGER.error("No se ha podido acceder a la URL. Mas Info-> "
-					+ e.getMessage());
+					+ e.getMessage() + " -> " + feed.getNewsLink());
 			return null;
 		} catch (IllegalArgumentException | FeedException e) {
 			LOGGER.error("Error al obtener la informacion RSS. Mas Info-> "
-					+ e.getMessage());
+					+ e.getMessage() + " -> " + feed.getNewsLink());
 			return null;
 		}
 	}
@@ -220,7 +220,11 @@ public class FeedScrapingImpl implements FeedScraping {
 			return listNews;
 		} catch (IOException e) {
 			LOGGER.error("No se ha podido acceder a la URL. Mas Info-> "
-					+ e.getMessage());
+					+ e.getMessage() + " -> " + feed.getNewsLink());
+			return null;
+		} catch (Exception e) {
+			LOGGER.error("No se ha podido acceder a la URL. Mas Info-> "
+					+ e.getMessage() + " -> " + feed.getNewsLink());
 			return null;
 		}
 	}
@@ -243,15 +247,15 @@ public class FeedScrapingImpl implements FeedScraping {
 			return listNews.get(0);
 		} catch (MalformedURLException e) {
 			LOGGER.error("Error al generar a la URL. Mas Info-> "
-					+ e.getMessage());
+					+ e.getMessage() + " -> " + feed.getNewsLink());
 			return null;
 		} catch (IOException e) {
 			LOGGER.error("No se ha podido acceder a la URL. Mas Info-> "
-					+ e.getMessage());
+					+ e.getMessage() + " -> " + feed.getNewsLink());
 			return null;
 		} catch (IllegalArgumentException | FeedException e) {
 			LOGGER.error("Error al obtener la informacion RSS. Mas Info-> "
-					+ e.getMessage());
+					+ e.getMessage() + " -> " + feed.getNewsLink());
 			return null;
 		}
 	}
@@ -280,7 +284,7 @@ public class FeedScrapingImpl implements FeedScraping {
 			return listNews.get(0);
 		} catch (IOException e) {
 			LOGGER.error("No se ha podido acceder a la URL. Mas Info-> "
-					+ e.getMessage());
+					+ e.getMessage() + " -> " + feed.getNewsLink());
 			return null;
 		}
 	}

@@ -20,34 +20,52 @@ public class Statistics {
 
 	@Id
 	@Column(name = "FECHA")
-	private Date date;
+	private Date fecha;
 	@Column(name = "TOTAL")
 	private Integer numNews = 0;
 	@Column(name = "ALERTA")
-	private Integer numAlerts = 0;
+	private Integer alertas = 0;
 	@Column(name = "RIESGO")
-	private Integer numRisks = 0;
+	private Integer riesgos = 0;
+	@Column(name = "NOTICIAS")
+	private Integer noticias = 0;
 
 	public Statistics() {
 
 	}
 
 	public Statistics(Date date) {
-		this.date = date;
+		this.fecha = date;
 	}
 
 	public Statistics(Date date, Integer alertDetectNum, Integer newsNum) {
-		this.date = date;
-		this.numAlerts = alertDetectNum;
+		this.fecha = date;
+		this.alertas = alertDetectNum;
 		this.numNews = newsNum;
 	}
 
-	public Date getDate() {
-		return date;
+	public Date getFecha() {
+		return fecha;
 	}
 
-	public void setDate(Date date) {
-		this.date = date;
+	public void setFecha(Date fecha) {
+		this.fecha = fecha;
+	}
+
+	public Integer getAlertas() {
+		return alertas;
+	}
+
+	public void setAlertas(Integer alertas) {
+		this.alertas = alertas;
+	}
+
+	public Integer getRiesgos() {
+		return riesgos;
+	}
+
+	public void setRiesgos(Integer riesgos) {
+		this.riesgos = riesgos;
 	}
 
 	public Integer getNumNews() {
@@ -58,20 +76,14 @@ public class Statistics {
 		this.numNews = numNews;
 	}
 
-	public Integer getNumAlerts() {
-		return numAlerts;
+	
+
+	public Integer getNoticias() {
+		return noticias;
 	}
 
-	public void setNumAlerts(Integer numAlerts) {
-		this.numAlerts = numAlerts;
-	}
-
-	public Integer getNumRisks() {
-		return numRisks;
-	}
-
-	public void setNumRisks(Integer numRisks) {
-		this.numRisks = numRisks;
+	public void setNoticias(Integer noticias) {
+		this.noticias = noticias;
 	}
 	
 	

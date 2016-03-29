@@ -176,44 +176,6 @@
 										[[${news.site.urlSite}]]
 										</div>
 									</div>
-										<div class="mdl-cell mdl-cell--5-col">
-											<table
-												class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
-												<thead>
-													<tr>
-														<th class="mdl-data-table__cell--non-numeric">Termino
-															Encontrado</th>
-													</tr>
-												</thead>
-												<tbody>
-													<tr th:each="word : ${news.wordsDetect}">
-														<td th:text="${word}"
-															class="mdl-data-table__cell--non-numeric">Acrylic
-															(Transparent)</td>
-													</tr>
-												</tbody>
-											</table>
-										</div>
-										<div class="mdl-cell mdl-cell--7-col">
-											<table
-												class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
-												<thead>
-													<tr>
-														<th class="mdl-data-table__cell--non-numeric">Proveedor
-															afectado</th>
-														<th>Descartar</th>
-													</tr>
-												</thead>
-												<tbody>
-													<tr th:each="loc : ${news.getCountryWithLocations()}">
-														<td th:id="${loc.key}"
-															class="mdl-data-table__cell--non-numeric">Acrylic
-															(Transparent)</td>
-														<td>Pulsa</td>
-													</tr>
-												</tbody>
-											</table>
-										</div>
 									</div>
 								</div>
 							</div>

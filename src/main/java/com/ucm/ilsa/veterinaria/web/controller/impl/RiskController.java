@@ -112,7 +112,7 @@ public class RiskController extends BaseController {
 		return "/" + FOLDER + "/alerts";
 	}
 	
-	@RequestMapping("**")
+	@RequestMapping("/list")
 	public String getAllLocations(Model model) {
 		model.addAttribute("allWords", service.getAllAlert());
 		model.addAttribute("term", new Alert());
@@ -145,7 +145,7 @@ public class RiskController extends BaseController {
 			wordFilter = service.create(wordFilter);
 		} catch (IOException e) {
 			redirectAttributes.addFlashAttribute("error","Error al detectar posibles alertas con la alerta almacenada.");
-			return "redirect:/alerts/risks/get/"+wordFilter.getTitle();
+			return "redirect:/alerts/get/"+wordFilter.getTitle();
 		}
 		redirectAttributes.addFlashAttribute("info","Se ha a&ntilde;adido correctamente el filtro");
 		return "redirect:/risks/get/"+wordFilter.getTitle();
@@ -200,7 +200,7 @@ public class RiskController extends BaseController {
 	@RequestMapping(value = "/get/{id}/remove", method=RequestMethod.GET)
 	public String updateNewsByFeed(Model model, @PathVariable ("id") Risk word) {
 		service.remove(word);
-		return "redirect:/risks";
+		return "redirect:/risks/list";
 	}
 	
 	@RequestMapping(value = "/get/{id}/news/{idNews}/history", method=RequestMethod.GET)

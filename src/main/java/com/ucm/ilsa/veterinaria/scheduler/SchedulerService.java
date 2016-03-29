@@ -1,11 +1,13 @@
 package com.ucm.ilsa.veterinaria.scheduler;
 
+import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import javax.annotation.PostConstruct;
 
@@ -21,7 +23,6 @@ import com.ucm.ilsa.veterinaria.domain.Feed;
 import com.ucm.ilsa.veterinaria.repository.NewsRepository;
 import com.ucm.ilsa.veterinaria.service.ConfiguracionService;
 import com.ucm.ilsa.veterinaria.service.FeedService;
-import com.ucm.ilsa.veterinaria.service.NewsCheckFeedService;
 import com.ucm.ilsa.veterinaria.service.NewsIndexService;
 
 @Service
@@ -46,7 +47,7 @@ public class SchedulerService {
 		if (configuracion.getConfiguracion().isRunService()) {
 			List<Feed> listFeeds = serviceFeed.getAllFeed();
 			Date startTime = new Date();
-			startTime.setTime(startTime.getTime() + 1000 * 30);// Las tareas se
+			startTime.setTime(startTime.getTime() + 1000 * 10);// Las tareas se
 																// comienzan a
 																// ejecutar
 																// despues
@@ -61,7 +62,7 @@ public class SchedulerService {
 					ScheduledFuture<?> futureTask = scheduler
 							.scheduleWithFixedDelay(task, startTime, MIN_MILIS
 									* feed.getMinRefresh());
-					startTime.setTime(startTime.getTime() + 1000 * 30);// Vamos
+					startTime.setTime(startTime.getTime() + 1000 * 10);// Vamos
 																		// espacioandolas
 																		// cada
 																		// 2
@@ -90,7 +91,7 @@ public class SchedulerService {
 			ScheduledFuture<?> futureTask = tasks.remove(feed.getId());
 			futureTask.cancel(true);
 		}
-		if (feed.isActived() && feed.isAccepted()) {
+		if (feed.isActived() && feed.isAccepted() && configuracion.getConfiguracion().isRunService()) {
 			ScheduledFuture<?> futureTask = null;
 			AlertTaskContainer task = new AlertTaskContainer((Feed) feed);
 			beanFactory.autowireBean(task);
@@ -103,7 +104,7 @@ public class SchedulerService {
 	public void addFeedTask(Feed feed) {
 		Date startTime = new Date();
 		startTime.setTime(startTime.getTime() + 1000 * 120);
-		if (feed.isActived() && feed.isAccepted()) {
+		if (feed.isActived() && feed.isAccepted() && configuracion.getConfiguracion().isRunService()) {
 			ScheduledFuture<?> futureTask = null;
 			AlertTaskContainer task = new AlertTaskContainer((Feed) feed);
 			beanFactory.autowireBean(task);
@@ -136,6 +137,16 @@ public class SchedulerService {
 			removeFeedTask(feed);
 		}
 		LOGGER.info("Se han eliminado todas las tareas de scraping.");
+	}
+	
+	public String getNextExecution(Feed feed) {
+		if (tasks.containsKey(feed.getId())) {
+			Long milis = tasks.get(feed.getId()).getDelay(TimeUnit.MILLISECONDS);
+			Date now = new Date();
+			now.setTime(now.getTime()+milis);
+			return DateFormat.getInstance().format(now);
+		}
+		return "";
 	}
 
 }

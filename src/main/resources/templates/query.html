@@ -20,38 +20,25 @@
 				class="mdl-cell mdl-cell--8-col mdl-color--white mdl-shadow--2dp">
 				<div
 					class="mdl-cell mdl-cell--12-col mdl-cell--12-col-desktop mdl-typography--display-1-color-contrast"
-					th:inline="text">[[${location.id==null?'Crear
-					proveedor':'Editar proveedor'}]]</div>
+					>Probar query</div>
 				<form action="#"
-					th:action="${location.id==null}?@{/locations/create}:@{/locations/get/{id}/edit(id=${location.id})}"
-					val:validate="${location}" th:object="${location}" method="post">
+					th:action="@{/query}" method="post">
 
 					<input type="hidden" th:name="${_csrf.parameterName}"
 						th:value="${_csrf.token}" />
-
-					<div>
-						<input type="hidden" th:field="*{id}" />
-					</div>
 					<div
-						class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-						<input class="mdl-textfield__input" type="text" th:field="*{name}" />
-						<label class="mdl-textfield__label" for="name">Nombre del
-							lugar</label>
-					</div>
-										<div
 						class="mdl-cell mdl-cell--10-col mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-						<label class="mdl-textfield__label" for="query">Introduce
-							la query de filtrado</label>
+						<label class="mdl-textfield__label" for="query">Introduce la query del topic</label>
 						<textarea class="mdl-textfield__input" rows="6" type="text"
-							th:field="*{query}"></textarea>
+							name="query" id="query" th:inline="text">[[${query}]]</textarea>
 					</div>
 					<div class="mdl-grid">
 						<div class="mdl-cell mdl-cell--1-col"></div>
 						<div class="mdl-cell mdl-cell--10-col">
 							<button class="mdl-button mdl-js-button mdl-color--primary"
 								type="submit">Enviar</button>
-							<a class="mdl-button mdl-js-button" th:if="${location.id!=null}"
-								th:href="@{/locations}" href="#">Cancelar</a>
+							<a class="mdl-button mdl-js-button"
+								th:href="@{/}" href="#">Cancelar</a>
 						</div>
 					</div>
 				</form>
@@ -63,25 +50,22 @@
 				class="mdl-data-table mdl-js-data-table mdl-shadow--2dp snippet">
 				<thead>
 					<tr>
-						<th class="mdl-data-table__cell--non-numeric">Nombre</th>
-						<th>Query</th>
-						<th>Editar</th>
-						<th>Borrar</th>
+						<th class="mdl-data-table__cell--non-numeric">Titulo</th>
+						<th class="mdl-data-table__cell--non-numeric">Sitio</th>
+						<th class="mdl-data-table__cell--non-numeric">Fecha de publicacion</th>
+						<th>Score</th>
 					</tr>
 				</thead>
 				<tbody>
-					<tr th:each="loc : ${allLocations}">
+					<tr th:each="news : ${result}">
 						<td class="mdl-data-table__cell--non-numeric"
-							th:text="${loc.name}">Pescados manolo</td>
-						<td th:text="${loc.query}">4.5234</td>
-						<td><a href="#"
-							th:href="@{/locations/get/{id}/edit(id=${loc.id})}"><i
-								class="mdl-color-text--white material-icons"
-								role="presentation">mode-edit</i></a></td>
-						<td><a class="confirm" href="#"
-							th:href="@{/locations/get/{id}/remove(id=${loc.id})}"><i
-								class="mdl-color-text--white material-icons"
-								role="presentation">delete</i></a></td>
+							th:inline="text"><a style="white-space: pre-line;" th:href="${news.link}">[[${news.title}]]</a></td>
+						<td class="mdl-data-table__cell--non-numeric"
+							th:inline="text"><p style="white-space: pre-line;">[[${news.site.name}]]</p></td>
+							<td class="mdl-data-table__cell--non-numeric"
+							th:inline="text">[[${#dates.format(news.datePub, 'dd/MM/yyyy')}]]</td>
+						<td
+							th:inline="text">[[${news.score}]]</td>
 					</tr>
 				</tbody>
 			</table>
@@ -89,38 +73,13 @@
 		</div>
 		</main>
 		<footer th:include="base :: footer"> </footer>
-		<script th:inline="javascript">
-				/*<![CDATA[*/
-				$(document).ready(
-						function() {
-							componentHandler.upgradeAllRegistered();
-							var mesInfo = /*[[${info}]]*/[];
-							var mesError = /*[[${error}]]*/[];
-							var notification = document
-									.querySelector('.mdl-js-snackbar');
-							for (var i = 0; i < mesInfo.length; i++) {
-								notification.MaterialSnackbar.showSnackbar({
-									message : mesInfo[i],
-									cssColor : 'mdl-color--primary',
-									timeout : 3000
-								});
-							}
-							for (var i = 0; i < mesError.length; i++) {
-								notification.MaterialSnackbar.showSnackbar({
-									message : mesInfo[i],
-									cssColor : 'mdl-color--red',
-									timeout : 3000
-								});
-							}
-						});
-				/*]]>*/
-			</script>
 		<script type="text/javascript">
+		// <![CDATA[
 			$(".confirm").click(function(e) {
 				var notification = document.querySelector('.mdl-js-snackbar');
-				var url = e.currentTarget;
+				var url = e && (('string' === typeof e && e) || (e.currentTarget && e.currentTarget.attributes['href'].value));
 				notification.MaterialSnackbar.showSnackbar({
-					message : "¿Estas seguro de borrar el proveedor seleccionado?",
+					message : "¿Estas seguro de borrar el topic seleccionado?",
 					cssColor : 'mdl-color--primary',
 					timeout : 300000,
 					actionHandler: function(event) {window.location = url; notification.MaterialSnackbar.cleanup_();},
@@ -130,6 +89,7 @@
 				});
 				return false;
 			});
+			// ]]>
 		</script>
 	</div>
 </body>

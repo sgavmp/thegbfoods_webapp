@@ -72,7 +72,7 @@ public class AlertController extends BaseController {
 		return FOLDER;
 	}
 	
-	@RequestMapping("**")
+	@RequestMapping("/list")
 	public String getAllLocations(Model model) {
 		model.addAttribute("allWords", service.getAllAlert());
 		model.addAttribute("term", new Alert());
@@ -104,10 +104,10 @@ public class AlertController extends BaseController {
 			service.create(wordFilter);
 		} catch (IOException e) {
 			redirectAttributes.addFlashAttribute("error","Error al detectar posibles alertas con la alerta almacenada.");
-			return "redirect:/alerts";
+			return "redirect:/alerts/list";
 		}
 		redirectAttributes.addFlashAttribute("info","Se ha a&ntilde;adido correctamente el filtro");
-		return "redirect:/alerts";
+		return "redirect:/alerts/list";
 	}
 
 	
@@ -161,7 +161,7 @@ public class AlertController extends BaseController {
 	@RequestMapping(value = "/get/{id}/remove", method=RequestMethod.GET)
 	public String updateNewsByFeed(Model model, @PathVariable ("id") Alert word) {
 		service.remove(word);
-		return "redirect:/alerts";
+		return "redirect:/alerts/list";
 	}
 	
 	@RequestMapping("/get/{idAlert}")

@@ -88,39 +88,6 @@
 								type="submit">Guardar</button>
 						</div>
 					</div>
-					<div class="mdl-grid">
-						<div
-							class="mdl-cell mdl-cell--12-col mdl-cell--12-col-desktop mdl-typography--display-1-color-contrast">Probar
-							expresión regular</div>
-						<div class="mdl-cell mdl-cell--12-col">
-							<div
-								class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-								<select class="mdl-textfield__input" th:field="*{feed}">
-									<option value="" disabled="disabled" selected="selected">Sitios</option>
-									<option th:each="type : ${feeds}" th:value="${type.id}"
-										th:text="${type.name}">Wireframe</option>
-								</select> <label class="mdl-textfield__label">Elige un sitio</label>
-							</div>
-							<div
-								class="mdl-cell mdl-cell--12-col mdl-cell--12-col-desktop mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-								<label class="mdl-textfield__label" for="url">URL de la
-									noticia de la cual extraer el texto</label> <input
-									class="mdl-textfield__input" type="text" th:field="*{url}" />
-							</div>
-							<div class="mdl-cell mdl-cell--12-col mdl-cell--12-col-desktop">
-								<label class="mdl-switch mdl-js-switch mdl-js-ripple-effect"
-									for="testReg"> <input type="checkbox"
-									class="mdl-switch__input" id="testReg" name="testReg"
-									th:checked="*{testReg}" th:field="*{testReg}" /> <span
-									class="mdl-switch__label">Activar el uso de la expresión
-										regular para encontrar lugares en los textos</span>
-								</label>
-							</div>
-							<button class="mdl-button mdl-js-button mdl-color--primary"
-								type="submit" name="testRegExp">Probar expresión
-								regular</button>
-						</div>
-					</div>
 				</form>
 			</div>
 		</div>
