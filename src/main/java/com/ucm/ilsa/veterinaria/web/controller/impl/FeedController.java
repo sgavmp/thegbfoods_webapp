@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import java.util.regex.Pattern;
 
 import javax.validation.Valid;
 
@@ -160,11 +161,20 @@ public class FeedController extends BaseController {
 		if (StringUtils.isEmpty(list))
 			model.addAttribute("error", "Tienes que añadir una URL por línea.");
 		String[] listURL = list.split("\r\n");
+		String regex = "^(?<name>[A-Za-z0-9 ]{5,20})\\t(?<url>(https?|ftp):\\/\\/[^\\s\\/$.?#].[^\\s]*)\\t(?<tipo>@T(general|periodico|revistaCientifica|revista|blogNutricional|blog|institucional)+)(?<lugar>(\\t(@L(general|españa|italia|rusia|holanda|alemania|inglaterra|portugal|francia|estadosunidos|india|marruecos)+))+)$";
+		Pattern pattern = Pattern.compile(regex);
+		for (String linea : listURL) {
+			if (!pattern.matcher(linea).find())
+			{
+				model.addAttribute("error", "Hay errores en los datos introducidos..");
+			}
+		}
 		List<String> urlFail = serviceFeed.createFeedAuto(listURL);
 		if (!urlFail.isEmpty()) {
 			model.addAttribute("error", "Tienes que añadir una URL por línea.");
 			model.addAttribute("fail", urlFail);
 		}
+		model.addAttribute("info", "Se han creado todos los websites correctamente.");
 		return "/feeds/masiveFeed";
 	}
 

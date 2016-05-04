@@ -60,7 +60,7 @@ public class FeedScrapingImpl implements FeedScraping {
 
 	private ScrapStatisticsRepository statisticsRepository;
 
-	//@Value("${gbfood.resources.crawler}")
+	@Value("${gbfood.resources.crawler}")
 	private String pathCrawler = "/tomcatfolder/app/gbfood/crawler/";
 
 	@Autowired

@@ -13,6 +13,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
@@ -35,6 +37,8 @@ import com.ucm.ilsa.veterinaria.domain.Alert;
 import com.ucm.ilsa.veterinaria.domain.AlertAbstract;
 import com.ucm.ilsa.veterinaria.domain.Feed;
 import com.ucm.ilsa.veterinaria.domain.FeedForm;
+import com.ucm.ilsa.veterinaria.domain.FeedPlaceEnum;
+import com.ucm.ilsa.veterinaria.domain.FeedTypeEnum;
 import com.ucm.ilsa.veterinaria.domain.News;
 import com.ucm.ilsa.veterinaria.domain.NewsDetect;
 import com.ucm.ilsa.veterinaria.domain.UpdateStateEnum;
@@ -130,7 +134,21 @@ public class FeedServiceImpl implements FeedService {
 	@Override
 	public List<String> createFeedAuto(String[] listUrl) {
 		List<String> fail = Lists.newArrayList();
-		for (String url : listUrl) {
+		String regex = "^(?<name>[A-Za-z0-9 ]{5,20})\\t(?<url>(https?|ftp):\\/\\/[^\\s\\/$.?#].[^\\s]*)\\t(?<tipo>@T(general|periodico|revistaCientifica|revista|blogNutricional|blog|institucional)+)(?<lugar>(\\t(@L(general|españa|italia|rusia|holanda|alemania|inglaterra|portugal|francia|estadosunidos|india|marruecos)+))+)$";
+		Pattern pattern = Pattern.compile(regex);
+		for (String linea : listUrl) {
+			Matcher matcher = pattern.matcher(linea);
+			matcher.find();
+			String name = matcher.group("name");
+			String url = matcher.group("url");
+			String tipo = matcher.group("tipo");
+			String lugares = matcher.group("lugar");
+			FeedTypeEnum typeE = FeedTypeEnum.valueOf(tipo.substring(2));
+			List<FeedPlaceEnum> lugaresE = Lists.newArrayList();
+			for (String lugaStep : lugares.split("\t")) {
+				if (!lugaStep.trim().isEmpty())
+					lugaresE.add(FeedPlaceEnum.valueOf(lugaStep.trim().substring(2)));
+			}
 			URL link = null;
 			try {
 				link = new URL(url);
@@ -140,9 +158,11 @@ public class FeedServiceImpl implements FeedService {
 			}
 			Feed feed = new Feed();
 			feed.setUrlNews(url);
-			feed.setName(link.getHost());
+			feed.setName(name);
 			feed.setUrlSite(link.getProtocol() + "://" +link.getAuthority());
 			feed.setAuto(true);
+			feed.setFeedType(typeE);
+			feed.setFeedPlace(lugaresE);
 			this.createFeed(feed);
 		}
 		return fail;

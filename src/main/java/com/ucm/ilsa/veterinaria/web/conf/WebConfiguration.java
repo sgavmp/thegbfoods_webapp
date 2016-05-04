@@ -21,9 +21,9 @@ import org.thymeleaf.templateresolver.FileTemplateResolver;
 @Configuration
 public class WebConfiguration extends WebMvcConfigurerAdapter  {
 	
-	//@Value("${gbfood.resources.statics}")
+	@Value("${gbfood.resources.statics}")
 	private String staticsLocation = "file:/tomcatfolder/app/gbfood/resources/static/";
-	//@Value("${gbfood.resources.templates}")
+	@Value("${gbfood.resources.templates}")
 	private String templatesLocation = "/tomcatfolder/app/gbfood/resources/templates/";
 	
 	@Autowired
