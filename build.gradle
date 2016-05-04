@@ -36,6 +36,9 @@ sourceCompatibility = 1.7
 targetCompatibility = 1.7
 
 repositories {
+	flatDir {
+	       dirs 'libs'
+	   }
 	mavenLocal()
     mavenCentral()
 }
