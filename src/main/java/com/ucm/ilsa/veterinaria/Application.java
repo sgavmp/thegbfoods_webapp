@@ -2,10 +2,18 @@ package com.ucm.ilsa.veterinaria;
 
 import java.util.concurrent.Executor;
 
+import javax.annotation.PostConstruct;
+import javax.sql.DataSource;
+
+import org.apache.commons.configuration.ConfigurationConverter;
+import org.apache.commons.configuration.DatabaseConfiguration;
 import org.apache.log4j.Logger;
 import org.springframework.aop.interceptor.AsyncUncaughtExceptionHandler;
 import org.springframework.aop.interceptor.SimpleAsyncUncaughtExceptionHandler;
+import org.springframework.beans.factory.annotation.Autowire;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -34,6 +42,9 @@ public class Application extends SpringBootServletInitializer implements AsyncCo
 	
 	@Autowired
 	Environment env;
+	
+	@Autowired
+	Configuration configuration; 
 	
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args);

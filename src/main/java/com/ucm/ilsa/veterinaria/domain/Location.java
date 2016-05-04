@@ -29,6 +29,7 @@ public class Location extends BaseEntity {
 	@Lob
 	private List<String> news;
 	private Timestamp ultimaRecuperacion;
+	private CountryCode country;
 
 	public Location() {
 
@@ -65,10 +66,21 @@ public class Location extends BaseEntity {
 	public void setNews(List<String> news) {
 		this.news = news;
 	}
+	
+	
+
+	public CountryCode getCountry() {
+		return country;
+	}
+
+	public void setCountry(CountryCode country) {
+		this.country = country;
+	}
 
 	public Location bind(Location location) {
 		this.name = location.getName();
 		this.query = location.getQuery();
+		this.country = location.getCountry();
 		return this;
 	}
 

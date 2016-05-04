@@ -2,9 +2,9 @@ package com.ucm.ilsa.veterinaria.web.controller.impl;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -31,6 +31,7 @@ import com.ucm.ilsa.veterinaria.domain.NewsDetect;
 import com.ucm.ilsa.veterinaria.domain.Risk;
 import com.ucm.ilsa.veterinaria.domain.Statistics;
 import com.ucm.ilsa.veterinaria.domain.topic.TopicManager;
+import com.ucm.ilsa.veterinaria.repository.LocationRepository;
 import com.ucm.ilsa.veterinaria.repository.NewsDetectRepository;
 import com.ucm.ilsa.veterinaria.repository.StatisticsRepository;
 import com.ucm.ilsa.veterinaria.service.NewsIndexService;
@@ -49,7 +50,7 @@ import es.ucm.visavet.gbf.topics.validator.TopicValidatorSemantics;
 @RequestMapping("/risks")
 public class RiskController extends BaseController {
 	
-	private static String FOLDER = "risks";
+	private static String FOLDER = "alerts";
 	
 	@Autowired
 	private RiskServiceImpl service;
@@ -63,18 +64,58 @@ public class RiskController extends BaseController {
 	@Autowired
 	private TopicManager topicManager;
 	
+	@Autowired
+	private StatisticsRepository statisticsRepository;
+	
+	@Autowired
+	private LocationRepository locationRepository;
+	
 	public RiskController() {
 		this.menu = "Otras Alertas";
 	}
 	
-	@ModelAttribute("alertsUncheck")
-	public Set<Risk> getAllRisk() {
-		return service.getAllAlertActive();
+	@ModelAttribute("allCountriesAfects")
+	public Map<String, String> getAllCountriesAfects() {
+		Map<String, String> listCountries = new HashMap<String, String>();
+		List<Location> listLocation = (List<Location>) locationRepository.findAllAfectRisk();
+		for (Location loc : listLocation) {
+			listCountries.put(
+					CountryCode.getByCode(loc.getCountry().name())
+							.getAlpha3(), "rgba(255,87,34,1)");
+		}
+		listCountries.put("defaultFill", "rgba(200,200,200,1)");
+		return listCountries;
+	}
+	
+	@ModelAttribute("alertsScoreToday")
+	public List<Object[]> getAllAlertsToday() {
+		Date now = new Date(System.currentTimeMillis());
+		Date today = new Date(now.getYear(), now.getMonth(), now.getDate());
+		List<Object[]> lista = statisticsRepository.getRiskSocreAvgDay(today.toString(),5);
+		return lista;
+	}
+	
+	@ModelAttribute("alertsScoreWeek")
+	public List<Object[]> getAllAlertsWeek() {
+		Date now = new Date(System.currentTimeMillis());
+		Date today = new Date(now.getYear(), now.getMonth(), now.getDate());
+		Date past = new Date(now.getYear(), now.getMonth(), now.getDate()-7);
+		List<Object[]> lista = statisticsRepository.getRiskSocreAvgBetween(today.toString(),past.toString(),7);
+		return lista;
+	}
+	
+	@ModelAttribute("alertsScoreMonth")
+	public List<Object[]> getAllAlertsMonth() {
+		Date now = new Date(System.currentTimeMillis());
+		Date today = new Date(now.getYear(), now.getMonth(), now.getDate());
+		Date past = new Date(now.getYear(), now.getMonth(), now.getDate()-31);
+		List<Object[]> lista = statisticsRepository.getRiskSocreAvgBetween(today.toString(),past.toString(),7);
+		return lista;
 	}
 	
 	@ModelAttribute("folder")
 	public String getFolder() {
-		return FOLDER;
+		return "risks";
 	}
 	
 	@RequestMapping("/get/{idAlert}")
@@ -104,19 +145,19 @@ public class RiskController extends BaseController {
 		model.addAttribute("alertActive", alertActive);
 		model.addAttribute("alertHistory", alertHistory);
 		model.addAttribute("alertFalse", alertFalse);
-		return "/" + FOLDER + "/oneAlert";
+		return "/alerts/oneAlert";
 	}
 
 	@RequestMapping("/detect")
 	public String getMainRisks() {
-		return "/" + FOLDER + "/alerts";
+		return "/alerts/alerts";
 	}
 	
 	@RequestMapping("/list")
 	public String getAllLocations(Model model) {
 		model.addAttribute("allWords", service.getAllAlert());
 		model.addAttribute("term", new Alert());
-		return "/" + FOLDER + "/words";
+		return "/alerts/words";
 	}
 	
 	@RequestMapping(value="/create", method=RequestMethod.POST)
@@ -124,38 +165,38 @@ public class RiskController extends BaseController {
 		model.addAttribute("term", wordFilter);
 		if (result.hasErrors()) {
 			model.addAttribute("error", "Hay un error en el formulario");
-            return "/" + FOLDER + "/words";
+            return "/alerts/words";
         }
 		TopicValidator validator = new TopicValidator(
-				new TopicValidatorSemantics(wordFilter.getTitle(), topicManager),
+				new TopicValidatorSemantics(wordFilter.getTitle()+"test", topicManager),
 				new ByteArrayInputStream(wordFilter.getWords().getBytes()));
 		try {
 			validator.topic();
 		} catch (TopicDoesNotExistsException e) {
 			model.addAttribute("error", "El topic " + e.getTopic() + " no existe.");
-			return "/" + FOLDER + "/words";
+			return "/alerts/words";
 		} catch (CyclicDependencyException e) {
 			model.addAttribute("error", e.toString());
-			return "/" + FOLDER + "/words";
+			return "/alerts/words";
 		} catch (ParseException | TokenMgrError e) {
 			model.addAttribute("error", "Se ha producido un error al validar el topic.");
-			return "/" + FOLDER + "/words";
+			return "/alerts/words";
 		}
 		try {
 			wordFilter = service.create(wordFilter);
 		} catch (IOException e) {
 			redirectAttributes.addFlashAttribute("error","Error al detectar posibles alertas con la alerta almacenada.");
-			return "redirect:/alerts/get/"+wordFilter.getTitle();
+			return "redirect:/alerts/get/"+wordFilter.getId();
 		}
-		redirectAttributes.addFlashAttribute("info","Se ha a&ntilde;adido correctamente el filtro");
-		return "redirect:/risks/get/"+wordFilter.getTitle();
+		redirectAttributes.addFlashAttribute("info","Se ha añadido correctamente el filtro");
+		return "redirect:/risks/get/"+wordFilter.getId();
 	}
 	
 	@RequestMapping(value = "/get/{id}/edit", method=RequestMethod.GET)
 	public String getFormUpdateLocation(Model model, @PathVariable ("id") Risk word) {
 		model.addAttribute("allWords", service.getAllAlert());
 		model.addAttribute("term",word);
-		return "/" + FOLDER + "/words";
+		return "/alerts/words";
 	}
 	
 	@RequestMapping(value="/get/{id}/edit", method=RequestMethod.POST)
@@ -163,7 +204,7 @@ public class RiskController extends BaseController {
 		model.addAttribute("term", wordFilter);
 		if (result.hasErrors()) {
         	model.addAttribute("error","Hay un error en el formulario");
-            return "/" + FOLDER + "/words";
+            return "/alerts/words";
         }
 		TopicValidator validator = new TopicValidator(
 				new TopicValidatorSemantics(wordFilter.getTitle(), topicManager),
@@ -172,17 +213,17 @@ public class RiskController extends BaseController {
 			validator.topic();
 		} catch (TopicDoesNotExistsException e) {
 			model.addAttribute("error", "El topic " + e.getTopic() + " no existe.");
-			return "/" + FOLDER + "/words";
+			return "/alerts/words";
 		} catch (CyclicDependencyException e) {
 			model.addAttribute("error", e.toString());
-			return "/" + FOLDER + "/words";
+			return "/alerts/words";
 		} catch (ParseException | TokenMgrError e) {
 			model.addAttribute("error", "Se ha producido un error al validar el topic.");
-			return "/" + FOLDER + "/words";
+			return "/alerts/words";
 		}
 		service.update((Risk)wordFilter.bind(before));
 		redirectAttributes.addFlashAttribute("info","Se ha actualizado correctamente el filtro.");
-		return "redirect:/risks";
+		return "redirect:/risks/get/"+wordFilter.getId();
 	}
 	
 	@RequestMapping(value = "/get/{id}/reset", method=RequestMethod.GET)

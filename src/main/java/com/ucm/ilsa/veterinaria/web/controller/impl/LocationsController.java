@@ -1,6 +1,7 @@
 package com.ucm.ilsa.veterinaria.web.controller.impl;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.util.List;
 
 import javax.validation.Valid;
@@ -55,7 +56,12 @@ public class LocationsController extends BaseController {
         if (result.hasErrors()) {
             return "locations";
         }
-		serviceLocation.createLocation(location);
+		try {
+			serviceLocation.createLocation(location);
+		}  catch (IOException e) {
+			model.addAttribute("error", "Se ha producido un error al detectar las localizaciones.");
+			return "locations";
+		}
 		redirectAttributes.addFlashAttribute("info","Se ha a&ntilde;adido correctamente la nueva localizaci&oacute;n");
 		return "redirect:/locations";
 	}
@@ -88,7 +94,12 @@ public class LocationsController extends BaseController {
 			model.addAttribute("error", "Se ha producido un error al validar el topic.");
 			return "locations";
 		}
-		serviceLocation.createLocation(before.bind(location));
+		try {
+			serviceLocation.updateLocation(before.bind(location));
+		} catch (IOException e) {
+			model.addAttribute("error", "Se ha producido un error al detectar las localizaciones.");
+			return "locations";
+		}
 		redirectAttributes.addFlashAttribute("info","Se ha actualizado correctamente la localizaci&oacute;n");
 		return "redirect:/locations";
 	}

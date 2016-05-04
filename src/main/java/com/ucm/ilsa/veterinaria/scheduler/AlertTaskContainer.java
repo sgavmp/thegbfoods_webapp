@@ -46,13 +46,18 @@ public class AlertTaskContainer implements Runnable {
 				if (!listNews.isEmpty()) {
 					LOGGER.info("Se han recuperado " + listNews.size() + " nuevas noticias del sitio: " + feed.getName());
 					//newsCheckService.checkNews(listNews, feed);
-					try {
-						newsRepository.save(listNews);
-						newsIndexService.markNewNews(feed);
-					} catch (Exception e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+					for (News news : listNews) {
+						try {
+							if (news!=null)
+								newsRepository.save(news);
+							else
+								LOGGER.warn("La noticia es null para el sitio: " + feed.getName());
+						}
+						catch (Exception ex) {
+							LOGGER.error("Error al guardar una noticia. Sitio: " + feed.getName() + ", Link: " + news.getUrl());
+						}
 					}
+					newsIndexService.markNewNews(feed);
 				} else {
 					LOGGER.info("No se han recuperado nuevas noticias del sitio: " + feed.getName());
 				}

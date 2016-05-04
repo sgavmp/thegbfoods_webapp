@@ -195,16 +195,16 @@ public class NewsIndexServiceImpl implements NewsIndexService, Runnable {
 		if (news != null) {
 			try {
 				Document d = new Document();
-				d.add(new StringField("id", news.getUrl(), Field.Store.YES));
-				d.add(new TextField("title", news.getTitle(), Field.Store.YES));
-				d.add(new TextField("titleN", news.getTitle(), Field.Store.NO));
-				d.add(new TextField("body", news.getContent(), Field.Store.YES));
-				d.add(new TextField("bodyN", news.getContent(), Field.Store.NO));
-				d.add(new StringField("datePub", DateTools.dateToString(
+				d.add(new StringField(News.fieldUrl, news.getUrl(), Field.Store.YES));
+				d.add(new TextField(News.fieldTitle, news.getTitle(), Field.Store.YES));
+				d.add(new TextField(News.fieldTitleNoCase, news.getTitle(), Field.Store.NO));
+				d.add(new TextField(News.fieldBody, news.getContent(), Field.Store.YES));
+				d.add(new TextField(News.fieldBody, news.getContent(), Field.Store.NO));
+				d.add(new StringField(News.fieldDatePub, DateTools.dateToString(
 						news.getPubDate(), Resolution.MINUTE), Field.Store.YES));
-				d.add(new StringField("feed", news.getSite().toString(),
+				d.add(new StringField(News.fieldSite, news.getSite().toString(),
 						Field.Store.YES));
-				d.add(new StringField("dateCreate", DateTools.dateToString(
+				d.add(new StringField(News.fieldDateCreate, DateTools.dateToString(
 						new Date(), Resolution.MINUTE), Field.Store.YES));
 				Feed feed = feedService.getFeedByCodeName(news.getSite());
 				if (feed.getFeedType() == null) {
@@ -222,7 +222,7 @@ public class NewsIndexServiceImpl implements NewsIndexService, Runnable {
 				for (FeedPlaceEnum type : feed.getFeedPlace())
 					d.add(new StringField(News.fieldSiteLoc, type.getValue()
 							.toString(), Field.Store.YES));
-				getWriter().addDocument(d);
+				getWriter().updateDocument(new Term(News.fieldUrl, news.getUrl()), d);
 				feedService.updateFeed(feed);
 			} catch (NullPointerException ex) {
 				LOGGER.error("Error al almacenar noticia.");
@@ -618,7 +618,10 @@ public class NewsIndexServiceImpl implements NewsIndexService, Runnable {
 			List<String> listNewsDetect = searchLocation(q, searcher, loc);
 			loc = locationRepository.findOne(loc.getId());
 			loc.setUltimaRecuperacion(new Timestamp(to));
-			loc.getNews().addAll(listNewsDetect);
+			if (loc.getNews()==null)
+				loc.setNews(listNewsDetect);
+			else
+				loc.getNews().addAll(listNewsDetect);
 			locationRepository.save(loc);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -659,6 +662,7 @@ public class NewsIndexServiceImpl implements NewsIndexService, Runnable {
 
 	}
 	
+	@Override
 	public void resetLocation(Location loc) throws IOException {
 		LOGGER.info("Se inicia el proceso de busqueda de alertas en todo el indice.");
 		boolean closed = getWriter() == null ? false : getWriter().isOpen();

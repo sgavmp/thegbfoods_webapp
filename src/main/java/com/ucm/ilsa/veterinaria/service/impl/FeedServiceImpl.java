@@ -2,6 +2,8 @@ package com.ucm.ilsa.veterinaria.service.impl;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.sql.Date;
@@ -14,6 +16,7 @@ import java.util.Set;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
+import org.hibernate.validator.internal.constraintvalidators.hv.URLValidator;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -122,6 +125,27 @@ public class FeedServiceImpl implements FeedService {
 		feed.setState(state);
 		Feed feedU = repositoryFeed.save(feed);
 		return feedU;
+	}
+
+	@Override
+	public List<String> createFeedAuto(String[] listUrl) {
+		List<String> fail = Lists.newArrayList();
+		for (String url : listUrl) {
+			URL link = null;
+			try {
+				link = new URL(url);
+			} catch (MalformedURLException e) {
+				fail.add(url);
+				continue;
+			}
+			Feed feed = new Feed();
+			feed.setUrlNews(url);
+			feed.setName(link.getHost());
+			feed.setUrlSite(link.getProtocol() + "://" +link.getAuthority());
+			feed.setAuto(true);
+			this.createFeed(feed);
+		}
+		return fail;
 	}
 
 }

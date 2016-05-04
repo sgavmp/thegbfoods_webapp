@@ -36,11 +36,6 @@ public class NewsBuilder {
 		return this;
 	}
 
-	public NewsBuilder setDescription(String description) {
-		this.news.setDescription(description);
-		return this;
-	}
-
 	public NewsBuilder setContent(String content) {
 		this.news.setContent(content);
 		return this;

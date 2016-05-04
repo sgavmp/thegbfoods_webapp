@@ -10,6 +10,11 @@ spring:
     validationQuery: SELECT 1
   
 ---
+gbfood:
+  resources: 
+    templates: /tomcatfolder/app/gbfood/resources/templates/
+    statics: file:/tomcatfolder/app/gbfood/resources/static/
+    crawler: /tomcatfolder/app/gbfood/crawler/
 logging:
   config: classpath:logback-production.xml
 spring:
@@ -32,12 +37,15 @@ spring:
 name: production
 
 ---
+gbfood:
+  resources: 
+    templates: /gb/resources/templates/
+    statics: file:/gb/resources/static/
+    crawler: /gb/crawler/
 logging:
   config: classpath:logback-local.xml
-
 spring:
   profiles: local
-  
   jpa:
     hibernate:
       ddl-auto: update

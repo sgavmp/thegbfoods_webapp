@@ -15,8 +15,12 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
+import com.kohlschutter.boilerpipe.BoilerpipeExtractor;
+import com.kohlschutter.boilerpipe.BoilerpipeProcessingException;
+import com.kohlschutter.boilerpipe.extractors.CommonExtractors;
 import com.rometools.rome.feed.synd.SyndContent;
 import com.rometools.rome.feed.synd.SyndEntry;
 import com.rometools.rome.feed.synd.SyndFeed;
@@ -24,6 +28,7 @@ import com.rometools.rome.io.FeedException;
 import com.rometools.rome.io.SyndFeedInput;
 import com.rometools.rome.io.XmlReader;
 import com.ucm.ilsa.veterinaria.domain.CharsetEnum;
+import com.ucm.ilsa.veterinaria.domain.ExtractionType;
 import com.ucm.ilsa.veterinaria.domain.Feed;
 import com.ucm.ilsa.veterinaria.domain.FeedForm;
 import com.ucm.ilsa.veterinaria.domain.News;
@@ -35,6 +40,13 @@ import com.ucm.ilsa.veterinaria.repository.NewsDetectRepository;
 import com.ucm.ilsa.veterinaria.repository.ScrapStatisticsRepository;
 import com.ucm.ilsa.veterinaria.repository.StatisticsRepository;
 import com.ucm.ilsa.veterinaria.service.FeedScraping;
+import com.ucm.ilsa.veterinaria.util.GBFoodCrawler;
+
+import edu.uci.ics.crawler4j.crawler.CrawlConfig;
+import edu.uci.ics.crawler4j.crawler.CrawlController;
+import edu.uci.ics.crawler4j.fetcher.PageFetcher;
+import edu.uci.ics.crawler4j.robotstxt.RobotstxtConfig;
+import edu.uci.ics.crawler4j.robotstxt.RobotstxtServer;
 
 @Repository
 public class FeedScrapingImpl implements FeedScraping {
@@ -48,6 +60,9 @@ public class FeedScrapingImpl implements FeedScraping {
 
 	private ScrapStatisticsRepository statisticsRepository;
 
+	//@Value("${gbfood.resources.crawler}")
+	private String pathCrawler = "/tomcatfolder/app/gbfood/crawler/";
+
 	@Autowired
 	public FeedScrapingImpl(FeedRepository repositoryFeed,
 			NewsDetectRepository repositoryNewsDetect,
@@ -60,10 +75,14 @@ public class FeedScrapingImpl implements FeedScraping {
 	@Override
 	public List<News> scrapNews(Feed feed, Date after, boolean withOutLimit) {
 		List<News> newsList = new ArrayList<>();
-		if (feed.isRSS()) {
-			newsList = scrapingWhitRSS(feed, after, withOutLimit);
+		if (feed.isAuto()) {
+			newsList = scrapingAuto(feed, after, withOutLimit);
 		} else {
-			newsList = scrapingWithOutRSS(feed, after, withOutLimit);
+			if (feed.isRSS()) {
+				newsList = scrapingWhitRSS(feed, after, withOutLimit);
+			} else {
+				newsList = scrapingWithOutRSS(feed, after, withOutLimit);
+			}
 		}
 		feed = repositoryFeed.findOne(feed.getId());
 		feed.setUltimaRecuperacion(new Timestamp(System.currentTimeMillis()));
@@ -73,7 +92,7 @@ public class FeedScrapingImpl implements FeedScraping {
 			Date today = new Date(System.currentTimeMillis());
 			ScrapStatistics statistics = statisticsRepository.findOne(today);
 			if (statistics != null) {
-				statistics.setTotal(statistics.getTotal()+newsList.size());
+				statistics.setTotal(statistics.getTotal() + newsList.size());
 			} else {
 				statistics = new ScrapStatistics(today, newsList.size());
 			}
@@ -83,12 +102,140 @@ public class FeedScrapingImpl implements FeedScraping {
 		return newsList;
 	}
 
+	private List<News> scrapingAuto(Feed feed, Date after, boolean withOutLimit) {
+		try {
+			List<News> listNews = new ArrayList<News>();
+			if (feed.getUrlNews() != null) {
+				String crawlStorageFolder = pathCrawler;
+				int numberOfCrawlers = 1;
+
+				CrawlConfig config = new CrawlConfig();
+				config.setCrawlStorageFolder(crawlStorageFolder);
+				config.setMaxDepthOfCrawling(1);
+				config.setPolitenessDelay(10);
+				config.setShutdownOnEmptyQueue(true);
+
+				/*
+				 * Instantiate the controller for this crawl.
+				 */
+				PageFetcher pageFetcher = new PageFetcher(config);
+				RobotstxtConfig robotstxtConfig = new RobotstxtConfig();
+				robotstxtConfig.setEnabled(false);
+				RobotstxtServer robotstxtServer = new RobotstxtServer(
+						robotstxtConfig, pageFetcher);
+				CrawlController controller = new CrawlController(config,
+						pageFetcher, robotstxtServer);
+
+				/*
+				 * For each crawl, you need to add some seed urls. These are the
+				 * first URLs that are fetched and then the crawler starts
+				 * following links which are found in these pages
+				 */
+				controller.addSeed(feed.getUrlNews());
+
+				/*
+				 * Start the crawl. This is a blocking operation, meaning that
+				 * your code will reach the line after this only when crawling
+				 * is finished.
+				 */
+				controller.start(GBFoodCrawler.class, numberOfCrawlers);
+				List<String> newsLinks = (List<String>) controller
+						.getCrawlersLocalData().get(0);
+				boolean isFirst = true;
+				String lastNews = null;
+				News news = null;
+				for (String linkNews : newsLinks) {
+					if (feed.getCrawlerNews().contains(linkNews))
+						continue;
+					news = getNewsWithOutRSS(feed, linkNews, null);
+					listNews.add(news);
+					feed.getCrawlerNews().add(linkNews);
+				}
+				repositoryFeed.save(feed);
+			}
+			return listNews;
+		} catch (IOException e) {
+			LOGGER.error("No se ha podido acceder a la URL. Mas Info-> "
+					+ e.getMessage() + " -> " + feed.getNewsLink());
+			return null;
+		} catch (Exception e) {
+			LOGGER.error("No se ha podido acceder a la URL. Mas Info-> "
+					+ e.getMessage() + " -> " + feed.getNewsLink());
+			return null;
+		}
+	}
+
 	@Override
 	public News scrapOneNews(FeedForm feed) {
-		if (feed.getIsRSS()) {
-			return scrapingOneWhitRSS(feed);
+		if (feed.getIsAuto()) {
+			return scrapingOneWithAuto(feed);
 		} else {
-			return scrapingOneWithOutRSS(feed);
+			if (feed.getIsRSS()) {
+				return scrapingOneWhitRSS(feed);
+			} else {
+				return scrapingOneWithOutRSS(feed);
+			}
+		}
+	}
+
+	private News scrapingOneWithAuto(FeedForm feed) {
+		try {
+			List<News> listNews = new ArrayList<News>();
+			if (feed.getUrlNews() != null) {
+				String crawlStorageFolder = pathCrawler;
+				int numberOfCrawlers = 1;
+
+				CrawlConfig config = new CrawlConfig();
+				config.setCrawlStorageFolder(crawlStorageFolder);
+				config.setMaxPagesToFetch(2);//Solo un enlace
+				config.setPolitenessDelay(10);
+				config.setMaxDepthOfCrawling(1);
+				config.setShutdownOnEmptyQueue(true);
+
+				/*
+				 * Instantiate the controller for this crawl.
+				 */
+				PageFetcher pageFetcher = new PageFetcher(config);
+				RobotstxtConfig robotstxtConfig = new RobotstxtConfig();
+				robotstxtConfig.setEnabled(false);
+				RobotstxtServer robotstxtServer = new RobotstxtServer(
+						robotstxtConfig, pageFetcher);
+				CrawlController controller = new CrawlController(config,
+						pageFetcher, robotstxtServer);
+
+				/*
+				 * For each crawl, you need to add some seed urls. These are the
+				 * first URLs that are fetched and then the crawler starts
+				 * following links which are found in these pages
+				 */
+				controller.addSeed(feed.getUrlNews());
+
+				/*
+				 * Start the crawl. This is a blocking operation, meaning that
+				 * your code will reach the line after this only when crawling
+				 * is finished.
+				 */
+				controller.start(GBFoodCrawler.class, numberOfCrawlers);
+				List<String> newsLinks = (List<String>) controller
+						.getCrawlersLocalData().get(0);
+				boolean isFirst = true;
+				String lastNews = null;
+				News news = null;
+				for (String linkNews : newsLinks) {
+					news = getNewsWithOutRSS(new Feed(feed), linkNews, "");
+					listNews.add(news);
+					break;
+				}
+			}
+			return listNews.get(0);
+		} catch (IOException e) {
+			LOGGER.error("No se ha podido acceder a la URL. Mas Info-> "
+					+ e.getMessage() + " -> " + feed.getNewsLink());
+			return null;
+		} catch (Exception e) {
+			LOGGER.error("No se ha podido acceder a la URL. Mas Info-> "
+					+ e.getMessage() + " -> " + feed.getNewsLink());
+			return null;
 		}
 	}
 
@@ -169,7 +316,8 @@ public class FeedScrapingImpl implements FeedScraping {
 		try {
 			List<News> listNews = new ArrayList<News>();
 			if (feed.getUrlNews() != null) {
-				Document doc = Jsoup.connect(feed.getUrlNews()).timeout(20000).get();
+				Document doc = Jsoup.connect(feed.getUrlNews()).timeout(20000)
+						.get();
 				Elements newsLinks = doc.select(feed.getNewsLink());
 				boolean isFirst = true;
 				String lastNews = null;
@@ -290,12 +438,11 @@ public class FeedScrapingImpl implements FeedScraping {
 	}
 
 	public News getNewsWithRSS(Feed feed, SyndEntry news) {
-		String url = news.getLink().startsWith("http://") ? news.getLink()
+		String url = news.getLink().startsWith("http")  ? news.getLink()
 				: feed.getUrlSite().concat(news.getLink());
 		NewsBuilder temp = new NewsBuilder(feed);
 		temp.setTitle(news.getTitle());
 		temp.setUrl(url);
-		temp.setDescription(news.getDescription().getValue());
 		temp.setPubDate(news.getPublishedDate());
 		String content = "";
 		for (SyndContent part : news.getContents()) {
@@ -326,18 +473,38 @@ public class FeedScrapingImpl implements FeedScraping {
 					return null;
 			}
 		}
-		if (feed.getSelectorContent() != null) {
-			if (!feed.getSelectorContent().isEmpty()) {
-				temp.setContent(feed.getSelectorContentMeta() ? newsPage
-						.select(feed.getSelectorContent()).attr("content")
-						: newsPage.select(feed.getSelectorContent()).text());
+		if (feed.getExtractionType() == null
+				|| ExtractionType.CSS_EXTRACTOR
+						.equals(feed.getExtractionType())) {
+			if (feed.getSelectorContent() != null) {
+				if (!feed.getSelectorContent().isEmpty()) {
+					temp.setContent(feed.getSelectorContentMeta() ? newsPage
+							.select(feed.getSelectorContent()).attr("content")
+							: newsPage.select(feed.getSelectorContent()).text());
+				}
 			}
-		}
-		if (feed.getSelectorDescription() != null) {
-			if (!feed.getSelectorDescription().isEmpty()) {
-				temp.setDescription(feed.getSelectorDescriptionMeta() ? newsPage
-						.select(feed.getSelectorDescription()).attr("content")
-						: newsPage.select(feed.getSelectorDescription()).text());
+		} else {
+			BoilerpipeExtractor extractor = CommonExtractors.ARTICLE_EXTRACTOR;
+			switch (feed.getExtractionType()) {
+			case ARTICLE_EXTRACTOR:
+				extractor = CommonExtractors.ARTICLE_EXTRACTOR;
+				break;
+			case DEFAULT_EXTRACTOR:
+				extractor = CommonExtractors.DEFAULT_EXTRACTOR;
+				break;
+			case CANOLA_EXTRACTOR:
+				extractor = CommonExtractors.CANOLA_EXTRACTOR;
+				break;
+			case LARGEST_CONTENT_EXTRACTOR:
+				extractor = CommonExtractors.LARGEST_CONTENT_EXTRACTOR;
+				break;
+			}
+			try {
+				temp.setContent(extractor.getText(newsPage.outerHtml()));
+			} catch (BoilerpipeProcessingException e) {
+				LOGGER.error("Error al extraer el contenido del texto de forma automatica");
+				;
+				temp.setContent("Error al extraer el contenido de forma automatica");
 			}
 		}
 		if (feed.getSelectorPubDate() != null) {
@@ -352,8 +519,8 @@ public class FeedScrapingImpl implements FeedScraping {
 				temp.setTitle(feed.getSelectorTitleMeta() ? newsPage.select(
 						feed.getSelectorTitle()).attr("content") : newsPage
 						.select(feed.getSelectorTitle()).text());
-			}
-		}
+			} 
+		} 
 		return temp.build();
 
 	}
@@ -384,18 +551,38 @@ public class FeedScrapingImpl implements FeedScraping {
 		NewsBuilder temp = new NewsBuilder(feed);
 		temp.setUrl(linkNews);
 		temp.setTitle(title);
-		if (feed.getSelectorContent() != null) {
-			if (!feed.getSelectorContent().isEmpty()) {
-				temp.setContent(feed.getSelectorContentMeta() ? newsPage
-						.select(feed.getSelectorContent()).attr("content")
-						: newsPage.select(feed.getSelectorContent()).text());
+		if (feed.getExtractionType() == null
+				|| ExtractionType.CSS_EXTRACTOR
+						.equals(feed.getExtractionType())) {
+			if (feed.getSelectorContent() != null) {
+				if (!feed.getSelectorContent().isEmpty()) {
+					temp.setContent(feed.getSelectorContentMeta() ? newsPage
+							.select(feed.getSelectorContent()).attr("content")
+							: newsPage.select(feed.getSelectorContent()).text());
+				}
 			}
-		}
-		if (feed.getSelectorDescription() != null) {
-			if (!feed.getSelectorDescription().isEmpty()) {
-				temp.setDescription(feed.getSelectorDescriptionMeta() ? newsPage
-						.select(feed.getSelectorDescription()).attr("content")
-						: newsPage.select(feed.getSelectorDescription()).text());
+		} else {
+			BoilerpipeExtractor extractor = CommonExtractors.ARTICLE_EXTRACTOR;
+			switch (feed.getExtractionType()) {
+			case ARTICLE_EXTRACTOR:
+				extractor = CommonExtractors.ARTICLE_EXTRACTOR;
+				break;
+			case DEFAULT_EXTRACTOR:
+				extractor = CommonExtractors.DEFAULT_EXTRACTOR;
+				break;
+			case CANOLA_EXTRACTOR:
+				extractor = CommonExtractors.CANOLA_EXTRACTOR;
+				break;
+			case LARGEST_CONTENT_EXTRACTOR:
+				extractor = CommonExtractors.LARGEST_CONTENT_EXTRACTOR;
+				break;
+			}
+			try {
+				temp.setContent(extractor.getText(newsPage.outerHtml()));
+			} catch (BoilerpipeProcessingException e) {
+				LOGGER.error("Error al extraer el contenido del texto de forma automatica");
+				;
+				temp.setContent("Error al extraer el contenido de forma automatica");
 			}
 		}
 		if (feed.getSelectorPubDate() != null) {
@@ -410,7 +597,11 @@ public class FeedScrapingImpl implements FeedScraping {
 				temp.setTitle(feed.getSelectorTitleMeta() ? newsPage.select(
 						feed.getSelectorTitle()).attr("content") : newsPage
 						.select(feed.getSelectorTitle()).text());
+			} else {
+				temp.setTitle(newsPage.title());
 			}
+		} else {
+			temp.setTitle(newsPage.title());
 		}
 		return temp.build();
 	}

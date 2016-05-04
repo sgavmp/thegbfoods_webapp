@@ -3,12 +3,17 @@ package com.ucm.ilsa.veterinaria.domain;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.validation.constraints.NotNull;
+
 import org.hibernate.validator.constraints.NotBlank;
 import org.hibernate.validator.constraints.NotEmpty;
 import org.hibernate.validator.constraints.URL;
 
+import com.google.common.collect.Lists;
+
 public class FeedForm {
 	@NotBlank
+	@NotEmpty
 	private String name;
 	@URL
 	@NotEmpty
@@ -16,40 +21,35 @@ public class FeedForm {
 	private String dateFormat;
 	//Por defecto Spanish
 	private Language languaje = Language.SPANISH;
-	private boolean isRSS = true;
+	private boolean isRSS = false;
+	private boolean isAuto = false;
 	private WebLevel type = WebLevel.yellow;
-	private boolean actived = false;
-	private boolean accepted = true;
-	private boolean forAlerts = true;
-	private boolean forRisks = true;
+	private boolean actived = true;
 	private Integer minRefresh = 120;
 	private String selectorTitle;
-	private String selectorDescription;
 	private String selectorContent;
 	private String selectorPubDate;
 	private boolean selectorTitleMeta;
-	private boolean selectorDescriptionMeta;
 	private boolean selectorContentMeta;
 	private boolean selectorPubDateMeta;
 	private FeedTypeEnum feedType;
 	private List<FeedPlaceEnum> feedPlace;
 	private CharsetEnum charSet = CharsetEnum.UTF8;
+	private ExtractionType extractionType = ExtractionType.ARTICLE_EXTRACTOR;
 	
 	@URL
+	@NotEmpty
 	private String urlNews;//Url de la pagina de noticias o de rss
-	
-	private List<String> urlPages;
 	private String newsLink;
 	
 	public FeedForm() {
-		this.urlPages = new ArrayList<String>();
+		this.feedPlace=Lists.newArrayList(FeedPlaceEnum.general);
 	}
 	
 	public FeedForm(Feed feed) {
 		this.name=feed.getName();
 		this.dateFormat=feed.getDateFormat();
 		this.languaje=feed.getLanguaje();
-		this.urlPages=feed.getUrlPages();
 		this.url=feed.getUrlSite();
 		this.urlNews=feed.getUrlNews();
 		this.newsLink = feed.getNewsLink();
@@ -58,19 +58,16 @@ public class FeedForm {
 		this.minRefresh = feed.getMinRefresh();
 		this.selectorContent = feed.getSelectorContent();
 		this.selectorContentMeta = feed.getSelectorContentMeta();
-		this.selectorDescription = feed.getSelectorDescription();
-		this.selectorDescriptionMeta = feed.getSelectorDescriptionMeta();
 		this.selectorTitle = feed.getSelectorTitle();
 		this.selectorTitleMeta = feed.getSelectorTitleMeta();
 		this.selectorPubDate = feed.getSelectorPubDate();
 		this.selectorPubDateMeta = feed.getSelectorPubDateMeta();
-		this.accepted = feed.isAccepted();
 		this.actived = feed.isActived();
 		this.charSet = feed.getCharSet();
-		this.forAlerts = feed.getForAlerts();
-		this.forRisks = feed.getForRisks();
 		this.feedPlace = feed.getFeedPlace();
 		this.feedType = feed.getFeedType();
+		this.extractionType = feed.getExtractionType();
+		this.isAuto = feed.getIsAuto();
 	}
 
 	public String getName() {
@@ -121,14 +118,6 @@ public class FeedForm {
 		this.urlNews = urlNews;
 	}
 
-	public List<String> getUrlPages() {
-		return urlPages;
-	}
-
-	public void setUrlPages(List<String> urlPages) {
-		this.urlPages = urlPages;
-	}
-
 	public String getNewsLink() {
 		return newsLink;
 	}
@@ -161,14 +150,6 @@ public class FeedForm {
 		this.selectorTitle = selectorTitle;
 	}
 
-	public String getSelectorDescription() {
-		return selectorDescription;
-	}
-
-	public void setSelectorDescription(String selectorDescription) {
-		this.selectorDescription = selectorDescription;
-	}
-
 	public String getSelectorContent() {
 		return selectorContent;
 	}
@@ -191,14 +172,6 @@ public class FeedForm {
 
 	public void setSelectorTitleMeta(boolean selectorTitleMeta) {
 		this.selectorTitleMeta = selectorTitleMeta;
-	}
-
-	public boolean getSelectorDescriptionMeta() {
-		return selectorDescriptionMeta;
-	}
-
-	public void setSelectorDescriptionMeta(boolean selectorDescriptionMeta) {
-		this.selectorDescriptionMeta = selectorDescriptionMeta;
 	}
 
 	public boolean getSelectorContentMeta() {
@@ -233,40 +206,12 @@ public class FeedForm {
 		this.actived = actived;
 	}
 
-	public boolean isAccepted() {
-		return accepted;
-	}
-	
-	public boolean getAccepted() {
-		return accepted;
-	}
-
-	public void setAccepted(boolean accepted) {
-		this.accepted = accepted;
-	}
-
 	public CharsetEnum getCharSet() {
 		return charSet;
 	}
 
 	public void setCharSet(CharsetEnum charSet) {
 		this.charSet = charSet;
-	}
-	
-	public boolean getForAlerts() {
-		return forAlerts;
-	}
-
-	public void setForAlerts(boolean forAlerts) {
-		this.forAlerts = forAlerts;
-	}
-
-	public boolean getForRisks() {
-		return forRisks;
-	}
-
-	public void setForRisks(boolean forRisks) {
-		this.forRisks = forRisks;
 	}
 
 	public FeedTypeEnum getFeedType() {
@@ -285,5 +230,22 @@ public class FeedForm {
 		this.feedPlace = feedPlace;
 	}
 
+	public ExtractionType getExtractionType() {
+		return extractionType;
+	}
+
+	public void setExtractionType(ExtractionType extractionType) {
+		this.extractionType = extractionType;
+	}
+
+	public boolean getIsAuto() {
+		return isAuto;
+	}
+
+	public void setIsAuto(boolean isAuto) {
+		this.isAuto = isAuto;
+	}
+	
+	
 	
 }

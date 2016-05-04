@@ -39,52 +39,46 @@ public class Feed extends BaseEntity {
 	private String urlSite;
 	private String dateFormat;
 	@Enumerated(EnumType.STRING)
-	private Language languaje;
+	private Language languaje = Language.SPANISH;
 	@Lob
 	private String lastNewsLink = "";
 	@Lob
 	private String urlNews;
-	private boolean isRSS = true;
+	private boolean isRSS = false;
+	private boolean isAuto = false;
 	@Enumerated(EnumType.ORDINAL)
-	private WebLevel type;
+	private WebLevel type = WebLevel.red;
 	@Enumerated(EnumType.ORDINAL)
 	private FeedTypeEnum feedType = FeedTypeEnum.general;
 	@Enumerated(EnumType.ORDINAL)
 	@ElementCollection(fetch = FetchType.EAGER)
-	private List<FeedPlaceEnum> feedPlace = Lists.newArrayList();
+	private List<FeedPlaceEnum> feedPlace = Lists.newArrayList(FeedPlaceEnum.general);
 	private Integer numNewNews;
 	private Date dateFirstNews;
 	private Timestamp ultimaRecuperacion;
-	private boolean actived = false;
-	private boolean accepted = true;
-	private boolean forAlerts = true;
-	private boolean forRisks = true;
+	private boolean actived = true;
 	private String comment;
-	private Integer minRefresh;
+	private Integer minRefresh = 120;
 	private String selectorTitle;
-	private String selectorDescription;
 	private String selectorContent;
 	private String selectorPubDate;
 	private boolean selectorTitleMeta;
-	private boolean selectorDescriptionMeta;
 	private boolean selectorContentMeta;
 	private boolean selectorPubDateMeta;
 	@Enumerated(EnumType.STRING)
 	private CharsetEnum charSet = CharsetEnum.UTF8;
 	@Enumerated(EnumType.ORDINAL)
 	private UpdateStateEnum state = UpdateStateEnum.WAIT;
+	private String newsLink;
+	private ExtractionType extractionType = ExtractionType.ARTICLE_EXTRACTOR;
+	@Lob
+	@ElementCollection(fetch = FetchType.EAGER)
+	private List<String> crawlerNews;
+	
 	@Transient
 	private boolean updateIndex=false;
 	@Transient
 	private String nextExecution="";
-
-	// Solo sitios sin RSS
-	@ElementCollection(fetch = FetchType.EAGER)
-	@CollectionTable(name = "feed_url_pages", joinColumns = @JoinColumn(name = "SITE_ID"))
-	@OrderColumn
-	@Lob
-	private List<String> urlPages;
-	private String newsLink;
 
 	public Feed() {
 	}
@@ -96,55 +90,47 @@ public class Feed extends BaseEntity {
 		this.isRSS = feed.getIsRSS();
 		this.urlSite = feed.getUrl();
 		this.urlNews = feed.getUrlNews();
-		this.urlPages = feed.getUrlPages();
 		this.newsLink = feed.getNewsLink();
 		this.type = feed.getType();
 		this.minRefresh = feed.getMinRefresh();
 		this.selectorContent = feed.getSelectorContent();
 		this.selectorContentMeta = feed.getSelectorContentMeta();
-		this.selectorDescription = feed.getSelectorDescription();
-		this.selectorDescriptionMeta = feed.getSelectorDescriptionMeta();
 		this.selectorTitle = feed.getSelectorTitle();
 		this.selectorTitleMeta = feed.getSelectorTitleMeta();
 		this.selectorPubDate = feed.getSelectorPubDate();
 		this.selectorPubDateMeta = feed.getSelectorPubDateMeta();
-		this.accepted = feed.isAccepted();
 		this.actived = feed.isActived();
 		this.charSet = feed.getCharSet();
-		this.forAlerts = feed.getForAlerts();
-		this.forRisks = feed.getForRisks();
 		this.feedPlace = feed.getFeedPlace();
 		this.feedType = feed.getFeedType();
+		this.extractionType = feed.getExtractionType();
+		this.isAuto = feed.getIsAuto();
 	}
 
 	public void changeValues(FeedForm feed) {
-		if (this.feedPlace.hashCode() != feed.getFeedPlace().hashCode())
+		if (this.feedPlace.hashCode() != feed.getFeedPlace().hashCode() || this.getFeedType().hashCode() != feed.getFeedType().hashCode())
 			this.updateIndex=true;
 		this.name = feed.getName();
 		this.dateFormat = feed.getDateFormat();
 		this.languaje = feed.getLanguaje();
 		this.urlSite = feed.getUrl();
 		this.urlNews = feed.getUrlNews();
-		this.urlPages = feed.getUrlPages();
 		this.isRSS = feed.getIsRSS();
 		this.newsLink = feed.getNewsLink();
 		this.type = feed.getType();
 		this.minRefresh = feed.getMinRefresh();
 		this.selectorContent = feed.getSelectorContent();
 		this.selectorContentMeta = feed.getSelectorContentMeta();
-		this.selectorDescription = feed.getSelectorDescription();
-		this.selectorDescriptionMeta = feed.getSelectorDescriptionMeta();
 		this.selectorTitle = feed.getSelectorTitle();
 		this.selectorTitleMeta = feed.getSelectorTitleMeta();
 		this.selectorPubDate = feed.getSelectorPubDate();
 		this.selectorPubDateMeta = feed.getSelectorPubDateMeta();
-		this.accepted = feed.isAccepted();
 		this.actived = feed.isActived();
 		this.charSet = feed.getCharSet();
-		this.forAlerts = feed.getForAlerts();
-		this.forRisks = feed.getForRisks();
 		this.feedPlace = feed.getFeedPlace();
 		this.feedType = feed.getFeedType();
+		this.extractionType = feed.getExtractionType();
+		this.isAuto = feed.getIsAuto();
 	}
 	
 
@@ -219,15 +205,7 @@ public class Feed extends BaseEntity {
 	public void setRSS(boolean isRSS) {
 		this.isRSS = isRSS;
 	}
-
-	public List<String> getUrlPages() {
-		return urlPages;
-	}
-
-	public void setUrlPages(List<String> urlPages) {
-		this.urlPages = urlPages;
-	}
-
+	
 	public String getNewsLink() {
 		return newsLink;
 	}
@@ -260,14 +238,6 @@ public class Feed extends BaseEntity {
 		this.actived = actived;
 	}
 
-	public boolean isAccepted() {
-		return accepted;
-	}
-
-	public void setAccepted(boolean accepted) {
-		this.accepted = accepted;
-	}
-
 	public String getComment() {
 		return comment;
 	}
@@ -292,14 +262,6 @@ public class Feed extends BaseEntity {
 		this.selectorTitle = selectorTitle;
 	}
 
-	public String getSelectorDescription() {
-		return selectorDescription;
-	}
-
-	public void setSelectorDescription(String selectorDescription) {
-		this.selectorDescription = selectorDescription;
-	}
-
 	public String getSelectorContent() {
 		return selectorContent;
 	}
@@ -322,14 +284,6 @@ public class Feed extends BaseEntity {
 
 	public void setSelectorTitleMeta(boolean selectorTitleMeta) {
 		this.selectorTitleMeta = selectorTitleMeta;
-	}
-
-	public boolean getSelectorDescriptionMeta() {
-		return selectorDescriptionMeta;
-	}
-
-	public void setSelectorDescriptionMeta(boolean selectorDescriptionMeta) {
-		this.selectorDescriptionMeta = selectorDescriptionMeta;
 	}
 
 	public boolean getSelectorContentMeta() {
@@ -380,22 +334,6 @@ public class Feed extends BaseEntity {
 		this.state = state;
 	}
 
-	public boolean getForAlerts() {
-		return forAlerts;
-	}
-
-	public void setForAlerts(boolean forAlerts) {
-		this.forAlerts = forAlerts;
-	}
-
-	public boolean getForRisks() {
-		return forRisks;
-	}
-
-	public void setForRisks(boolean forRisks) {
-		this.forRisks = forRisks;
-	}
-
 	public FeedTypeEnum getFeedType() {
 		return feedType;
 	}
@@ -426,6 +364,36 @@ public class Feed extends BaseEntity {
 
 	public void setNextExecution(String nextExecution) {
 		this.nextExecution = nextExecution;
+	}
+
+	public ExtractionType getExtractionType() {
+		return extractionType;
+	}
+
+	public void setExtractionType(ExtractionType extractionType) {
+		this.extractionType = extractionType;
+	}
+
+	public List<String> getCrawlerNews() {
+		if (this.crawlerNews==null)
+			this.crawlerNews= Lists.newArrayList();
+		return crawlerNews;
+	}
+
+	public void setCrawlerNews(List<String> crawlerNews) {
+		this.crawlerNews = crawlerNews;
+	}
+
+	public boolean isAuto() {
+		return isAuto;
+	}
+	
+	public boolean getIsAuto() {
+		return isAuto;
+	}
+
+	public void setAuto(boolean isAuto) {
+		this.isAuto = isAuto;
 	}
 	
 	

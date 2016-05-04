@@ -56,7 +56,7 @@ public class SchedulerService {
 																// tras
 																// planificar
 			for (Feed feed : listFeeds) {
-				if (feed.isAccepted() & feed.isActived()) {
+				if (feed.isActived()) {
 					AlertTaskContainer task = new AlertTaskContainer(feed);
 					beanFactory.autowireBean(task);
 					ScheduledFuture<?> futureTask = scheduler
@@ -91,7 +91,7 @@ public class SchedulerService {
 			ScheduledFuture<?> futureTask = tasks.remove(feed.getId());
 			futureTask.cancel(true);
 		}
-		if (feed.isActived() && feed.isAccepted() && configuracion.getConfiguracion().isRunService()) {
+		if (feed.isActived() && configuracion.getConfiguracion().isRunService()) {
 			ScheduledFuture<?> futureTask = null;
 			AlertTaskContainer task = new AlertTaskContainer((Feed) feed);
 			beanFactory.autowireBean(task);
@@ -104,7 +104,7 @@ public class SchedulerService {
 	public void addFeedTask(Feed feed) {
 		Date startTime = new Date();
 		startTime.setTime(startTime.getTime() + 1000 * 120);
-		if (feed.isActived() && feed.isAccepted() && configuracion.getConfiguracion().isRunService()) {
+		if (feed.isActived() && configuracion.getConfiguracion().isRunService()) {
 			ScheduledFuture<?> futureTask = null;
 			AlertTaskContainer task = new AlertTaskContainer((Feed) feed);
 			beanFactory.autowireBean(task);
@@ -115,7 +115,7 @@ public class SchedulerService {
 	}
 
 	public void startTask(Feed feed) {
-		if (feed.isActived() && feed.isAccepted()) {
+		if (feed.isActived()) {
 			Date startTime = new Date();
 			startTime.setTime(startTime.getTime() + 1000 * 5); // Iniciar en 5
 			AlertTaskContainer task = new AlertTaskContainer((Feed) feed);

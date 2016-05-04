@@ -15,6 +15,7 @@ import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,11 +23,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.google.common.collect.Lists;
 import com.ucm.ilsa.veterinaria.domain.Alert;
 import com.ucm.ilsa.veterinaria.domain.AlertAbstract;
+import com.ucm.ilsa.veterinaria.domain.ExtractionType;
 import com.ucm.ilsa.veterinaria.domain.Feed;
 import com.ucm.ilsa.veterinaria.domain.FeedForm;
 import com.ucm.ilsa.veterinaria.domain.FeedPlaceEnum;
@@ -69,7 +72,7 @@ public class FeedController extends BaseController {
 
 	@RequestMapping("**")
 	public String getAllAlerts() {
-		return FOLDER + "feeds";
+		return "/feeds/feeds";
 	}
 	
 	@RequestMapping("/get/{codeName}")
@@ -86,7 +89,7 @@ public class FeedController extends BaseController {
 			}
 		}
 		model.addAttribute("alertas", alertas);
-		return FOLDER + "oneFeed";
+		return "/feeds/oneFeed";
 	}
 	
 	@ModelAttribute("enumFiabilidad")
@@ -108,6 +111,11 @@ public class FeedController extends BaseController {
 	public FeedPlaceEnum[] getValuesOfPlace() {
 		return FeedPlaceEnum.values();
 	}
+	
+	@ModelAttribute("enumExtraction")
+	public ExtractionType[] getValuesOfExtraction() {
+		return ExtractionType.values();
+	}
 
 	@RequestMapping("/get/{codeName}/update/ajax")
 	public @ResponseBody String updateNewsByFeedAjax(Model model,
@@ -120,7 +128,7 @@ public class FeedController extends BaseController {
 	public String formNewFeed(Model model) {
 		model.addAttribute("feed", new FeedForm());
 		model.addAttribute("nuevo", true);
-		return FOLDER + "feedForm";
+		return "/feeds/feedForm";
 	}
 
 	@RequestMapping(value = "/create", method = RequestMethod.POST)
@@ -128,7 +136,7 @@ public class FeedController extends BaseController {
 			RedirectAttributes redirectAttributes, @Valid FeedForm feed,
 			BindingResult result) {
 		if (result.hasErrors()) {
-			return FOLDER + "feedForm";
+			return "/feeds/feedForm";
 		}
 		Feed feedP = new Feed(feed);
 		feedP = serviceFeed.createFeed(feedP);
@@ -141,11 +149,29 @@ public class FeedController extends BaseController {
 		}
 		return "redirect:/feeds/get/" + feedP.getId() + "/edit";
 	}
+	
+	@RequestMapping(value = "/masive", method = RequestMethod.GET)
+	public String createMasiveFeed(Model model) {
+		return "/feeds/masiveFeed";
+	}
+	
+	@RequestMapping(value = "/masive", method = RequestMethod.POST)
+	public String createMasiveFeed(@RequestParam(name="list") String list, Model model) {
+		if (StringUtils.isEmpty(list))
+			model.addAttribute("error", "Tienes que añadir una URL por línea.");
+		String[] listURL = list.split("\r\n");
+		List<String> urlFail = serviceFeed.createFeedAuto(listURL);
+		if (!urlFail.isEmpty()) {
+			model.addAttribute("error", "Tienes que añadir una URL por línea.");
+			model.addAttribute("fail", urlFail);
+		}
+		return "/feeds/masiveFeed";
+	}
 
 	@RequestMapping(value = "/get/{codeName}/edit", method = RequestMethod.GET)
 	public String formEditFeed(Model model, @PathVariable("codeName") Feed feedP) {
 		model.addAttribute("feed", new FeedForm(feedP));
-		return FOLDER + "feedForm";
+		return "/feeds/feedForm";
 	}
 
 	@RequestMapping(value = "/get/{codeName}/edit", method = RequestMethod.POST)
@@ -155,7 +181,7 @@ public class FeedController extends BaseController {
 			@ModelAttribute(value = "feed") FeedForm feed,
 			BindingResult bindingResult) {
 		if (bindingResult.hasErrors()) {
-			return FOLDER + "newsFeed";
+			return "/feeds/newsFeed";
 		}
 		int version = feedP.getVersion();
 		feedP.changeValues(feed);
@@ -168,7 +194,7 @@ public class FeedController extends BaseController {
 			redirectAttributes.addFlashAttribute("error",
 					"Ha ocurrido un error, vuelva a intentarlo más tarde.");
 		}
-		return FOLDER + "feedForm";
+		return "/feeds/feedForm";
 	}
 
 	@RequestMapping(value = "/get/{codeName}/test", method = RequestMethod.GET)
@@ -178,7 +204,7 @@ public class FeedController extends BaseController {
 			feedP.setRSS(false);
 		}
 		model.addAttribute("feed", new FeedForm(feedP));
-		return FOLDER + "comprobarForm";
+		return "/feeds/comprobarForm";
 	}
 
 	@RequestMapping(value = "/get/{codeName}/test", method = RequestMethod.POST, params = { "testFeed" })
@@ -186,40 +212,15 @@ public class FeedController extends BaseController {
 			@ModelAttribute(value = "feed") FeedForm feed) {
 		feed.setIsRSS(false);
 		News news = serviceFeed.testFeed(feed);
-		// model.addAttribute(feed);
 		return news;
-	}
-
-	@RequestMapping(value = { "/get/{codeName}/edit", "/create" }, method = RequestMethod.POST, params = { "addPage" })
-	public String addPageNews(Model model,
-			@ModelAttribute(value = "feed") FeedForm feed) {
-		feed.getUrlPages().add(new String());
-		// model.addAttribute(feed);
-		return FOLDER + "feedForm";
-	}
-
-	@RequestMapping(value = { "/get/{codeName}/edit", "/create" }, method = RequestMethod.POST, params = { "removePage" })
-	public String removePageNews(Model model,
-			@ModelAttribute(value = "feed") FeedForm feed,
-			@RequestParam("removePage") Integer index) {
-		feed.getUrlPages().remove(index.intValue());
-		// model.addAttribute(feed);
-		return FOLDER + "feedForm";
 	}
 
 	@RequestMapping(value = { "/get/{codeName}/edit", "/create" }, method = RequestMethod.POST, params = { "testFeed" })
-	public @ResponseBody News testFeed(Model model,
+	public String testFeed(Model model,
 			@ModelAttribute(value = "feed") FeedForm feed) {
 		News news = serviceFeed.testFeed(feed);
-		if (news != null) {
-			if (news.getContent() != null) {
-				if (news.getContent().length() > 500)
-					news.setContent(news.getContent().substring(0, 500)
-							.concat("..."));
-			}
-		}
-		// model.addAttribute(feed);
-		return news;
+		model.addAttribute(news);
+		return "/feeds/comprobarForm";
 	}
 
 	@RequestMapping("/get/{codeName}/remove")

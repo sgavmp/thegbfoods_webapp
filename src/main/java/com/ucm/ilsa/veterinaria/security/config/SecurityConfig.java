@@ -38,7 +38,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         //Configuramos los permisos de cada ruta
         .and()
             .authorizeRequests()
-            .antMatchers("/static/**","/webjars/**").permitAll()//Recursos estaticos
+            .antMatchers("/static/**","/webjars/**","/error").permitAll()//Recursos estaticos
             .anyRequest().authenticated()
             //.antMatchers("/admin*").hasRole("ADMIN")//Panel de administracion
             //.antMatchers("/**").permitAll()//El resto esta abierto

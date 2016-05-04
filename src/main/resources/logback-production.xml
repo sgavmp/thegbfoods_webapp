@@ -10,15 +10,13 @@
 		</filter>
 	</appender>
 
-
 	<logger name="com.ucm.ilsa.veterinaria" additivity="false">
 	    <level value="ALL" />
 		<appender-ref ref="consoleAppender" />
 	</logger>
 	
 	<root>
-		<level value="WARN" />
+		<level value="ERROR" />
 		<appender-ref ref="consoleAppender" />
 	</root>
-
 </configuration>

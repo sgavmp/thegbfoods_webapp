@@ -6,6 +6,7 @@ import java.util.concurrent.Future;
 
 import com.ucm.ilsa.veterinaria.domain.AlertAbstract;
 import com.ucm.ilsa.veterinaria.domain.Feed;
+import com.ucm.ilsa.veterinaria.domain.Location;
 import com.ucm.ilsa.veterinaria.domain.News;
 import com.ucm.ilsa.veterinaria.domain.NewsDetect;
 
@@ -25,4 +26,5 @@ public interface NewsIndexService {
 	public void resetAllAlerts() throws IOException;
 	public void resetAlert(AlertAbstract alert) throws IOException;
 	public List<NewsDetect> search(String query) throws Exception;
+	void resetLocation(Location loc) throws IOException;
 }

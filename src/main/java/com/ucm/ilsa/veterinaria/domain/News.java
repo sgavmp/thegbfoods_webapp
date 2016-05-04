@@ -29,6 +29,7 @@ public class News extends BaseEntity {
 	public static String fieldBody = "body";
 	public static String fieldBodyNoCase = "bodyN";
 	public static String fieldDatePub = "datePub";
+	public static String fieldDateCreate = "dateCreate";
 	public static String fieldUrl = "id";
 	public static String fieldSite = "feed";
 	public static String fieldSiteLoc = "siteLoc";
@@ -39,8 +40,6 @@ public class News extends BaseEntity {
 	private Long id;
 	@Lob
 	private String title;
-	@Transient
-	private String description;
 	@Lob
 	private String content;
 	private Long site;
@@ -64,14 +63,6 @@ public class News extends BaseEntity {
 
 	public void setTitle(String title) {
 		this.title = title;
-	}
-
-	public String getDescription() {
-		return description;
-	}
-
-	public void setDescription(String description) {
-		this.description = description;
 	}
 
 	public String getContent() {

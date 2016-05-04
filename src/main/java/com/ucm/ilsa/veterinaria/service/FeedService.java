@@ -24,5 +24,6 @@ public interface FeedService {
 	public News testFeed(FeedForm feed);
 	public List<NewsDetect> findAllDistinctNewsDetectByFeedOrderByDatePub(Feed feed);
 	public Feed setSateOfFeed(Feed feed, UpdateStateEnum state);
+	public List<String> createFeedAuto(String[] listURL);
 
 }
