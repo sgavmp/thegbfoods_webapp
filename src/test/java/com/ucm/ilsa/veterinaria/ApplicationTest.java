@@ -39,6 +39,7 @@ import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.aop.interceptor.AsyncUncaughtExceptionHandler;
@@ -84,6 +85,7 @@ import es.ucm.visavet.gbf.topics.validator.ParseException;
 import es.ucm.visavet.gbf.topics.validator.TopicValidator;
 import es.ucm.visavet.gbf.topics.validator.TopicValidatorSemantics;
 
+@Ignore
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(Application.class)
 @WebAppConfiguration 

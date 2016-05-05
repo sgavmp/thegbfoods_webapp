@@ -35,6 +35,10 @@ war {
 sourceCompatibility = 1.7
 targetCompatibility = 1.7
 
+springBoot {
+  mainClass = "com.ucm.ilsa.veterinaria.Application.java"
+}
+
 repositories {
 	flatDir {
 	       dirs 'libs'
