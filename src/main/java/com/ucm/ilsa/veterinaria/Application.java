@@ -7,6 +7,7 @@ import javax.sql.DataSource;
 
 import org.apache.commons.configuration.ConfigurationConverter;
 import org.apache.commons.configuration.DatabaseConfiguration;
+import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 import org.springframework.aop.interceptor.AsyncUncaughtExceptionHandler;
 import org.springframework.aop.interceptor.SimpleAsyncUncaughtExceptionHandler;
@@ -48,6 +49,7 @@ public class Application extends SpringBootServletInitializer implements AsyncCo
 	
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args);
+        BasicConfigurator.configure();
     }
     
     @Override

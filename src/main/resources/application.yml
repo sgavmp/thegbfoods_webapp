@@ -8,6 +8,11 @@ spring:
     test-on-borrow: true
     time-between-eviction-runs-millis: 18000
     validationQuery: SELECT 1
+
+logging:
+  pattern:
+    level: DEBUG
+    console: '%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg %n'
   
 ---
 gbfood:

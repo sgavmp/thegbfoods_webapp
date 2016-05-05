@@ -134,7 +134,7 @@ public class FeedServiceImpl implements FeedService {
 	@Override
 	public List<String> createFeedAuto(String[] listUrl) {
 		List<String> fail = Lists.newArrayList();
-		String regex = "^(?<name>[A-Za-z0-9 ]{5,20})\\t(?<url>(https?|ftp):\\/\\/[^\\s\\/$.?#].[^\\s]*)\\t(?<tipo>@T(general|periodico|revistaCientifica|revista|blogNutricional|blog|institucional)+)(?<lugar>(\\t(@L(general|españa|italia|rusia|holanda|alemania|inglaterra|portugal|francia|estadosunidos|india|marruecos)+))+)$";
+		String regex = "^(?<name>[A-Za-z0-9 ]{2,50})\\t(?<url>(https?|ftp):\\/\\/[^\\s\\/$.?#].[^\\s]*)\\t(?<tipo>@T(general|periodico|revistaCientifica|revista|blogNutricional|blog|institucional)+)(?<lugar>(\\t(@L(general|españa|italia|rusia|holanda|alemania|inglaterra|portugal|francia|estadosunidos|india|marruecos)+))+)$";
 		Pattern pattern = Pattern.compile(regex);
 		for (String linea : listUrl) {
 			Matcher matcher = pattern.matcher(linea);

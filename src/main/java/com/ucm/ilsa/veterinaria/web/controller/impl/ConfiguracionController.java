@@ -93,5 +93,15 @@ public class ConfiguracionController extends BaseController {
 		return "conf";
 	}
 	
-	
+	@RequestMapping(value="/shutdown")
+	public String shutdown(Model model, RedirectAttributes redirectAttributes) {
+        try {
+			newsIndexService.stopDirectory();
+			schedulerService.stopAllTask();
+		} catch (IOException e) {
+			
+		}
+        
+		return "redirect:/";
+	}
 }
