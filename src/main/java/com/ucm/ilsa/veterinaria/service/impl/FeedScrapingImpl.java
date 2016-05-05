@@ -438,8 +438,13 @@ public class FeedScrapingImpl implements FeedScraping {
 	}
 
 	public News getNewsWithRSS(Feed feed, SyndEntry news) {
-		String url = news.getLink().startsWith("http")  ? news.getLink()
-				: feed.getUrlSite().concat(news.getLink());
+		String link = news.getLink();
+		try {
+			URL url = new URL(news.getLink());
+		} catch (MalformedURLException ex) {
+			link = feed.getUrlSite().concat(news.getLink());
+		}
+		String url = link;
 		NewsBuilder temp = new NewsBuilder(feed);
 		temp.setTitle(news.getTitle());
 		temp.setUrl(url);
