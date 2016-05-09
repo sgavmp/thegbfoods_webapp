@@ -127,7 +127,7 @@ public class NewsIndexServiceImpl implements NewsIndexService, Runnable {
 
 	@Autowired
 	private AutowireCapableBeanFactory beanFactory;
-	
+
 	@Autowired
 	private LocationRepository locationRepository;
 
@@ -195,17 +195,24 @@ public class NewsIndexServiceImpl implements NewsIndexService, Runnable {
 		if (news != null) {
 			try {
 				Document d = new Document();
-				d.add(new StringField(News.fieldUrl, news.getUrl(), Field.Store.YES));
-				d.add(new TextField(News.fieldTitle, news.getTitle(), Field.Store.YES));
-				d.add(new TextField(News.fieldTitleNoCase, news.getTitle(), Field.Store.NO));
-				d.add(new TextField(News.fieldBody, news.getContent(), Field.Store.YES));
-				d.add(new TextField(News.fieldBody, news.getContent(), Field.Store.NO));
-				d.add(new StringField(News.fieldDatePub, DateTools.dateToString(
-						news.getPubDate(), Resolution.MINUTE), Field.Store.YES));
-				d.add(new StringField(News.fieldSite, news.getSite().toString(),
+				d.add(new StringField(News.fieldUrl, news.getUrl(),
 						Field.Store.YES));
-				d.add(new StringField(News.fieldDateCreate, DateTools.dateToString(
-						new Date(), Resolution.MINUTE), Field.Store.YES));
+				d.add(new TextField(News.fieldTitle, news.getTitle(),
+						Field.Store.YES));
+				d.add(new TextField(News.fieldTitleNoCase, news.getTitle(),
+						Field.Store.NO));
+				d.add(new TextField(News.fieldBody, news.getContent(),
+						Field.Store.YES));
+				d.add(new TextField(News.fieldBody, news.getContent(),
+						Field.Store.NO));
+				d.add(new StringField(News.fieldDatePub, DateTools
+						.dateToString(news.getPubDate(), Resolution.MINUTE),
+						Field.Store.YES));
+				d.add(new StringField(News.fieldSite,
+						news.getSite().toString(), Field.Store.YES));
+				d.add(new StringField(News.fieldDateCreate, DateTools
+						.dateToString(new Date(), Resolution.MINUTE),
+						Field.Store.YES));
 				Feed feed = feedService.getFeedByCodeName(news.getSite());
 				if (feed.getFeedType() == null) {
 					feed.setFeedType(FeedTypeEnum.general);
@@ -222,7 +229,8 @@ public class NewsIndexServiceImpl implements NewsIndexService, Runnable {
 				for (FeedPlaceEnum type : feed.getFeedPlace())
 					d.add(new StringField(News.fieldSiteLoc, type.getValue()
 							.toString(), Field.Store.YES));
-				getWriter().updateDocument(new Term(News.fieldUrl, news.getUrl()), d);
+				getWriter().updateDocument(
+						new Term(News.fieldUrl, news.getUrl()), d);
 				feedService.updateFeed(feed);
 			} catch (NullPointerException ex) {
 				LOGGER.error("Error al almacenar noticia.");
@@ -300,7 +308,7 @@ public class NewsIndexServiceImpl implements NewsIndexService, Runnable {
 		getWriter().commit();
 		getWriter().close();
 		getDirectory().close();
-		this.allDirectory=null;
+		this.allDirectory = null;
 		LOGGER.info("Se han cerrado los indices");
 	}
 
@@ -361,10 +369,10 @@ public class NewsIndexServiceImpl implements NewsIndexService, Runnable {
 		Query query = b.build();
 		return query;
 	}
-	
+
 	private Query createQuery(Location location, Long from, Long to) {
-		InputStream alertDefinition = new ByteArrayInputStream(location.getQuery()
-				.getBytes());
+		InputStream alertDefinition = new ByteArrayInputStream(location
+				.getQuery().getBytes());
 		QueryConstructor queryConstructorBody = new QueryConstructor(
 				new QueryConstructorSemantics(topicManager, News.fieldBody,
 						News.fieldBodyNoCase, News.fieldSiteLoc,
@@ -376,7 +384,8 @@ public class NewsIndexServiceImpl implements NewsIndexService, Runnable {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		alertDefinition = new ByteArrayInputStream(location.getQuery().getBytes());
+		alertDefinition = new ByteArrayInputStream(location.getQuery()
+				.getBytes());
 		QueryConstructor queryConstructorTitle = new QueryConstructor(
 				new QueryConstructorSemantics(topicManager, News.fieldTitle,
 						News.fieldTitleNoCase, News.fieldSiteLoc,
@@ -426,7 +435,7 @@ public class NewsIndexServiceImpl implements NewsIndexService, Runnable {
 			LOGGER.error("Error al abrir el indice para realizar la busqueda.");
 		}
 		IndexSearcher searcher = new IndexSearcher(reader);
-		//Proceso de detección de localizaciones
+		// Proceso de detección de localizaciones
 		Iterable<Location> locations = locationRepository.findAll();
 		for (Location loc : locations) {
 			Long from = loc.getUltimaRecuperacion() != null ? loc
@@ -444,7 +453,7 @@ public class NewsIndexServiceImpl implements NewsIndexService, Runnable {
 				e.printStackTrace();
 			}
 		}
-		//Proceso de detección de alertas
+		// Proceso de detección de alertas
 		Set<AlertAbstract> tasks = Sets.newHashSet();
 		tasks.addAll(alertService.getAllAlert());
 		tasks.addAll(riskService.getAllAlert());
@@ -504,8 +513,10 @@ public class NewsIndexServiceImpl implements NewsIndexService, Runnable {
 		LOGGER.info("Añadiendo nuevas noticias al indice.");
 		int i = 0;
 		for (News news : newsRepository.findAll()) {
-			addDocument(news);
-			i++;
+			if (news.getContent() !=null && news.getContent().length() > 25) {//Solo noticias con mas de 25 caracteres
+				addDocument(news);
+				i++;
+			}
 			newsRepository.delete(news);
 		}
 		getWriter().commit();
@@ -546,7 +557,7 @@ public class NewsIndexServiceImpl implements NewsIndexService, Runnable {
 		}
 		if (!closed) {
 			getDirectory().close();
-			this.allDirectory=null;
+			this.allDirectory = null;
 		}
 		LOGGER.info("Finaliza el proceso de busqueda de alertas en todo el indice.");
 
@@ -606,11 +617,11 @@ public class NewsIndexServiceImpl implements NewsIndexService, Runnable {
 		}
 		if (!closed) {
 			getDirectory().close();
-			this.allDirectory=null;
+			this.allDirectory = null;
 		}
 		LOGGER.info("Finaliza el proceso de busqueda de alertas en todo el indice.");
 	}
-	
+
 	private void resetLocationInter(Location loc, IndexSearcher searcher) {
 		Long to = new Date().getTime();
 		Query q = createQuery(loc, 0L, to);
@@ -618,7 +629,7 @@ public class NewsIndexServiceImpl implements NewsIndexService, Runnable {
 			List<String> listNewsDetect = searchLocation(q, searcher, loc);
 			loc = locationRepository.findOne(loc.getId());
 			loc.setUltimaRecuperacion(new Timestamp(to));
-			if (loc.getNews()==null)
+			if (loc.getNews() == null)
 				loc.setNews(listNewsDetect);
 			else
 				loc.getNews().addAll(listNewsDetect);
@@ -628,7 +639,7 @@ public class NewsIndexServiceImpl implements NewsIndexService, Runnable {
 			e.printStackTrace();
 		}
 	}
-	
+
 	public void resetAllLocation() throws IOException {
 		LOGGER.info("Se inicia el proceso de busqueda de localizaciones en todo el indice.");
 		boolean closed = getWriter() == null ? false : getWriter().isOpen();
@@ -643,11 +654,11 @@ public class NewsIndexServiceImpl implements NewsIndexService, Runnable {
 		}
 		// newsDetectRepository.deleteAll();
 		IndexSearcher searcher = new IndexSearcher(reader);
-		//Proceso de detección de localizaciones
-				Iterable<Location> locations = locationRepository.findAll();
-				for (Location loc : locations) {
-					resetLocationInter(loc, searcher);
-				}
+		// Proceso de detección de localizaciones
+		Iterable<Location> locations = locationRepository.findAll();
+		for (Location loc : locations) {
+			resetLocationInter(loc, searcher);
+		}
 		try {
 			reader.close();
 		} catch (IOException e) {
@@ -656,12 +667,12 @@ public class NewsIndexServiceImpl implements NewsIndexService, Runnable {
 		}
 		if (!closed) {
 			getDirectory().close();
-			this.allDirectory=null;
+			this.allDirectory = null;
 		}
 		LOGGER.info("Finaliza el proceso de busqueda de localizaciones en todo el indice.");
 
 	}
-	
+
 	@Override
 	public void resetLocation(Location loc) throws IOException {
 		LOGGER.info("Se inicia el proceso de busqueda de alertas en todo el indice.");
@@ -685,7 +696,7 @@ public class NewsIndexServiceImpl implements NewsIndexService, Runnable {
 		}
 		if (!closed) {
 			getDirectory().close();
-			this.allDirectory=null;
+			this.allDirectory = null;
 		}
 		LOGGER.info("Finaliza el proceso de busqueda de alertas en todo el indice.");
 	}
@@ -716,9 +727,10 @@ public class NewsIndexServiceImpl implements NewsIndexService, Runnable {
 						.toString(), Field.Store.YES));
 			String url = doc.get("id").toString();
 			try {
-			getWriter().updateDocument(new Term("id", url), doc);
+				getWriter().updateDocument(new Term("id", url), doc);
 			} catch (Exception e) {
-				LOGGER.error("Error al actualizar el documento con id " + docId + " y url " + url);
+				LOGGER.error("Error al actualizar el documento con id " + docId
+						+ " y url " + url);
 			}
 		}
 		reader.close();
@@ -759,6 +771,27 @@ public class NewsIndexServiceImpl implements NewsIndexService, Runnable {
 			return listNewsDetect.subList(0, 20);
 		else
 			return listNewsDetect;
+	}
+
+	@Override
+	public void removeFeedFromIndex(Feed feed) throws Exception {
+		IndexReader reader = null;
+		try {
+			reader = DirectoryReader.open(getDirectory());
+		} catch (IOException e1) {
+			LOGGER.error("Error al abrir el indice para realizar la busqueda.");
+		}
+		IndexSearcher searcher = new IndexSearcher(reader);
+		Query q = new TermQuery(new Term(News.fieldSite, feed.getId()
+				.toString()));
+		try {
+			getWriter().deleteDocuments(q);
+		} catch (Exception e) {
+			LOGGER.error("Error al eliminar las noticias del websites: " + feed.getId());
+		}
+		reader.close();
+		getWriter().commit();
+
 	}
 
 }

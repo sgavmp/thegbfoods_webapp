@@ -94,6 +94,14 @@ public class FeedServiceImpl implements FeedService {
 	@Override
 	public boolean removeFeed(Feed feed) {
 		schedulerService.removeFeedTask(feed);
+		try {
+			newsIndexService.removeFeedFromIndex(feed);
+		} catch (Exception e) {
+			return false;
+		}
+		List<NewsDetect> lista = newsDetectRepository.findAllDistinctBySiteOrderByDatePubDesc(feed);
+		for (NewsDetect news : lista)
+			newsDetectRepository.delete(news.getId());
 		this.repositoryFeed.delete(feed);
 		return !this.repositoryFeed.exists(feed.getId());
 	}

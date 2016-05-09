@@ -27,4 +27,5 @@ public interface NewsIndexService {
 	public void resetAlert(AlertAbstract alert) throws IOException;
 	public List<NewsDetect> search(String query) throws Exception;
 	void resetLocation(Location loc) throws IOException;
+	public void removeFeedFromIndex(Feed feed) throws Exception;
 }
