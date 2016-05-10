@@ -8,8 +8,8 @@ spring:
     test-on-borrow: true
     time-between-eviction-runs-millis: 18000
     validationQuery: SELECT 1
-
 logging:
+  config: classpath:logback-production.xml
   pattern:
     level: DEBUG
     console: '%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg %n'
@@ -22,6 +22,9 @@ gbfood:
     crawler: /tomcatfolder/app/gbfood/crawler/
 logging:
   config: classpath:logback-production.xml
+  pattern:
+    level: DEBUG
+    console: '%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg %n'
 spring:
   profiles: production
   datasource:

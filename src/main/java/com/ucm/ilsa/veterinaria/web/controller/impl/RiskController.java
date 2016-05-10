@@ -165,7 +165,7 @@ public class RiskController extends BaseController {
 		model.addAttribute("term", wordFilter);
 		if (result.hasErrors()) {
 			model.addAttribute("error", "Hay un error en el formulario");
-            return "/alerts/words";
+            return "/alerts/formAlert";
         }
 		TopicValidator validator = new TopicValidator(
 				new TopicValidatorSemantics(wordFilter.getTitle()+"test", topicManager),
@@ -174,13 +174,13 @@ public class RiskController extends BaseController {
 			validator.topic();
 		} catch (TopicDoesNotExistsException e) {
 			model.addAttribute("error", "El topic " + e.getTopic() + " no existe.");
-			return "/alerts/words";
+			return "/alerts/formAlert";
 		} catch (CyclicDependencyException e) {
 			model.addAttribute("error", e.toString());
-			return "/alerts/words";
+			return "/alerts/formAlert";
 		} catch (ParseException | TokenMgrError e) {
 			model.addAttribute("error", "Se ha producido un error al validar el topic.");
-			return "/alerts/words";
+			return "/alerts/formAlert";
 		}
 		try {
 			wordFilter = service.create(wordFilter);
@@ -192,11 +192,16 @@ public class RiskController extends BaseController {
 		return "redirect:/risks/get/"+wordFilter.getId();
 	}
 	
+	@RequestMapping(value = "/create", method=RequestMethod.GET)
+	public String getFormCreate(Model model) {
+		model.addAttribute("term", new Risk());
+		return "/alerts/formAlert";
+	}
+	
 	@RequestMapping(value = "/get/{id}/edit", method=RequestMethod.GET)
 	public String getFormUpdateLocation(Model model, @PathVariable ("id") Risk word) {
-		model.addAttribute("allWords", service.getAllAlert());
 		model.addAttribute("term",word);
-		return "/alerts/words";
+		return "/alerts/formAlert";
 	}
 	
 	@RequestMapping(value="/get/{id}/edit", method=RequestMethod.POST)
@@ -204,7 +209,7 @@ public class RiskController extends BaseController {
 		model.addAttribute("term", wordFilter);
 		if (result.hasErrors()) {
         	model.addAttribute("error","Hay un error en el formulario");
-            return "/alerts/words";
+            return "/alerts/formAlert";
         }
 		TopicValidator validator = new TopicValidator(
 				new TopicValidatorSemantics(wordFilter.getTitle(), topicManager),
@@ -213,13 +218,13 @@ public class RiskController extends BaseController {
 			validator.topic();
 		} catch (TopicDoesNotExistsException e) {
 			model.addAttribute("error", "El topic " + e.getTopic() + " no existe.");
-			return "/alerts/words";
+			return "/alerts/formAlert";
 		} catch (CyclicDependencyException e) {
 			model.addAttribute("error", e.toString());
-			return "/alerts/words";
+			return "/alerts/formAlert";
 		} catch (ParseException | TokenMgrError e) {
 			model.addAttribute("error", "Se ha producido un error al validar el topic.");
-			return "/alerts/words";
+			return "/alerts/formAlert";
 		}
 		service.update((Risk)wordFilter.bind(before));
 		redirectAttributes.addFlashAttribute("info","Se ha actualizado correctamente el filtro.");

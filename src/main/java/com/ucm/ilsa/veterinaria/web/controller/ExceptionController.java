@@ -10,6 +10,8 @@ import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.support.ConfigurableConversionService;
 import org.springframework.core.io.ClassPathResource;
@@ -58,10 +60,14 @@ import es.ucm.visavet.gbf.topics.validator.TopicDoesNotExistsException;
 
 @ControllerAdvice
 public class ExceptionController {
+	
+	Logger LOGGER = LoggerFactory.getLogger(getClass());
 
 	@ExceptionHandler(value = Exception.class)
     public ModelAndView defaultErrorHandler(HttpServletRequest req, Exception e) throws Exception {
         // Otherwise setup and send the user to a default error-view.
+		LOGGER.error(e.getMessage());
+		LOGGER.error(e.toString());
         ModelAndView mav = new ModelAndView();
         mav.addObject("exception", e);
         mav.addObject("url", req.getRequestURL());

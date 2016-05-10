@@ -188,7 +188,7 @@ public class FeedScrapingImpl implements FeedScraping {
 				CrawlConfig config = new CrawlConfig();
 				config.setCrawlStorageFolder(crawlStorageFolder);
 				config.setMaxPagesToFetch(2);//Solo un enlace
-				config.setPolitenessDelay(10);
+				config.setPolitenessDelay(1);
 				config.setMaxDepthOfCrawling(1);
 				config.setShutdownOnEmptyQueue(true);
 

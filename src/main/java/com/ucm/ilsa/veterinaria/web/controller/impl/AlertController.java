@@ -125,7 +125,6 @@ public class AlertController extends BaseController {
 	@RequestMapping("/list")
 	public String getAllLocations(Model model) {
 		model.addAttribute("allWords", service.getAllAlert());
-		model.addAttribute("term", new Alert());
 		return "/alerts/words";
 	}
 	
@@ -133,7 +132,7 @@ public class AlertController extends BaseController {
 	public String createLocation(Model model, RedirectAttributes redirectAttributes, Alert wordFilter,BindingResult result) {
 		model.addAttribute("term", wordFilter);
 		if (result.hasErrors()) {
-            return "/alerts/words";
+            return "/alerts/formAlert";
         }
 		TopicValidator validator = new TopicValidator(
 				new TopicValidatorSemantics(wordFilter.getTitle()+"test", topicManager),
@@ -142,13 +141,13 @@ public class AlertController extends BaseController {
 			validator.topic();
 		} catch (TopicDoesNotExistsException e) {
 			model.addAttribute("error", "El topic " + e.getTopic() + " no existe.");
-			return "/alerts/words";
+			return "/alerts/formAlert";
 		} catch (CyclicDependencyException e) {
 			model.addAttribute("error", e.toString());
-			return "/alerts/words";
+			return "/alerts/formAlert";
 		} catch (ParseException | TokenMgrError e) {
 			model.addAttribute("error", "Se ha producido un error al validar el topic.");
-			return "/alerts/words";
+			return "/alerts/formAlert";
 		}
 		try {
 			service.create(wordFilter);
@@ -159,13 +158,19 @@ public class AlertController extends BaseController {
 		redirectAttributes.addFlashAttribute("info","Se ha añadido correctamente el filtro");
 		return "redirect:/alerts/get/"+wordFilter.getId();
 	}
+	
+	@RequestMapping(value = "/create", method=RequestMethod.GET)
+	public String getFormCreate(Model model) {
+		model.addAttribute("term", new Alert());
+		return "/alerts/formAlert";
+	}
 
 	
 	@RequestMapping(value = "/get/{id}/edit", method=RequestMethod.GET)
 	public String getFormUpdateLocation(Model model, @PathVariable ("id") Alert word) {
 		model.addAttribute("allWords", service.getAllAlert());
 		model.addAttribute("term",word);
-		return "/alerts/words";
+		return "/alerts/formAlert";
 	}
 	
 	@RequestMapping(value="/get/{id}/edit", method=RequestMethod.POST)
@@ -173,7 +178,7 @@ public class AlertController extends BaseController {
 		model.addAttribute("term", wordFilter);
 		if (result.hasErrors()) {
         	model.addAttribute("error","Hay un error en el formulario");
-            return "/alerts/words";
+            return "/alerts/formAlert";
         }
         model.addAttribute("term", wordFilter);
 		TopicValidator validator = new TopicValidator(
@@ -183,13 +188,13 @@ public class AlertController extends BaseController {
 			validator.topic();
 		} catch (TopicDoesNotExistsException e) {
 			model.addAttribute("error", "El topic " + e.getTopic() + " no existe.");
-			return "/alerts/words";
+			return "/alerts/formAlert";
 		} catch (CyclicDependencyException e) {
 			model.addAttribute("error", e.toString());
-			return "/alerts/words";
+			return "/alerts/formAlert";
 		} catch (ParseException | TokenMgrError e) {
 			model.addAttribute("error", "Se ha producido un error al validar el topic.");
-			return "/alerts/words";
+			return "/alerts/formAlert";
 		}
 		wordFilter = service.update((Alert)wordFilter.bind(before));
 		redirectAttributes.addFlashAttribute("info","Se ha actualizado correctamente el filtro.");
