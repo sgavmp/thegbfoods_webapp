@@ -488,6 +488,12 @@ public class FeedScrapingImpl implements FeedScraping {
 							: newsPage.select(feed.getSelectorContent()).text());
 				}
 			}
+		} else if (ExtractionType.RSS_DESCRIPTION
+				.equals(feed.getExtractionType())) {
+			news.getDescription();
+		} else if (ExtractionType.ALL_CONTENT
+				.equals(feed.getExtractionType())) {
+			temp.setContent(newsPage.text());
 		} else {
 			BoilerpipeExtractor extractor = CommonExtractors.ARTICLE_EXTRACTOR;
 			switch (feed.getExtractionType()) {
@@ -566,6 +572,10 @@ public class FeedScrapingImpl implements FeedScraping {
 							: newsPage.select(feed.getSelectorContent()).text());
 				}
 			}
+		}  else if (ExtractionType.ALL_CONTENT
+				.equals(feed.getExtractionType()) || ExtractionType.RSS_DESCRIPTION
+				.equals(feed.getExtractionType())) {
+			temp.setContent(newsPage.text());
 		} else {
 			BoilerpipeExtractor extractor = CommonExtractors.ARTICLE_EXTRACTOR;
 			switch (feed.getExtractionType()) {
