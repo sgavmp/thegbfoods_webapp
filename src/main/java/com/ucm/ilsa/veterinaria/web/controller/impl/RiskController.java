@@ -71,7 +71,7 @@ public class RiskController extends BaseController {
 	private LocationRepository locationRepository;
 	
 	public RiskController() {
-		this.menu = "Otras Alertas";
+		this.menu = "Otros Riesgos";
 	}
 	
 	@ModelAttribute("allCountriesAfects")

@@ -15,9 +15,6 @@ public class FeedForm {
 	@NotBlank
 	@NotEmpty
 	private String name;
-	@URL
-	@NotEmpty
-	private String url;//Url del sitio
 	private String dateFormat;
 	//Por defecto Spanish
 	private Language languaje = Language.SPANISH;
@@ -50,7 +47,6 @@ public class FeedForm {
 		this.name=feed.getName();
 		this.dateFormat=feed.getDateFormat();
 		this.languaje=feed.getLanguaje();
-		this.url=feed.getUrlSite();
 		this.urlNews=feed.getUrlNews();
 		this.newsLink = feed.getNewsLink();
 		this.type = feed.getType();
@@ -76,14 +72,6 @@ public class FeedForm {
 
 	public void setName(String name) {
 		this.name = name;
-	}
-
-	public String getUrl() {
-		return url;
-	}
-
-	public void setUrl(String url) {
-		this.url = url;
 	}
 
 	public String getDateFormat() {

@@ -173,6 +173,12 @@ public class MainController extends BaseController {
 	}
 	
 	@ResponseBody
+	@RequestMapping("/ajax/graph/alerts")
+	public List<Object> getGraphDataForAlerts() {
+		return Lists.newArrayList();
+	}
+	
+	@ResponseBody
 	@RequestMapping("/ajax/scrap/week")
 	public GraphData getGraphDataForWeek() {
 		List<String> dias = Lists.newArrayList("Domingo","Lunes","Martes","Miercoles","Jueves","Viernes","Sabado");

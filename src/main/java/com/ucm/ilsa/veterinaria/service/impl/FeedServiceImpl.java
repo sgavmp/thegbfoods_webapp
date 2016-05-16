@@ -167,7 +167,6 @@ public class FeedServiceImpl implements FeedService {
 			Feed feed = new Feed();
 			feed.setUrlNews(url);
 			feed.setName(name);
-			feed.setUrlSite(link.getProtocol() + "://" +link.getAuthority());
 			feed.setAuto(true);
 			feed.setFeedType(typeE);
 			feed.setFeedPlace(lugaresE);

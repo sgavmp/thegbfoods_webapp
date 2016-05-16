@@ -442,7 +442,13 @@ public class FeedScrapingImpl implements FeedScraping {
 		try {
 			URL url = new URL(news.getLink());
 		} catch (MalformedURLException ex) {
-			link = feed.getUrlSite().concat(news.getLink());
+			URL url = null;
+			try {
+				url = new URL(feed.getUrlNews());
+				link = url.getProtocol().concat(url.getAuthority().concat(news.getLink()));
+			} catch (MalformedURLException e) {
+				e.printStackTrace();
+			}
 		}
 		String url = link;
 		NewsBuilder temp = new NewsBuilder(feed);

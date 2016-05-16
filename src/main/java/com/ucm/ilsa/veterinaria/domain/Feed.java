@@ -35,8 +35,6 @@ public class Feed extends BaseEntity {
 	@Id @GeneratedValue(strategy=GenerationType.TABLE)
 	private Long id;
 	private String name;
-	@Lob
-	private String urlSite;
 	private String dateFormat;
 	@Enumerated(EnumType.STRING)
 	private Language languaje = Language.SPANISH;
@@ -88,7 +86,6 @@ public class Feed extends BaseEntity {
 		this.dateFormat = feed.getDateFormat();
 		this.languaje = feed.getLanguaje();
 		this.isRSS = feed.getIsRSS();
-		this.urlSite = feed.getUrl();
 		this.urlNews = feed.getUrlNews();
 		this.newsLink = feed.getNewsLink();
 		this.type = feed.getType();
@@ -113,7 +110,6 @@ public class Feed extends BaseEntity {
 		this.name = feed.getName();
 		this.dateFormat = feed.getDateFormat();
 		this.languaje = feed.getLanguaje();
-		this.urlSite = feed.getUrl();
 		this.urlNews = feed.getUrlNews();
 		this.isRSS = feed.getIsRSS();
 		this.newsLink = feed.getNewsLink();
@@ -156,14 +152,6 @@ public class Feed extends BaseEntity {
 
 	public void setName(String name) {
 		this.name = name;
-	}
-
-	public String getUrlSite() {
-		return urlSite;
-	}
-
-	public void setUrlSite(String urlSite) {
-		this.urlSite = urlSite;
 	}
 
 	public String getDateFormat() {
@@ -317,14 +305,6 @@ public class Feed extends BaseEntity {
 	public void setCharSet(CharsetEnum charSet) {
 		this.charSet = charSet;
 	}	
-	
-	public boolean linkIsFromSite(String link) throws MalformedURLException {
-		URL lasNews = new URL(this.lastNewsLink);
-		URL site = new URL(this.urlSite);
-		URL newsLink = new URL(this.urlNews);
-		URL linkURL = new URL(link);
-		return lasNews.getHost().equals(linkURL.getHost()) || site.getHost().equals(linkURL.getHost()) || newsLink.getHost().equals(linkURL.getHost());
-	}
 
 	public UpdateStateEnum getState() {
 		return state;
