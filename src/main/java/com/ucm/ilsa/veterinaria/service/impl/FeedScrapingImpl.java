@@ -496,7 +496,7 @@ public class FeedScrapingImpl implements FeedScraping {
 			}
 		} else if (ExtractionType.RSS_DESCRIPTION
 				.equals(feed.getExtractionType())) {
-			news.getDescription();
+			temp.setContent(news.getDescription().getValue());
 		} else if (ExtractionType.ALL_CONTENT
 				.equals(feed.getExtractionType())) {
 			temp.setContent(newsPage.text());
