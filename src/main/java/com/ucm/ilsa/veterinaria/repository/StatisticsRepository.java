@@ -12,9 +12,9 @@ import com.ucm.ilsa.veterinaria.domain.Statistics;
 
 public interface StatisticsRepository extends CrudRepository<Statistics, Date> {
 
-	@Query(value="SELECT SUM(s.NOTICIAS) NOTICIAS,SUM(s.TOTAL) TOTAL,SUM(s.RIESGO) RIESGO,SUM(s.ALERTA) ALERTA,year(s.FECHA) YEAR,weekofyear(s.FECHA) SEMANA FROM gbfood.estadisticas s group by SEMANA ORDER BY YEAR desc, SEMANA desc;",nativeQuery=true)
+	@Query(value="SELECT SUM(s.NOTICIAS) NOTICIAS,SUM(s.TOTAL) TOTAL,SUM(s.RIESGO) RIESGO,SUM(s.ALERTA) ALERTA,year(s.FECHA) YEAR,weekofyear(s.FECHA) SEMANA FROM estadisticas s group by SEMANA ORDER BY YEAR desc, SEMANA desc;",nativeQuery=true)
 	List<Object[]> getStatsByWeek();
-	@Query(value="SELECT SUM(s.NOTICIAS) NOTICIAS,SUM(s.TOTAL) TOTAL,SUM(s.RIESGO) RIESGO,SUM(s.ALERTA) ALERTA, year(s.FECHA) YEAR, month(s.FECHA) MES FROM gbfood.estadisticas s group by MES ORDER BY YEAR desc, MES desc;",nativeQuery = true)
+	@Query(value="SELECT SUM(s.NOTICIAS) NOTICIAS,SUM(s.TOTAL) TOTAL,SUM(s.RIESGO) RIESGO,SUM(s.ALERTA) ALERTA, year(s.FECHA) YEAR, month(s.FECHA) MES FROM estadisticas s group by MES ORDER BY YEAR desc, MES desc;",nativeQuery = true)
 	List<Object[]> getStatsByMonth();
 	@Query(value="SELECT * FROM ESTADISTICAS order by FECHA desc limit 7",nativeQuery = true)
 	List<Statistics> getStatsLastWeek();
