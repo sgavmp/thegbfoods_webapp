@@ -7,6 +7,7 @@ spring:
     testWhileIdle: true
     test-on-borrow: true
     time-between-eviction-runs-millis: 18000
+    init-sql: "SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci;"
     validationQuery: SELECT 1
 logging:
   config: classpath:logback-production.xml
@@ -31,6 +32,7 @@ spring:
     jndi-name: java:comp/env/jdbc/veterinaria
     driverClassName: com.mysql.jdbc.Driver
     testWhileIdle: true
+    init-sql: "SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci;"
     test-on-borrow: true
     time-between-eviction-runs-millis: 18000
     validationQuery: SELECT 1
@@ -39,7 +41,10 @@ spring:
       ddl-auto: update
     properties:
       hibernate:
-        dialect org.hibernate.dialect.MySQL5Dialect
+        dialect: org.hibernate.dialect.MySQL5Dialect
+        connection:
+          characterEncoding: utf8mb4
+          useUnicode: true
     database-platform: org.hibernate.dialect.MySQLDialect
 
 name: production
@@ -55,12 +60,18 @@ logging:
 spring:
   profiles: local
   jpa:
+    properties:
+      hibernate:
+        connection:
+          characterEncoding: utf8mb4
+          useUnicode: true
     hibernate:
       ddl-auto: update
   thymeleaf:
     cache: false
   datasource:
     url: jdbc:mysql://localhost:3306/gbfood
+    init-sql: "SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci;"
     username: root
     password: root
     driverClassName: com.mysql.jdbc.Driver
@@ -79,6 +90,11 @@ spring:
   profiles: test-db
   
   jpa:
+    properties:
+      hibernate:
+        connection:
+          characterEncoding: utf8mb4
+          useUnicode: true
     hibernate:
       ddl-auto: update
   thymeleaf:
@@ -87,6 +103,7 @@ spring:
     url: jdbc:mysql://localhost:3306/gbfood
     username: root
     password: root
+    init-sql: "SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci;"
     driverClassName: com.mysql.jdbc.Driver
     continueOnError: true
     initialize: false
@@ -99,12 +116,18 @@ spring:
   profiles: test
   
   jpa:
+    properties:
+      hibernate:
+        connection:
+          characterEncoding: utf8mb4
+          useUnicode: true
     hibernate:
       ddl-auto: update
     database-platform: org.hibernate.dialect.H2Dialect
   thymeleaf:
     cache: false
   datasource:
+    init-sql: "SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci;"
     initialize: false
     
 

@@ -19,9 +19,11 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.neovisionaries.i18n.CountryCode;
 import com.ucm.ilsa.veterinaria.domain.Alert;
@@ -276,6 +278,19 @@ public class RiskController extends BaseController {
 		repository.save(news);
 		redirectAttributes.addFlashAttribute("info", "Se ha marcado la noticia como activa.");
 		return "redirect:/risks/get/" + word.getId();
+	}
+	
+	@ResponseBody
+	@RequestMapping(value = "/ajax/stats", method=RequestMethod.GET)
+	public Map<String,List<Object[]>> getAlertsStat() {
+		Map<String,List<Object[]>> alerts = Maps.newHashMap();
+		for (Risk alert : service.getAllAlert()) {
+			alerts.put(alert.getTitle(), new ArrayList<Object[]>());	
+		}
+		for (Object[] ob : statisticsRepository.getRisktStats()) {
+			alerts.get(ob[1]).add(ob);
+		}
+		return alerts;
 	}
 	
 	@RequestMapping(value = "/get/{id}/news/{idNews}/remove", method=RequestMethod.GET)

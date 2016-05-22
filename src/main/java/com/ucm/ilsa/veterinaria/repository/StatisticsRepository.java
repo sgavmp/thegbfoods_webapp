@@ -20,10 +20,18 @@ public interface StatisticsRepository extends CrudRepository<Statistics, Date> {
 	List<Statistics> getStatsLastWeek();
 	@Query(value="SELECT * FROM ESTADISTICAS order by FECHA",nativeQuery = true)
 	List<Statistics> getAllStats();
+	@Query(value="SELECT *  FROM alert_score order by fecha desc",nativeQuery = true)
+	List<Object[]> getAlertStats();
+	@Query(value="SELECT *  FROM alert_score where alert_detect_id LIKE :alert order by fecha desc",nativeQuery = true)
+	List<Object[]> getAlertStats(@Param("alert")String alert);
 	@Query(value="SELECT *  FROM alert_score where fecha = :fecha order by score_avg desc limit :limit",nativeQuery = true)
 	List<Object[]> getAlertSocreAvgDay(@Param("fecha")String fecha, @Param("limit")Integer limit);
 	@Query(value="SELECT alert_detect_id,title,fecha,sum(num) num, avg(score_avg) score_avg  FROM alert_score where fecha <= :from and fecha > :to group by title order by score_avg desc limit :limit",nativeQuery = true)
 	List<Object[]> getAlertSocreAvgBetween(@Param("from")String from,@Param("to")String to, @Param("limit")Integer limit);
+	@Query(value="SELECT *  FROM risk_score order by fecha desc",nativeQuery = true)
+	List<Object[]> getRisktStats();
+	@Query(value="SELECT *  FROM risk_score where alert_detect_id LIKE :alert order by fecha desc",nativeQuery = true)
+	List<Object[]> getRisktStats(@Param("alert")String alert);
 	@Query(value="SELECT *  FROM risk_score where fecha = :fecha order by score_avg desc limit :limit",nativeQuery = true)
 	List<Object[]> getRiskSocreAvgDay(@Param("fecha")String fecha, @Param("limit")Integer limit);
 	@Query(value="SELECT alert_detect_id,title,fecha,sum(num) num, avg(score_avg) score_avg  FROM risk_score where fecha <= :from and fecha > :to group by title order by score_avg desc limit :limit",nativeQuery = true)
