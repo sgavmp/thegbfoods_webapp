@@ -6,10 +6,10 @@ PARSER_BEGIN(QueryConstructor)
 package es.ucm.visavet.gbf.topics.queryconstructor;
 import es.ucm.visavet.gbf.topics.util.QueryUtil;
 import org.apache.lucene.search.Query;
-import java.io.InputStream;
+import java.io.Reader;
 public class QueryConstructor {
     private QueryConstructorSemantics sem;
-    public QueryConstructor(QueryConstructorSemantics sem, InputStream input) {
+    public QueryConstructor(QueryConstructorSemantics sem, Reader input) {
 	  this(input);
 	  this.sem = sem;
 	}

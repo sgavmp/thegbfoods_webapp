@@ -61,12 +61,12 @@ public class RiskItemProcessor implements ItemProcessor<Risk, Risk> {
 //			temp = temp.trim();
 //			item.setWords(temp);
 //		}
-		TopicValidator validator = new TopicValidator(new TopicValidatorSemantics(item.getTitle(), topicManager), new ByteArrayInputStream(item.getWords().getBytes()));
-		try {
-			validator.topic();
-		} catch (TokenMgrError | ParseException e) {
-			LOGGER.error("Error en alerta " + item.getTitle());
-		}
+//		TopicValidator validator = new TopicValidator(new TopicValidatorSemantics(item.getTitle(), topicManager), new ByteArrayInputStream(item.getWords().getBytes()));
+//		try {
+//			validator.topic();
+//		} catch (TokenMgrError | ParseException e) {
+//			LOGGER.error("Error en alerta " + item.getTitle());
+//		}
 		return item;
 	}
 

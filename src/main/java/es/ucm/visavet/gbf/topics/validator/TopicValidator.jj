@@ -4,11 +4,11 @@ options  {
 }  
 PARSER_BEGIN(TopicValidator)
 package es.ucm.visavet.gbf.topics.validator;
-import java.io.InputStream;
+import java.io.Reader;
 import es.ucm.visavet.gbf.topics.util.QueryUtil;
 public class TopicValidator {
     private TopicValidatorSemantics sem;
-    public TopicValidator(TopicValidatorSemantics sem, InputStream input) {
+    public TopicValidator(TopicValidatorSemantics sem, Reader input) {
 	  this(input);
 	  this.sem = sem;
 	}

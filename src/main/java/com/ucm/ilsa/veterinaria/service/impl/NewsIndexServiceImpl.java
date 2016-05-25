@@ -5,6 +5,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.HashMap;
@@ -13,6 +15,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledFuture;
+
 import org.apache.log4j.Logger;
 
 import javax.annotation.PostConstruct;
@@ -251,8 +254,11 @@ public class NewsIndexServiceImpl implements NewsIndexService, Runnable {
 			newsDocument.setDatePub(DateTools.stringToDate(d.get("datePub")));
 			newsDocument.setLink(d.get("id"));
 			newsDocument.setScore(docsA[i].score);
+			newsDocument.setScoreLucene(docsA[i].score);
 			newsDocument.setSite(feedService.getFeedByCodeName(new Long(d
 					.get("feed"))));
+			if (alert==null || newsDocument.getSite()==null)
+				LOGGER.error("Error");
 			newsDocument.setTitle(d.get("title"));
 			listNewsDetect.add(newsDocument);
 		}
@@ -325,9 +331,9 @@ public class NewsIndexServiceImpl implements NewsIndexService, Runnable {
 		return true;
 	}
 
-	private Query createQuery(AlertAbstract alert, Long from, Long to) {
-		InputStream alertDefinition = new ByteArrayInputStream(alert.getWords()
-				.getBytes());
+	private Query createQuery(AlertAbstract alert, Long from, Long to) throws UnsupportedEncodingException {
+		InputStreamReader alertDefinition = new InputStreamReader(new ByteArrayInputStream(alert.getWords()
+				.getBytes()),"UTF-8");
 		QueryConstructor queryConstructorBody = new QueryConstructor(
 				new QueryConstructorSemantics(topicManager, News.fieldBody,
 						News.fieldBodyNoCase, News.fieldSiteLoc,
@@ -339,7 +345,7 @@ public class NewsIndexServiceImpl implements NewsIndexService, Runnable {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		alertDefinition = new ByteArrayInputStream(alert.getWords().getBytes());
+		alertDefinition = new InputStreamReader(new ByteArrayInputStream(alert.getWords().getBytes()),"UTF-8");
 		QueryConstructor queryConstructorTitle = new QueryConstructor(
 				new QueryConstructorSemantics(topicManager, News.fieldTitle,
 						News.fieldTitleNoCase, News.fieldSiteLoc,
@@ -370,9 +376,9 @@ public class NewsIndexServiceImpl implements NewsIndexService, Runnable {
 		return query;
 	}
 
-	private Query createQuery(Location location, Long from, Long to) {
-		InputStream alertDefinition = new ByteArrayInputStream(location
-				.getQuery().getBytes());
+	private Query createQuery(Location location, Long from, Long to) throws UnsupportedEncodingException {
+		InputStreamReader alertDefinition = new InputStreamReader(new ByteArrayInputStream(location
+				.getQuery().getBytes()),"UTF-8");
 		QueryConstructor queryConstructorBody = new QueryConstructor(
 				new QueryConstructorSemantics(topicManager, News.fieldBody,
 						News.fieldBodyNoCase, News.fieldSiteLoc,
@@ -384,8 +390,8 @@ public class NewsIndexServiceImpl implements NewsIndexService, Runnable {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		alertDefinition = new ByteArrayInputStream(location.getQuery()
-				.getBytes());
+		alertDefinition = new InputStreamReader(new ByteArrayInputStream(location.getQuery()
+				.getBytes()),"UTF-8");
 		QueryConstructor queryConstructorTitle = new QueryConstructor(
 				new QueryConstructorSemantics(topicManager, News.fieldTitle,
 						News.fieldTitleNoCase, News.fieldSiteLoc,
@@ -441,7 +447,13 @@ public class NewsIndexServiceImpl implements NewsIndexService, Runnable {
 			Long from = loc.getUltimaRecuperacion() != null ? loc
 					.getUltimaRecuperacion().getTime() : 0;
 			Long to = new Date().getTime();
-			Query q = createQuery(loc, from, to);
+			Query q;
+			try {
+				q = createQuery(loc, from, to);
+			} catch (UnsupportedEncodingException e1) {
+				LOGGER.error("Error al construir la query de loc:" + loc.getName());
+				continue;
+			}
 			try {
 				List<String> listNewsDetect = searchLocation(q, searcher, loc);
 				loc = locationRepository.findOne(loc.getId());
@@ -462,7 +474,13 @@ public class NewsIndexServiceImpl implements NewsIndexService, Runnable {
 			Long from = alert.getUltimaRecuperacion() != null ? alert
 					.getUltimaRecuperacion().getTime() : 0;
 			Long to = new Date().getTime();
-			Query q = createQuery(alert, from, to);
+			Query q;
+			try {
+				q = createQuery(alert, from, to);
+			} catch (UnsupportedEncodingException e1) {
+				LOGGER.error("Error al construir la query de alerta:" + alert.getTitle());
+				continue;
+			}
 			try {
 				List<NewsDetect> listNewsDetect = search(q, searcher, alert);
 				if (!listNewsDetect.isEmpty()) {
@@ -513,10 +531,8 @@ public class NewsIndexServiceImpl implements NewsIndexService, Runnable {
 		LOGGER.info("Añadiendo nuevas noticias al indice.");
 		int i = 0;
 		for (News news : newsRepository.findAll()) {
-			if (news.getContent() !=null && news.getContent().length() > 25) {//Solo noticias con mas de 25 caracteres
-				addDocument(news);
-				i++;
-			}
+			addDocument(news);
+			i++;
 			newsRepository.delete(news);
 		}
 		getWriter().commit();
@@ -563,7 +579,7 @@ public class NewsIndexServiceImpl implements NewsIndexService, Runnable {
 
 	}
 
-	private void resetAlertInter(AlertAbstract alert, IndexSearcher searcher) {
+	private void resetAlertInter(AlertAbstract alert, IndexSearcher searcher) throws UnsupportedEncodingException {
 		Long to = new Date().getTime();
 		Query q = createQuery(alert, 0L, to);
 		try {
@@ -622,7 +638,7 @@ public class NewsIndexServiceImpl implements NewsIndexService, Runnable {
 		LOGGER.info("Finaliza el proceso de busqueda de alertas en todo el indice.");
 	}
 
-	private void resetLocationInter(Location loc, IndexSearcher searcher) {
+	private void resetLocationInter(Location loc, IndexSearcher searcher) throws UnsupportedEncodingException {
 		Long to = new Date().getTime();
 		Query q = createQuery(loc, 0L, to);
 		try {

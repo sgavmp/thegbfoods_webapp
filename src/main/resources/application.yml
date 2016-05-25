@@ -1,3 +1,7 @@
+datetime:
+  extra:
+    masks: dd/MM/yyyy
+
 spring:
   application:
     name: veterinaria
@@ -50,6 +54,9 @@ spring:
 name: production
 
 ---
+datetime:
+  extra:
+    masks: dd/MM/yyyy
 gbfood:
   resources: 
     templates: /gb/resources/templates/
@@ -85,7 +92,11 @@ name: local
 ---
 logging:
   config: classpath:logback-local.xml
-
+gbfood:
+  resources: 
+    templates: /gb/resources/templates/
+    statics: file:/gb/resources/static/
+    crawler: /gb/crawler/
 spring:
   profiles: test-db
   
@@ -111,7 +122,11 @@ spring:
 name: test-db
 
 ---
-
+gbfood:
+  resources: 
+    templates: /gb/resources/templates/
+    statics: file:/gb/resources/static/
+    crawler: /gb/crawler/
 spring:
   profiles: test
   

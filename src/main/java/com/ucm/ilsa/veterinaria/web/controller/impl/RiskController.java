@@ -2,6 +2,8 @@ package com.ucm.ilsa.veterinaria.web.controller.impl;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -163,7 +165,7 @@ public class RiskController extends BaseController {
 	}
 	
 	@RequestMapping(value="/create", method=RequestMethod.POST)
-	public String createLocation(Model model, RedirectAttributes redirectAttributes, Risk wordFilter,BindingResult result) {
+	public String createLocation(Model model, RedirectAttributes redirectAttributes, Risk wordFilter,BindingResult result) throws UnsupportedEncodingException {
 		model.addAttribute("term", wordFilter);
 		if (result.hasErrors()) {
 			model.addAttribute("error", "Hay un error en el formulario");
@@ -171,7 +173,7 @@ public class RiskController extends BaseController {
         }
 		TopicValidator validator = new TopicValidator(
 				new TopicValidatorSemantics(wordFilter.getTitle()+"test", topicManager),
-				new ByteArrayInputStream(wordFilter.getWords().getBytes()));
+				new InputStreamReader(new ByteArrayInputStream(wordFilter.getWords().getBytes()),"UTF-8"));
 		try {
 			validator.topic();
 		} catch (TopicDoesNotExistsException e) {
@@ -207,7 +209,7 @@ public class RiskController extends BaseController {
 	}
 	
 	@RequestMapping(value="/get/{id}/edit", method=RequestMethod.POST)
-	public String updateLocation(Model model, RedirectAttributes redirectAttributes, Risk wordFilter, @PathVariable ("id") Risk before,BindingResult result) {
+	public String updateLocation(Model model, RedirectAttributes redirectAttributes, Risk wordFilter, @PathVariable ("id") Risk before,BindingResult result) throws UnsupportedEncodingException {
 		model.addAttribute("term", wordFilter);
 		if (result.hasErrors()) {
         	model.addAttribute("error","Hay un error en el formulario");
@@ -215,7 +217,7 @@ public class RiskController extends BaseController {
         }
 		TopicValidator validator = new TopicValidator(
 				new TopicValidatorSemantics(wordFilter.getTitle(), topicManager),
-				new ByteArrayInputStream(wordFilter.getWords().getBytes()));
+				new InputStreamReader(new ByteArrayInputStream(wordFilter.getWords().getBytes()),"UTF-8"));
 		try {
 			validator.topic();
 		} catch (TopicDoesNotExistsException e) {

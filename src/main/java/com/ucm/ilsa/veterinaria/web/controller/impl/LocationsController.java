@@ -2,6 +2,8 @@ package com.ucm.ilsa.veterinaria.web.controller.impl;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 import javax.validation.Valid;
@@ -74,14 +76,14 @@ public class LocationsController extends BaseController {
 	}
 	
 	@RequestMapping(value="/get/{id}/edit", method=RequestMethod.POST)
-	public String updateLocation(Model model, RedirectAttributes redirectAttributes, @Valid Location location, @PathVariable ("id") Location before,BindingResult result) {
+	public String updateLocation(Model model, RedirectAttributes redirectAttributes, @Valid Location location, @PathVariable ("id") Location before,BindingResult result) throws UnsupportedEncodingException {
         if (result.hasErrors() & location.getId().equals(before.getId())) {
         	redirectAttributes.addFlashAttribute("error","Hay un error en el formulario");
             return "locations";
         }
         TopicValidator validator = new TopicValidator(
 				new TopicValidatorSemantics(location.getName(), topicManager),
-				new ByteArrayInputStream(location.getQuery().getBytes()));
+				new InputStreamReader(new ByteArrayInputStream(location.getQuery().getBytes()),"UTF-8"));
 		try {
 			validator.topic();
 		} catch (TopicDoesNotExistsException e) {

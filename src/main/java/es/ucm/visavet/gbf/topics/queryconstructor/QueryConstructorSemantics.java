@@ -2,10 +2,13 @@
 package es.ucm.visavet.gbf.topics.queryconstructor;
 
 import es.ucm.visavet.gbf.topics.manager.ITopicsManager;
-import java.io.InputStream;
+
+import java.io.Reader;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanQuery;
@@ -46,9 +49,16 @@ public class QueryConstructorSemantics {
    } 
    
    public Query buildTopicRefQuery(String term) throws ParseException {
-     InputStream topicStream = topicsManager.getDefinition(term.substring(1));
-     QueryConstructor queryConstructor = new QueryConstructor(this,topicStream);
-     return queryConstructor.topic();
+     Reader topicStream;
+	try {
+		topicStream = topicsManager.getDefinition(term.substring(1));
+		QueryConstructor queryConstructor = new QueryConstructor(this,topicStream);
+		return queryConstructor.topic();
+	} catch (UnsupportedEncodingException e) {
+		throw new ParseException("Error de codificación");
+	}
+     
+     
    } 
    
    public Query buildSourceTypeQuery(String type) throws ParseException {

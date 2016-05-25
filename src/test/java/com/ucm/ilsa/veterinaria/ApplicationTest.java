@@ -42,6 +42,7 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.openqa.selenium.phantomjs.PhantomJSDriver;
 import org.springframework.aop.interceptor.AsyncUncaughtExceptionHandler;
 import org.springframework.aop.interceptor.SimpleAsyncUncaughtExceptionHandler;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,6 +64,13 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
+import com.crawljax.core.CrawlSession;
+import com.crawljax.core.CrawlerContext;
+import com.crawljax.core.CrawljaxRunner;
+import com.crawljax.core.configuration.CrawljaxConfiguration;
+import com.crawljax.core.configuration.CrawljaxConfiguration.CrawljaxConfigurationBuilder;
+import com.crawljax.core.plugin.OnNewStatePlugin;
+import com.crawljax.core.state.StateVertex;
 import com.google.common.collect.Lists;
 import com.ucm.ilsa.veterinaria.domain.Configuracion;
 import com.ucm.ilsa.veterinaria.domain.Feed;
@@ -88,32 +96,41 @@ import es.ucm.visavet.gbf.topics.validator.TopicValidatorSemantics;
 @Ignore
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(Application.class)
-@WebAppConfiguration 
+@WebAppConfiguration
 @ActiveProfiles("test-db")
 //@ActiveProfiles("test")
-public class ApplicationTest  {
-	
-    @Autowired
-    private FeedScraping scraping;
-    
-    @Autowired
-    private FeedService feedService;
+public class ApplicationTest {
 
-    @Test
-    public void canFetchMickey() {
-    	//Feed feed = new Feed();
-    	//feed.setAuto(true);
-    	//feed.setName("Prueba");
-    	//feed.setUrlNews("http://elpais.com/elpais/ciencia.html");
-    	//feed = feedService.createFeed(feed);
-    	Feed feed = feedService.getFeedByCodeName(294912L);
-    	FeedForm form = new FeedForm(feed);
-    	List<News> listNews = scraping.scrapNews(feed, null, true);
-    	for (News news : listNews) {
-    		System.out.println(news.getTitle());
-    		System.out.println(news.getUrl());
-    		System.out.println(news.getContent());
-    	}
-    }
-    
+	@Autowired
+	private FeedScraping scraping;
+
+	@Autowired
+	private FeedService feedService;
+
+	@Test
+	public void canFetchMickey() {
+		CrawljaxConfigurationBuilder builder = CrawljaxConfiguration
+				.builderFor("http://promedmail.org/direct.php?id=20160524.4242904");
+		builder.setMaximumDepth(0);
+		builder.addPlugin(new OnNewStatePlugin() {
+
+			@Override
+			public String toString() {
+				return "Our example plugin";
+			}
+
+			@Override
+			public void onNewState(CrawlerContext cc, StateVertex sv) {
+
+				String html = cc.getBrowser().getStrippedDom();
+				String url = cc.getBrowser().getCurrentUrl();
+				System.out.println(cc.getCurrentState().getDom());
+
+			}
+		});
+
+		CrawljaxRunner crawljax = new CrawljaxRunner(builder.build());
+		crawljax.call();
+
+	}
 }

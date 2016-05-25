@@ -38,6 +38,7 @@ public class NewsDetect extends BaseEntity {
 	private boolean falPositive = false;
 	private boolean mark = false;
 	private float score;
+	private float scoreLucene;
 
 	public Long getId() {
 		return id;
@@ -120,6 +121,14 @@ public class NewsDetect extends BaseEntity {
 		this.score = score2;
 	}
 
+	public float getScoreLucene() {
+		return scoreLucene;
+	}
+
+	public void setScoreLucene(float scoreLucene) {
+		this.scoreLucene = scoreLucene;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -142,10 +151,9 @@ public class NewsDetect extends BaseEntity {
 				return false;
 		} else if (!id.equals(other.id))
 			return false;
-		if (version!=other.getVersion())
+		if (version != other.getVersion())
 			return false;
 		return true;
 	}
 
-	
 }
