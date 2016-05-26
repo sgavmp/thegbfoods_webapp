@@ -95,6 +95,7 @@ import es.ucm.visavet.gbf.topics.validator.ParseException;
 import es.ucm.visavet.gbf.topics.validator.TopicValidator;
 import es.ucm.visavet.gbf.topics.validator.TopicValidatorSemantics;
 
+@Ignore
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(Application.class)
 @WebAppConfiguration
