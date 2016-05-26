@@ -14,8 +14,9 @@ import com.ucm.ilsa.veterinaria.service.NewsIndexService;
 
 public class AlertTaskContainer implements Runnable {
 
-	private final static Logger LOGGER = Logger.getLogger(AlertTaskContainer.class);
-	
+	private final static Logger LOGGER = Logger
+			.getLogger(AlertTaskContainer.class);
+
 	private Feed feed;
 	@Autowired
 	private FeedService service;
@@ -25,8 +26,7 @@ public class AlertTaskContainer implements Runnable {
 	private NewsIndexService newsIndexService;
 	@Autowired
 	private NewsRepository newsRepository;
-	
-	
+
 	public AlertTaskContainer(Feed feed) {
 		this.feed = feed;
 	}
@@ -40,33 +40,45 @@ public class AlertTaskContainer implements Runnable {
 		feedComp = service.getFeedByCodeName(feed.getId());
 		if (feedComp != null) {
 			feed = service.setSateOfFeed(feedComp, UpdateStateEnum.GET_NEWS);
-			List<News> listNews = service.scrapFeed(feed,null,false);
+			List<News> listNews = service.scrapFeed(feed, null, false);
 			feed = service.getFeedByCodeName(feed.getId());
 			if (listNews != null) {
 				if (!listNews.isEmpty()) {
-					LOGGER.info("Se han recuperado " + listNews.size() + " nuevas noticias del sitio: " + feed.getName());
-					//newsCheckService.checkNews(listNews, feed);
+					LOGGER.info("Se han recuperado " + listNews.size()
+							+ " nuevas noticias del sitio: " + feed.getName());
+					// newsCheckService.checkNews(listNews, feed);
 					for (News news : listNews) {
 						try {
-							if (news!=null)
-								newsRepository.save(news);
-							else
-								LOGGER.warn("La noticia es null para el sitio: " + feed.getName());
-						}
-						catch (Exception ex) {
-							LOGGER.error("Error al guardar una noticia. Sitio: " + feed.getName() + ", Link: " + news.getUrl());
+							if (news != null) {
+								// Si no ha extraido contenido ni titulo
+								if (!"".equals(news.getContent())
+										&& news.getContent() != null
+										|| !"".equals(news.getTitle())
+										&& news.getTitle() != null)
+									newsRepository.save(news);
+							} else
+								LOGGER.warn("La noticia es null para el sitio: "
+										+ feed.getName());
+						} catch (Exception ex) {
+							LOGGER.error("Error al guardar una noticia. Sitio: "
+									+ feed.getName()
+									+ ", Link: "
+									+ news.getUrl());
 						}
 					}
 					newsIndexService.markNewNews(feed);
 				} else {
-					LOGGER.info("No se han recuperado nuevas noticias del sitio: " + feed.getName());
+					LOGGER.info("No se han recuperado nuevas noticias del sitio: "
+							+ feed.getName());
 				}
 			}
-			LOGGER.info("Finalizada tarea planificada para el sitio: " + feed.getName());
+			LOGGER.info("Finalizada tarea planificada para el sitio: "
+					+ feed.getName());
 			feed = service.setSateOfFeed(feed, UpdateStateEnum.WAIT);
 		} else {
 			schedulerService.removeFeedTask(feed);
-			LOGGER.info("El sitio " + feed.getName() + " ha sido borrado mientras se obtenian nuevos datos.");
+			LOGGER.info("El sitio " + feed.getName()
+					+ " ha sido borrado mientras se obtenian nuevos datos.");
 		}
 
 	}

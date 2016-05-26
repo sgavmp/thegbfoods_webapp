@@ -20,6 +20,10 @@ logging:
     console: '%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg %n'
   
 ---
+datetime:
+  extra:
+    masks: dd/MM/yyyy
+    
 gbfood:
   resources: 
     templates: /tomcatfolder/app/gbfood/resources/templates/
@@ -57,6 +61,7 @@ name: production
 datetime:
   extra:
     masks: dd/MM/yyyy
+    
 gbfood:
   resources: 
     templates: /gb/resources/templates/
@@ -90,8 +95,13 @@ spring:
 name: local
 
 ---
+phantomjs:
+  binary:
+    path: classpath:phantomjs
+    
 logging:
   config: classpath:logback-local.xml
+  
 gbfood:
   resources: 
     templates: /gb/resources/templates/
@@ -99,7 +109,6 @@ gbfood:
     crawler: /gb/crawler/
 spring:
   profiles: test-db
-  
   jpa:
     properties:
       hibernate:

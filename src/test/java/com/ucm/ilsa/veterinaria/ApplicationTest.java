@@ -64,9 +64,11 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
+import com.crawljax.browser.EmbeddedBrowser.BrowserType;
 import com.crawljax.core.CrawlSession;
 import com.crawljax.core.CrawlerContext;
 import com.crawljax.core.CrawljaxRunner;
+import com.crawljax.core.configuration.BrowserConfiguration;
 import com.crawljax.core.configuration.CrawljaxConfiguration;
 import com.crawljax.core.configuration.CrawljaxConfiguration.CrawljaxConfigurationBuilder;
 import com.crawljax.core.plugin.OnNewStatePlugin;
@@ -93,7 +95,6 @@ import es.ucm.visavet.gbf.topics.validator.ParseException;
 import es.ucm.visavet.gbf.topics.validator.TopicValidator;
 import es.ucm.visavet.gbf.topics.validator.TopicValidatorSemantics;
 
-@Ignore
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(Application.class)
 @WebAppConfiguration
@@ -112,6 +113,7 @@ public class ApplicationTest {
 		CrawljaxConfigurationBuilder builder = CrawljaxConfiguration
 				.builderFor("http://promedmail.org/direct.php?id=20160524.4242904");
 		builder.setMaximumDepth(0);
+		builder.setBrowserConfig(new BrowserConfiguration(BrowserType.PHANTOMJS, 1));
 		builder.addPlugin(new OnNewStatePlugin() {
 
 			@Override

@@ -47,7 +47,6 @@ repositories {
 
 configurations {
     providedRuntime
-    all*.exclude module: "logback-classic"
     }
 
 dependencies {
@@ -72,9 +71,7 @@ dependencies {
     compile 'com.neovisionaries:nv-i18n:1.17'
     compile 'org.apache.commons:commons-math3:3.6.1'
     compile('com.kohlschutter.boilerpipe:boilerpipe-common:2.0-SNAPSHOT')
-    compile('me.vamsoft:clavin-mod:0.2.1') {
-    	exclude module: 'slf4j-api'
-    }
+    compile('me.vamsoft:clavin-mod:0.2.1')
     compile 'com.crawljax:crawljax-core:3.6'
     compile 'org.apache.lucene:lucene-queryparser:5.4.1'
     compile('org.apache.lucene:lucene-core:5.4.1')
