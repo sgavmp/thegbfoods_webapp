@@ -38,6 +38,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         //Configuramos los permisos de cada ruta
         .and()
             .authorizeRequests()
+            .antMatchers("/alerts/ajax/stats").permitAll()
+            .antMatchers("/risks/ajax/stats").permitAll()
+            .antMatchers("/ajax/**").permitAll()
             .antMatchers("/static/**","/webjars/**","/error").permitAll()//Recursos estaticos
             .anyRequest().authenticated()
             //.antMatchers("/admin*").hasRole("ADMIN")//Panel de administracion

@@ -371,6 +371,10 @@ public class Feed extends BaseEntity {
 	public boolean getIsAuto() {
 		return isAuto;
 	}
+	
+	public boolean getIsRSS() {
+		return isRSS;
+	}
 
 	public void setAuto(boolean isAuto) {
 		this.isAuto = isAuto;

@@ -441,6 +441,11 @@ public class MainController extends BaseController {
 		}
 	}
 	
+	@RequestMapping(value = "/test", method = RequestMethod.GET)
+	public String test(Model model) {
+		return "index";
+	}
+	
 	@RequestMapping(value = "/chart", method = RequestMethod.GET)
 	public String chart(Model model) {
 		return "chart";
@@ -450,6 +455,12 @@ public class MainController extends BaseController {
 	public String loadHistory(Model model) {
 		model.addAttribute("feeds", feedService.getAllFeed());
 		return "load";
+	}
+	
+	@ResponseBody
+	@RequestMapping("/ajax/days")
+	public List<Object> getAllDays() {
+		return statisticsRepository.getAllFechas();
 	}
 
 	@RequestMapping(value = "/load", method = RequestMethod.POST)
