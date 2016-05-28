@@ -290,7 +290,7 @@ public class AlertController extends BaseController {
 	@ResponseBody
 	@RequestMapping(value = "/ajax/stats", method=RequestMethod.GET)
 	public Map<String,Map<Object,Object[]>> getAlertsStat() {
-		Map<String,Map<Object,Object[]>> alerts = Maps.newHashMap();
+		Map<String,Map<Object,Object[]>> alerts = Maps.newLinkedHashMap();
 		for (Alert alert : service.getAllAlert()) {
 			alerts.put(alert.getTitle(), new HashMap<Object, Object[]>());	
 		}

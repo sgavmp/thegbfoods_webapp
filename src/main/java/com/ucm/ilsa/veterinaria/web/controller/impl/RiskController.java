@@ -285,11 +285,11 @@ public class RiskController extends BaseController {
 	@ResponseBody
 	@RequestMapping(value = "/ajax/stats", method=RequestMethod.GET)
 	public Map<String,Map<Object,Object[]>> getAlertsStat() {
-		Map<String,Map<Object,Object[]>> alerts = Maps.newHashMap();
+		Map<String,Map<Object,Object[]>> alerts = Maps.newLinkedHashMap();
 		for (Risk alert : service.getAllAlert()) {
 			alerts.put(alert.getTitle(), new HashMap<Object, Object[]>());	
 		}
-		for (Object[] ob : statisticsRepository.getAlertStats()) {
+		for (Object[] ob : statisticsRepository.getRisktStats()) {
 			alerts.get(ob[1]).put(ob[2].toString(),ob);
 		}
 		return alerts;
