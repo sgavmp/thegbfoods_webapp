@@ -124,6 +124,7 @@ public class RiskController extends BaseController {
 	
 	@RequestMapping("/get/{idAlert}")
 	public String getAlert(Model model, @PathVariable ("idAlert") Risk alert) {
+		alert = service.setNewsLocation(alert);
 		Risk alertActive = new Risk();
 		alertActive.setId(alert.getId());
 		alertActive.setTitle(alert.getTitle());
@@ -290,6 +291,17 @@ public class RiskController extends BaseController {
 			alerts.put(alert.getTitle(), new HashMap<Object, Object[]>());	
 		}
 		for (Object[] ob : statisticsRepository.getRisktStats()) {
+			alerts.get(ob[1]).put(ob[2].toString(),ob);
+		}
+		return alerts;
+	}
+	
+	@ResponseBody
+	@RequestMapping(value = "/ajax/stats/{alertId}", method=RequestMethod.GET)
+	public Map<String,Map<Object,Object[]>> getAlertsStat(@PathVariable ("alertId") Risk alert) {
+		Map<String,Map<Object,Object[]>> alerts = Maps.newLinkedHashMap();
+		alerts.put(alert.getTitle(), new HashMap<Object, Object[]>());	
+		for (Object[] ob : statisticsRepository.getRisktStats(alert.getId().toString())) {
 			alerts.get(ob[1]).put(ob[2].toString(),ob);
 		}
 		return alerts;

@@ -225,6 +225,7 @@ public class AlertController extends BaseController {
 	
 	@RequestMapping("/get/{idAlert}")
 	public String getAlert(Model model, @PathVariable ("idAlert") Alert alert) {
+		alert = service.setNewsLocation(alert);
 		Alert alertActive = new Alert();
 		alertActive.setId(alert.getId());
 		alertActive.setTitle(alert.getTitle());
@@ -295,6 +296,17 @@ public class AlertController extends BaseController {
 			alerts.put(alert.getTitle(), new HashMap<Object, Object[]>());	
 		}
 		for (Object[] ob : statisticsRepository.getAlertStats()) {
+			alerts.get(ob[1]).put(ob[2].toString(),ob);
+		}
+		return alerts;
+	}
+	
+	@ResponseBody
+	@RequestMapping(value = "/ajax/stats/{id}", method=RequestMethod.GET)
+	public Map<String,Map<Object,Object[]>> getAlertsStat(@PathVariable ("id") Alert alert) {
+		Map<String,Map<Object,Object[]>> alerts = Maps.newLinkedHashMap();
+		alerts.put(alert.getTitle(), new HashMap<Object, Object[]>());	
+		for (Object[] ob : statisticsRepository.getAlertStats(alert.getId().toString())) {
 			alerts.get(ob[1]).put(ob[2].toString(),ob);
 		}
 		return alerts;

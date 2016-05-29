@@ -28,4 +28,5 @@ public interface NewsIndexService {
 	public List<NewsDetect> search(String query) throws Exception;
 	void resetLocation(Location loc) throws IOException;
 	public void removeFeedFromIndex(Feed feed) throws Exception;
+	void resetAllLocation() throws IOException;
 }

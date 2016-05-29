@@ -357,7 +357,7 @@ public class NewsIndexServiceImpl implements NewsIndexService, Runnable {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		Query q2 = TermRangeQuery.newStringRange("dateCreate",
+		Query q2 = TermRangeQuery.newStringRange(News.fieldDateCreate,
 				DateTools.timeToString(from, Resolution.MINUTE),
 				DateTools.timeToString(to, Resolution.MINUTE), false, true);
 		BooleanClause op1 = new BooleanClause(q, BooleanClause.Occur.SHOULD);
@@ -645,10 +645,7 @@ public class NewsIndexServiceImpl implements NewsIndexService, Runnable {
 			List<String> listNewsDetect = searchLocation(q, searcher, loc);
 			loc = locationRepository.findOne(loc.getId());
 			loc.setUltimaRecuperacion(new Timestamp(to));
-			if (loc.getNews() == null)
-				loc.setNews(listNewsDetect);
-			else
-				loc.getNews().addAll(listNewsDetect);
+			loc.setNews(listNewsDetect);
 			locationRepository.save(loc);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -656,6 +653,7 @@ public class NewsIndexServiceImpl implements NewsIndexService, Runnable {
 		}
 	}
 
+	@Override
 	public void resetAllLocation() throws IOException {
 		LOGGER.info("Se inicia el proceso de busqueda de localizaciones en todo el indice.");
 		boolean closed = getWriter() == null ? false : getWriter().isOpen();

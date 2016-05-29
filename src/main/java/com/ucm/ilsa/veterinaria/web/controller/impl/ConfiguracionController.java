@@ -93,6 +93,18 @@ public class ConfiguracionController extends BaseController {
 		return "conf";
 	}
 	
+	@RequestMapping(value="/resetLocations")
+	public String resetLocations(Model model, RedirectAttributes redirectAttributes, Configuracion configuracion,BindingResult result) {
+        try {
+			newsIndexService.resetAllLocation();
+		} catch (IOException e) {
+			model.addAttribute("error", "Ha ocurrido un error al resetear todas las localizaciones");
+		}
+		model.addAttribute("info", "Se estan reiniciando las localizaciones detectadas.");
+		model.addAttribute("conf", configuracionService.getConfiguracion());
+		return "conf";
+	}
+	
 	@RequestMapping(value="/shutdown")
 	public String shutdown(Model model, RedirectAttributes redirectAttributes) {
         try {

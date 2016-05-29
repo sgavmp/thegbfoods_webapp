@@ -92,4 +92,10 @@ public class Location extends BaseEntity {
 		this.ultimaRecuperacion = ultimaRecuperacion;
 	}
 
+	@Override
+	public String toString() {
+		return name;
+	}
+	
+
 }

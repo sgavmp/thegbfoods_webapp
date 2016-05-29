@@ -18,6 +18,7 @@ import com.ucm.ilsa.veterinaria.domain.Alert;
 import com.ucm.ilsa.veterinaria.domain.Feed;
 import com.ucm.ilsa.veterinaria.domain.NewsDetect;
 import com.ucm.ilsa.veterinaria.repository.AlertRepository;
+import com.ucm.ilsa.veterinaria.repository.LocationRepository;
 import com.ucm.ilsa.veterinaria.service.NewsIndexService;
 
 @Service
@@ -28,6 +29,9 @@ public class AlertServiceImpl {
 	
 	@Autowired
 	private NewsIndexService newsIndexService;
+	
+	@Autowired
+	private LocationRepository locationRepository;
 	
 	public Set<Alert> getAllAlert() {
 		return repository.findAllByOrderByTitleAsc();
@@ -108,6 +112,13 @@ public class AlertServiceImpl {
 	
 	public Set<Alert> getAllAlertWithFalsePositive() {
 		return repository.readAllDistinctByNewsDetectFalPositiveTrue();
+	}
+	
+	public Alert setNewsLocation(Alert alert) {
+		for (NewsDetect news : alert.getNewsDetect()) {
+			news.setLocation(locationRepository.findAllByNews(news.getLink()));
+		}
+		return alert;
 	}
 	
 }

@@ -1,6 +1,8 @@
 package com.ucm.ilsa.veterinaria.domain;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -14,8 +16,10 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
+import javax.persistence.Transient;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.google.common.collect.Lists;
 
 @Entity
 public class NewsDetect extends BaseEntity {
@@ -39,6 +43,8 @@ public class NewsDetect extends BaseEntity {
 	private boolean mark = false;
 	private float score;
 	private float scoreLucene;
+	@Transient
+	private List<Location> location;
 
 	public Long getId() {
 		return id;
@@ -127,6 +133,20 @@ public class NewsDetect extends BaseEntity {
 
 	public void setScoreLucene(float scoreLucene) {
 		this.scoreLucene = scoreLucene;
+	}
+
+	public List<Location> getLocation() {
+		return location;
+	}
+
+	public void setLocation(List<Location> location) {
+		this.location = location;
+	}
+	
+	public void addLocation(Location location) {
+		if (this.location == null)
+			this.location = new ArrayList<Location>();
+		this.location.add(location);
 	}
 
 	@Override
