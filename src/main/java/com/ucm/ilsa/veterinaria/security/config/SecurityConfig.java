@@ -21,7 +21,7 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import com.ucm.ilsa.veterinaria.service.impl.UserDetailServiceImpl;
 
 @Configuration
-@EnableWebMvcSecurity
+@EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	
 	@Autowired
@@ -35,23 +35,27 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         .tokenValiditySeconds(1209600)
         	.key("6772b7939386362af7ed96915")
         	.rememberMeServices(persistentTokenBasedRememberMeServices())
-    	//Configuramos los parametros del login
+        //Configuramos los permisos de cada ruta
+        .and()
+            .authorizeRequests()
+            .antMatchers("/alerts/ajax/stats").permitAll()
+            .antMatchers("/risks/ajax/stats").permitAll()
+            .antMatchers("/ajax/**").permitAll()
+            .antMatchers("/static/**","/webjars/**","/error").permitAll()//Recursos estaticos
+            .anyRequest().authenticated()
+            //.antMatchers("/admin*").hasRole("ADMIN")//Panel de administracion
+            //.antMatchers("/**").permitAll()//El resto esta abierto
+            //Configuramos los parametros del login
         .and()
             .formLogin()
+            .loginPage("/login")
             .permitAll()
         //Configuramos los parametros del logout
         .and()
             .logout()
         	.deleteCookies("JSESSIONID")
         	.logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
-        	.logoutSuccessUrl("/")
-            .permitAll()
-        //Configuramos los permisos de cada ruta
-        .and()
-            .authorizeRequests()
-            .antMatchers("/admin","/admin/**").hasRole("ADMIN")//Panel de administracion
-            .antMatchers("/static/**","/webjars/**").permitAll()//Recursos estaticos
-            .antMatchers("/**").permitAll()//El resto esta abierto
+        	.logoutSuccessUrl("/login")
         //Activamos csrf para controlar la procedencia de los formularios
         .and()
         	.csrf();

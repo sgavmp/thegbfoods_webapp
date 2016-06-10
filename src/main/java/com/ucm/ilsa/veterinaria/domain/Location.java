@@ -1,9 +1,18 @@
 package com.ucm.ilsa.veterinaria.domain;
 
+import java.sql.Timestamp;
+import java.util.List;
+
+import javax.persistence.CollectionTable;
+import javax.persistence.ElementCollection;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
 
 import com.bericotech.clavin.gazetteer.CountryCode;
 
@@ -14,8 +23,12 @@ public class Location extends BaseEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	private String name;
-	private Double latitude;
-	private Double longitude;
+	private String query;
+	@ElementCollection(fetch = FetchType.EAGER)
+	@CollectionTable(name = "news_detect_locations", joinColumns = @JoinColumn(name = "LOCATION_ID"))
+	@Lob
+	private List<String> news;
+	private Timestamp ultimaRecuperacion;
 	private CountryCode country;
 
 	public Location() {
@@ -37,65 +50,24 @@ public class Location extends BaseEntity {
 	public void setName(String name) {
 		this.name = name;
 	}
-
-	public Double getLatitude() {
-		return latitude;
+	
+	public String getQuery() {
+		return query;
 	}
 
-	public void setLatitude(Double latitude) {
-		this.latitude = latitude;
+	public void setQuery(String query) {
+		this.query = query;
 	}
 
-	public Double getLongitude() {
-		return longitude;
+	public List<String> getNews() {
+		return news;
 	}
 
-	public void setLongitude(Double longitude) {
-		this.longitude = longitude;
-	}
-
-	public boolean isNearOf(Double latitude, Double longitude,Double radius) {
-		return (distance(this.latitude,this.longitude,latitude,longitude)<=radius);
-	}
-
-	private double distance(double lat1, double lon1, double lat2, double lon2) {
-		double theta = lon1 - lon2;
-		double dist = Math.sin(deg2rad(lat1)) * Math.sin(deg2rad(lat2))
-				+ Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2))
-				* Math.cos(deg2rad(theta));
-		dist = Math.acos(dist);
-		dist = rad2deg(dist);
-		dist = dist * 60 * 1.1515;//Millas
-		dist = dist * 1.609344;//Km
-		return (dist);
+	public void setNews(List<String> news) {
+		this.news = news;
 	}
 	
-	public Location bind(Location location) {
-		this.id = location.id;
-		this.createDate = location.createDate;
-		this.updateDate = location.updateDate;
-		this.version = location.version;
-		return this;
-	}
-
-	/* ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: */
-	/* :: This function converts decimal degrees to radians : */
-	/* ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: */
-	private double deg2rad(double deg) {
-		return (deg * Math.PI / 180.0);
-	}
-
-	/* ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: */
-	/* :: This function converts radians to decimal degrees : */
-	/* ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: */
-	private double rad2deg(double rad) {
-		return (rad * 180 / Math.PI);
-	}
-
-	@Override
-	public String toString() {
-		return name;
-	}
+	
 
 	public CountryCode getCountry() {
 		return country;
@@ -104,7 +76,26 @@ public class Location extends BaseEntity {
 	public void setCountry(CountryCode country) {
 		this.country = country;
 	}
-	
+
+	public Location bind(Location location) {
+		this.name = location.getName();
+		this.query = location.getQuery();
+		this.country = location.getCountry();
+		return this;
+	}
+
+	public Timestamp getUltimaRecuperacion() {
+		return ultimaRecuperacion;
+	}
+
+	public void setUltimaRecuperacion(Timestamp ultimaRecuperacion) {
+		this.ultimaRecuperacion = ultimaRecuperacion;
+	}
+
+	@Override
+	public String toString() {
+		return name;
+	}
 	
 
 }

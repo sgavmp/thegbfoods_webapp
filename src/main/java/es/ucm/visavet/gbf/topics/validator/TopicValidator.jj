@@ -1,0 +1,46 @@
+options  {
+  STATIC=false;
+  UNICODE_INPUT=true;
+}
+PARSER_BEGIN(TopicValidator)
+package es.ucm.visavet.gbf.topics.validator;
+import java.io.Reader;
+import es.ucm.visavet.gbf.topics.util.QueryUtil;
+public class TopicValidator {
+    private TopicValidatorSemantics sem;
+    public TopicValidator(TopicValidatorSemantics sem, Reader input) {
+	  this(input);
+	  this.sem = sem;
+	}
+  }
+PARSER_END(TopicValidator)
+  TOKEN:{<TERM: <WORD>|"'"<QWORD>"'">}
+  TOKEN:{<LITERAL_TERM: "\""<LWORD>"\"">}
+  TOKEN:{<TOPIC_NAME: "#"<WORD>>}
+  TOKEN:{<AND: "&">}
+  TOKEN:{<OR:  "|">}
+  TOKEN:{<DIF: "-">}
+  TOKEN:{<ATTYPE: "@T"<WORD>>}
+  TOKEN:{<ATLOC: "@L"<WORD>>}
+  SKIP:{<["\t"," ","\r","\b","\n"]>}
+  TOKEN:{<#ESCSEQ: "\\'"|"\\\""|"\\\\"|"\\&"|"\\|"|"\\-"|"\\@"|"\\("|"\\)"|"\\#">}
+  TOKEN:{<#WCHAR: ~["'","\"","\\","&","|","(",")","-","@","\t"," ","\r","\b","\n","#"]>}
+  TOKEN:{<#WORD:(<ESCSEQ>|<WCHAR>)+>}
+  TOKEN:{<#QESCSEQ: "\\'">}
+  TOKEN:{<#QWCHAR: ~["'"]>}
+  TOKEN:{<#QWORD:(<QESCSEQ>|<QWCHAR>)+>}
+  TOKEN:{<#LESCSEQ: "\\\"">}
+  TOKEN:{<#LWCHAR: ~["\""]>}
+  TOKEN:{<#LWORD:(<LESCSEQ>|<LWCHAR>)+>}
+
+  void topic():  {} {topic0() <EOF> }
+  void topic0(): {} {topic1() ((<OR>)? topic1())* }
+  void topic1(): {} {topic2() (<AND> topic2())* }
+  void topic2(): {} {topic3() (<DIF> topic3())* }
+  void topic3(): {Token tk;}
+                    {<TERM>         |
+                     <LITERAL_TERM> |
+                     tk= <ATTYPE>   {sem.validateSourceType(QueryUtil.internize(tk.image));}          |
+                     tk=<ATLOC>        {sem.validateSourceLocation(QueryUtil.internize(tk.image));}      |
+                     tk= <TOPIC_NAME>  {sem.validateReferenceToTopic(QueryUtil.internize(tk.image));} |
+		     "(" topic0() ")" }

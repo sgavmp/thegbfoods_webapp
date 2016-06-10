@@ -18,6 +18,7 @@ public class NewsBuilder {
 
 	public NewsBuilder(Feed feed) {
 		this.news = new News();
+		this.news.setContent("");
 		this.news.setSite(feed.getId());
 		this.dateFormat = feed.getDateFormat();
 		if (feed.getLanguaje().equals(Language.SPANISH)) {
@@ -33,11 +34,6 @@ public class NewsBuilder {
 
 	public NewsBuilder setTitle(String title) {
 		this.news.setTitle(title);
-		return this;
-	}
-
-	public NewsBuilder setDescription(String description) {
-		this.news.setDescription(description);
 		return this;
 	}
 
@@ -62,39 +58,6 @@ public class NewsBuilder {
 				.parse(date));
 		} catch (ParseException ex) {
 			this.news.setPubDate(new Date(System.currentTimeMillis()));
-		}
-		return this;
-	}
-
-	public NewsBuilder setValueOf(String attribute, String value) {
-		switch (attribute) {
-		case "title":
-			this.news.setTitle(value);
-			break;
-		case "description":
-			this.news.setDescription(value);
-			break;
-		case "content":
-			this.news.setContent(value);
-			if (value.length()>200)
-				this.news.setDescription(value.substring(0, 200).concat("..."));
-			else
-				this.news.setDescription(value);
-			break;
-		case "url":
-			this.news.setUrl(value);
-			break;
-		case "pubDate":
-			try {
-				this.news.setPubDate(new SimpleDateFormat(dateFormat,
-						this.locale).parse(value));
-			} catch (ParseException ex) {
-				this.news.setPubDate(new Date(System.currentTimeMillis()));
-			}
-			break;
-		default:
-			this.news.getOthers().put(attribute, value);
-			break;
 		}
 		return this;
 	}

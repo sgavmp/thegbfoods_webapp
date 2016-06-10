@@ -1,16 +1,12 @@
 package com.ucm.ilsa.veterinaria.domain;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.CollectionTable;
-import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -18,16 +14,10 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
 import javax.persistence.Lob;
-import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
+import javax.persistence.Transient;
 
-import com.bericotech.clavin.gazetteer.CountryCode;
-import com.bericotech.clavin.gazetteer.GeoName;
-import com.bericotech.clavin.resolver.ResolvedLocation;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.collect.Lists;
 
@@ -35,7 +25,7 @@ import com.google.common.collect.Lists;
 public class NewsDetect extends BaseEntity {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.TABLE)
 	private Long id;
 	@ManyToOne
 	@JoinColumn(name = "siteCodeName")
@@ -43,26 +33,18 @@ public class NewsDetect extends BaseEntity {
 	@Lob
 	private String title;
 	@Lob
-	@Column(name = "link")
 	private String link;
 	private Date datePub;
-	@ElementCollection(fetch = FetchType.LAZY)
-	private Set<String> wordsDetect;
-	@ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
-	@JoinColumn(name = "alert_detect_id")
-	private Set<Location> locationsNear;
-	@ElementCollection(fetch = FetchType.LAZY)
-	@CollectionTable(name = "news_detect_locations", joinColumns = @JoinColumn(name = "NEWS_ID") )
-	private Set<PointLocation> locations;
 	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
 	@JoinColumn(name = "alert_detect_id")
 	private AlertAbstract alertDetect;
 	private boolean history = false;
 	private boolean falPositive = false;
-	@ElementCollection(fetch = FetchType.LAZY)
-	private Set<DictDetect> dictionaryDetect;
 	private boolean mark = false;
-	private Double score;
+	private float score;
+	private float scoreLucene;
+	@Transient
+	private List<Location> location;
 
 	public Long getId() {
 		return id;
@@ -70,22 +52,6 @@ public class NewsDetect extends BaseEntity {
 
 	public void setId(Long id) {
 		this.id = id;
-	}
-
-	public Set<String> getWordsDetect() {
-		return wordsDetect;
-	}
-
-	public void setWordsDetect(Set<String> wordsDetect) {
-		this.wordsDetect = wordsDetect;
-	}
-
-	public Set<Location> getLocationsNear() {
-		return locationsNear;
-	}
-
-	public void setLocationsNear(Set<Location> locationsNear) {
-		this.locationsNear = locationsNear;
 	}
 
 	public Feed getSite() {
@@ -129,27 +95,6 @@ public class NewsDetect extends BaseEntity {
 		this.alertDetect = alertDetect;
 	}
 
-	public Map<CountryCode, List<Location>> getCountryWithLocations() {
-		Map<CountryCode, List<Location>> mapa = new HashMap<CountryCode, List<Location>>();
-		if (locationsNear != null) {
-			for (Location loc : locationsNear) {
-				List<Location> lista = mapa.containsKey(loc.getCountry()) ? mapa.get(loc.getCountry())
-						: new ArrayList<Location>();
-				lista.add(loc);
-				mapa.put(loc.getCountry(), lista);
-			}
-		}
-		return mapa;
-	}
-
-	public Set<PointLocation> getLocations() {
-		return locations;
-	}
-
-	public void setLocations(Set<PointLocation> locations) {
-		this.locations = locations;
-	}
-
 	public boolean getHistory() {
 		return history;
 	}
@@ -174,20 +119,34 @@ public class NewsDetect extends BaseEntity {
 		this.mark = mark;
 	}
 
-	public Double getScore() {
+	public Float getScore() {
 		return score;
 	}
 
-	public void setScore(Double score) {
-		this.score = score;
+	public void setScore(float score2) {
+		this.score = score2;
 	}
 
-	public Set<DictDetect> getDictionaryDetect() {
-		return dictionaryDetect;
+	public float getScoreLucene() {
+		return scoreLucene;
 	}
 
-	public void setDictionaryDetect(Set<DictDetect> dictionaryDetect) {
-		this.dictionaryDetect = dictionaryDetect;
+	public void setScoreLucene(float scoreLucene) {
+		this.scoreLucene = scoreLucene;
+	}
+
+	public List<Location> getLocation() {
+		return location;
+	}
+
+	public void setLocation(List<Location> location) {
+		this.location = location;
+	}
+	
+	public void addLocation(Location location) {
+		if (this.location == null)
+			this.location = new ArrayList<Location>();
+		this.location.add(location);
 	}
 
 	@Override
@@ -212,10 +171,9 @@ public class NewsDetect extends BaseEntity {
 				return false;
 		} else if (!id.equals(other.id))
 			return false;
-		if (version!=other.getVersion())
+		if (version != other.getVersion())
 			return false;
 		return true;
 	}
 
-	
 }

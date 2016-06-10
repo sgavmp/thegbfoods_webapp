@@ -1,8 +1,10 @@
 package com.ucm.ilsa.veterinaria.service.impl;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.SortedMap;
@@ -14,13 +16,22 @@ import org.springframework.stereotype.Service;
 import com.google.common.collect.Lists;
 import com.ucm.ilsa.veterinaria.domain.Alert;
 import com.ucm.ilsa.veterinaria.domain.Feed;
+import com.ucm.ilsa.veterinaria.domain.NewsDetect;
 import com.ucm.ilsa.veterinaria.repository.AlertRepository;
+import com.ucm.ilsa.veterinaria.repository.LocationRepository;
+import com.ucm.ilsa.veterinaria.service.NewsIndexService;
 
 @Service
 public class AlertServiceImpl {
 	
 	@Autowired
 	private AlertRepository repository;
+	
+	@Autowired
+	private NewsIndexService newsIndexService;
+	
+	@Autowired
+	private LocationRepository locationRepository;
 	
 	public Set<Alert> getAllAlert() {
 		return repository.findAllByOrderByTitleAsc();
@@ -34,8 +45,11 @@ public class AlertServiceImpl {
 		return repository.save(word);
 	}
 	
-	public Alert create(Alert word) {
-		return repository.save(word);
+	public Alert create(Alert word) throws IOException {
+		Alert alert = repository.save(word);
+		alert.setNewsDetect(new HashSet<NewsDetect>());
+		newsIndexService.resetAlert(alert);
+		return alert;
 	}
 	
 	public void remove(Alert word) {
@@ -98,6 +112,13 @@ public class AlertServiceImpl {
 	
 	public Set<Alert> getAllAlertWithFalsePositive() {
 		return repository.readAllDistinctByNewsDetectFalPositiveTrue();
+	}
+	
+	public Alert setNewsLocation(Alert alert) {
+		for (NewsDetect news : alert.getNewsDetect()) {
+			news.setLocation(locationRepository.findAllByNews(news.getLink()));
+		}
+		return alert;
 	}
 	
 }

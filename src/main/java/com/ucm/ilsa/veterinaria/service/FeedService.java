@@ -23,7 +23,7 @@ public interface FeedService {
 	public void setSchedulerService(SchedulerService schedulerService);
 	public News testFeed(FeedForm feed);
 	public List<NewsDetect> findAllDistinctNewsDetectByFeedOrderByDatePub(Feed feed);
-	public Set<AlertAbstract> checkNewsLinkOnFeed(String link, Feed feed);
 	public Feed setSateOfFeed(Feed feed, UpdateStateEnum state);
+	public List<String> createFeedAuto(String[] listURL);
 
 }

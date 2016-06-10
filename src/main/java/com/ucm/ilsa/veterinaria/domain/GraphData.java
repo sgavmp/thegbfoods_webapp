@@ -11,8 +11,6 @@ public class GraphData {
 	public GraphData() {
 		this.labels = Lists.newArrayList();
 		this.noticias = Lists.newArrayList();
-		this.noticias.add("Noticias");
 		this.alertas = Lists.newArrayList();
-		this.alertas.add("Alertas");
 	}
 }

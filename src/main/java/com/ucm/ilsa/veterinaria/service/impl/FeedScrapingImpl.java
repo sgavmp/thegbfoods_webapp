@@ -1,6 +1,7 @@
 package com.ucm.ilsa.veterinaria.service.impl;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
@@ -15,8 +16,12 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
+import com.kohlschutter.boilerpipe.BoilerpipeExtractor;
+import com.kohlschutter.boilerpipe.BoilerpipeProcessingException;
+import com.kohlschutter.boilerpipe.extractors.CommonExtractors;
 import com.rometools.rome.feed.synd.SyndContent;
 import com.rometools.rome.feed.synd.SyndEntry;
 import com.rometools.rome.feed.synd.SyndFeed;
@@ -24,15 +29,28 @@ import com.rometools.rome.io.FeedException;
 import com.rometools.rome.io.SyndFeedInput;
 import com.rometools.rome.io.XmlReader;
 import com.ucm.ilsa.veterinaria.domain.CharsetEnum;
+import com.ucm.ilsa.veterinaria.domain.ExtractionType;
 import com.ucm.ilsa.veterinaria.domain.Feed;
 import com.ucm.ilsa.veterinaria.domain.FeedForm;
 import com.ucm.ilsa.veterinaria.domain.News;
+import com.ucm.ilsa.veterinaria.domain.ScrapStatistics;
 import com.ucm.ilsa.veterinaria.domain.Statistics;
 import com.ucm.ilsa.veterinaria.domain.builder.NewsBuilder;
 import com.ucm.ilsa.veterinaria.repository.FeedRepository;
 import com.ucm.ilsa.veterinaria.repository.NewsDetectRepository;
+import com.ucm.ilsa.veterinaria.repository.NewsRepository;
+import com.ucm.ilsa.veterinaria.repository.ScrapStatisticsRepository;
 import com.ucm.ilsa.veterinaria.repository.StatisticsRepository;
 import com.ucm.ilsa.veterinaria.service.FeedScraping;
+import com.ucm.ilsa.veterinaria.service.NewsIndexService;
+import com.ucm.ilsa.veterinaria.util.GBFoodCrawler;
+import com.rometools.rome.io.impl.DateParser;
+
+import edu.uci.ics.crawler4j.crawler.CrawlConfig;
+import edu.uci.ics.crawler4j.crawler.CrawlController;
+import edu.uci.ics.crawler4j.fetcher.PageFetcher;
+import edu.uci.ics.crawler4j.robotstxt.RobotstxtConfig;
+import edu.uci.ics.crawler4j.robotstxt.RobotstxtServer;
 
 @Repository
 public class FeedScrapingImpl implements FeedScraping {
@@ -44,24 +62,39 @@ public class FeedScrapingImpl implements FeedScraping {
 
 	private NewsDetectRepository repositoryNewsDetect;
 
-	private StatisticsRepository statisticsRepository;
+	private ScrapStatisticsRepository statisticsRepository;
+	
+	private NewsRepository newsRepository;
+	
+	private NewsIndexService newsIndexService;
+
+	@Value("${gbfood.resources.crawler}")
+	private String pathCrawler = "/tomcatfolder/app/gbfood/crawler/";
 
 	@Autowired
 	public FeedScrapingImpl(FeedRepository repositoryFeed,
 			NewsDetectRepository repositoryNewsDetect,
-			StatisticsRepository statisticsRepository) {
+			ScrapStatisticsRepository statisticsRepository,
+			NewsRepository newsRepository,
+			NewsIndexService newsIndexServic) {
 		this.repositoryFeed = repositoryFeed;
 		this.repositoryNewsDetect = repositoryNewsDetect;
 		this.statisticsRepository = statisticsRepository;
+		this.newsRepository = newsRepository;
+		this.newsIndexService = newsIndexServic;
 	}
 
 	@Override
 	public List<News> scrapNews(Feed feed, Date after, boolean withOutLimit) {
 		List<News> newsList = new ArrayList<>();
-		if (feed.isRSS()) {
-			newsList = scrapingWhitRSS(feed, after, withOutLimit);
+		if (feed.isAuto()) {
+			newsList = scrapingAuto(feed, after, withOutLimit);
 		} else {
-			newsList = scrapingWithOutRSS(feed, after, withOutLimit);
+			if (feed.isRSS()) {
+				newsList = scrapingWhitRSS(feed, after, withOutLimit);
+			} else {
+				newsList = scrapingWithOutRSS(feed, after, withOutLimit);
+			}
 		}
 		feed = repositoryFeed.findOne(feed.getId());
 		feed.setUltimaRecuperacion(new Timestamp(System.currentTimeMillis()));
@@ -69,11 +102,11 @@ public class FeedScrapingImpl implements FeedScraping {
 		repositoryFeed.save((Feed) feed);
 		if (newsList != null) {
 			Date today = new Date(System.currentTimeMillis());
-			Statistics statistics = statisticsRepository.findOne(today);
+			ScrapStatistics statistics = statisticsRepository.findOne(today);
 			if (statistics != null) {
-				statistics.increment(0, newsList.size());
+				statistics.setTotal(statistics.getTotal() + newsList.size());
 			} else {
-				statistics = new Statistics(today, 0, newsList.size());
+				statistics = new ScrapStatistics(today, newsList.size());
 			}
 			statisticsRepository.save(statistics);
 		}
@@ -81,12 +114,140 @@ public class FeedScrapingImpl implements FeedScraping {
 		return newsList;
 	}
 
+	private List<News> scrapingAuto(Feed feed, Date after, boolean withOutLimit) {
+		try {
+			List<News> listNews = new ArrayList<News>();
+			if (feed.getUrlNews() != null) {
+				String crawlStorageFolder = pathCrawler;
+				int numberOfCrawlers = 1;
+
+				CrawlConfig config = new CrawlConfig();
+				config.setCrawlStorageFolder(crawlStorageFolder);
+				config.setMaxDepthOfCrawling(1);
+				config.setPolitenessDelay(10);
+				config.setShutdownOnEmptyQueue(true);
+
+				/*
+				 * Instantiate the controller for this crawl.
+				 */
+				PageFetcher pageFetcher = new PageFetcher(config);
+				RobotstxtConfig robotstxtConfig = new RobotstxtConfig();
+				robotstxtConfig.setEnabled(false);
+				RobotstxtServer robotstxtServer = new RobotstxtServer(
+						robotstxtConfig, pageFetcher);
+				CrawlController controller = new CrawlController(config,
+						pageFetcher, robotstxtServer);
+
+				/*
+				 * For each crawl, you need to add some seed urls. These are the
+				 * first URLs that are fetched and then the crawler starts
+				 * following links which are found in these pages
+				 */
+				controller.addSeed(feed.getUrlNews());
+
+				/*
+				 * Start the crawl. This is a blocking operation, meaning that
+				 * your code will reach the line after this only when crawling
+				 * is finished.
+				 */
+				controller.start(GBFoodCrawler.class, numberOfCrawlers);
+				List<String> newsLinks = (List<String>) controller
+						.getCrawlersLocalData().get(0);
+				boolean isFirst = true;
+				String lastNews = null;
+				News news = null;
+				for (String linkNews : newsLinks) {
+					if (feed.getCrawlerNews().contains(linkNews))
+						continue;
+					news = getNewsWithOutRSS(feed, linkNews, null);
+					listNews.add(news);
+					feed.getCrawlerNews().add(linkNews);
+				}
+				repositoryFeed.save(feed);
+			}
+			return listNews;
+		} catch (IOException e) {
+			LOGGER.error("No se ha podido acceder a la URL. Mas Info-> "
+					+ e.getMessage() + " -> " + feed.getNewsLink());
+			return null;
+		} catch (Exception e) {
+			LOGGER.error("No se ha podido acceder a la URL. Mas Info-> "
+					+ e.getMessage() + " -> " + feed.getNewsLink());
+			return null;
+		}
+	}
+
 	@Override
 	public News scrapOneNews(FeedForm feed) {
-		if (feed.getIsRSS()) {
-			return scrapingOneWhitRSS(feed);
+		if (feed.getIsAuto()) {
+			return scrapingOneWithAuto(feed);
 		} else {
-			return scrapingOneWithOutRSS(feed);
+			if (feed.getIsRSS()) {
+				return scrapingOneWhitRSS(feed);
+			} else {
+				return scrapingOneWithOutRSS(feed);
+			}
+		}
+	}
+
+	private News scrapingOneWithAuto(FeedForm feed) {
+		try {
+			List<News> listNews = new ArrayList<News>();
+			if (feed.getUrlNews() != null) {
+				String crawlStorageFolder = pathCrawler;
+				int numberOfCrawlers = 1;
+
+				CrawlConfig config = new CrawlConfig();
+				config.setCrawlStorageFolder(crawlStorageFolder);
+				config.setMaxPagesToFetch(2);//Solo un enlace
+				config.setPolitenessDelay(1);
+				config.setMaxDepthOfCrawling(1);
+				config.setShutdownOnEmptyQueue(true);
+
+				/*
+				 * Instantiate the controller for this crawl.
+				 */
+				PageFetcher pageFetcher = new PageFetcher(config);
+				RobotstxtConfig robotstxtConfig = new RobotstxtConfig();
+				robotstxtConfig.setEnabled(false);
+				RobotstxtServer robotstxtServer = new RobotstxtServer(
+						robotstxtConfig, pageFetcher);
+				CrawlController controller = new CrawlController(config,
+						pageFetcher, robotstxtServer);
+
+				/*
+				 * For each crawl, you need to add some seed urls. These are the
+				 * first URLs that are fetched and then the crawler starts
+				 * following links which are found in these pages
+				 */
+				controller.addSeed(feed.getUrlNews());
+
+				/*
+				 * Start the crawl. This is a blocking operation, meaning that
+				 * your code will reach the line after this only when crawling
+				 * is finished.
+				 */
+				controller.start(GBFoodCrawler.class, numberOfCrawlers);
+				List<String> newsLinks = (List<String>) controller
+						.getCrawlersLocalData().get(0);
+				boolean isFirst = true;
+				String lastNews = null;
+				News news = null;
+				for (String linkNews : newsLinks) {
+					news = getNewsWithOutRSS(new Feed(feed), linkNews, "");
+					listNews.add(news);
+					break;
+				}
+			}
+			return listNews.get(0);
+		} catch (IOException e) {
+			LOGGER.error("No se ha podido acceder a la URL. Mas Info-> "
+					+ e.getMessage() + " -> " + feed.getNewsLink());
+			return null;
+		} catch (Exception e) {
+			LOGGER.error("No se ha podido acceder a la URL. Mas Info-> "
+					+ e.getMessage() + " -> " + feed.getNewsLink());
+			return null;
 		}
 	}
 
@@ -125,7 +286,7 @@ public class FeedScrapingImpl implements FeedScraping {
 							isFirst = false;
 						}
 					}
-					News newsData = getNewsWithRSS(feed, news);
+					News newsData = getNewsWithRSS(feed, news, true);
 					if (!withOutLimit && after != null) {
 						if (newsData.getPubDate().before(after)) {
 							break;
@@ -149,15 +310,15 @@ public class FeedScrapingImpl implements FeedScraping {
 			return listNews;
 		} catch (MalformedURLException e) {
 			LOGGER.error("Error al generar a la URL. Mas Info-> "
-					+ e.getMessage());
+					+ e.getMessage() + " -> " + feed.getNewsLink());
 			return null;
 		} catch (IOException e) {
 			LOGGER.error("No se ha podido acceder a la URL. Mas Info-> "
-					+ e.getMessage());
+					+ e.getMessage() + " -> " + feed.getNewsLink());
 			return null;
 		} catch (IllegalArgumentException | FeedException e) {
 			LOGGER.error("Error al obtener la informacion RSS. Mas Info-> "
-					+ e.getMessage());
+					+ e.getMessage() + " -> " + feed.getNewsLink());
 			return null;
 		}
 	}
@@ -167,7 +328,8 @@ public class FeedScrapingImpl implements FeedScraping {
 		try {
 			List<News> listNews = new ArrayList<News>();
 			if (feed.getUrlNews() != null) {
-				Document doc = Jsoup.connect(feed.getUrlNews()).timeout(20000).get();
+				Document doc = Jsoup.connect(feed.getUrlNews()).timeout(20000)
+						.get();
 				Elements newsLinks = doc.select(feed.getNewsLink());
 				boolean isFirst = true;
 				String lastNews = null;
@@ -218,7 +380,11 @@ public class FeedScrapingImpl implements FeedScraping {
 			return listNews;
 		} catch (IOException e) {
 			LOGGER.error("No se ha podido acceder a la URL. Mas Info-> "
-					+ e.getMessage());
+					+ e.getMessage() + " -> " + feed.getNewsLink());
+			return null;
+		} catch (Exception e) {
+			LOGGER.error("No se ha podido acceder a la URL. Mas Info-> "
+					+ e.getMessage() + " -> " + feed.getNewsLink());
 			return null;
 		}
 	}
@@ -234,22 +400,22 @@ public class FeedScrapingImpl implements FeedScraping {
 				SyndFeed newsList = input.build(new XmlReader(conn
 						.getInputStream()));
 				for (SyndEntry news : newsList.getEntries()) {
-					listNews.add(getNewsWithRSS(new Feed(feed), news));
+					listNews.add(getNewsWithRSS(new Feed(feed), news, true));
 					break;
 				}
 			}
 			return listNews.get(0);
 		} catch (MalformedURLException e) {
 			LOGGER.error("Error al generar a la URL. Mas Info-> "
-					+ e.getMessage());
+					+ e.getMessage() + " -> " + feed.getNewsLink());
 			return null;
 		} catch (IOException e) {
 			LOGGER.error("No se ha podido acceder a la URL. Mas Info-> "
-					+ e.getMessage());
+					+ e.getMessage() + " -> " + feed.getNewsLink());
 			return null;
 		} catch (IllegalArgumentException | FeedException e) {
 			LOGGER.error("Error al obtener la informacion RSS. Mas Info-> "
-					+ e.getMessage());
+					+ e.getMessage() + " -> " + feed.getNewsLink());
 			return null;
 		}
 	}
@@ -278,18 +444,28 @@ public class FeedScrapingImpl implements FeedScraping {
 			return listNews.get(0);
 		} catch (IOException e) {
 			LOGGER.error("No se ha podido acceder a la URL. Mas Info-> "
-					+ e.getMessage());
+					+ e.getMessage() + " -> " + feed.getNewsLink());
 			return null;
 		}
 	}
 
-	public News getNewsWithRSS(Feed feed, SyndEntry news) {
-		String url = news.getLink().startsWith("http://") ? news.getLink()
-				: feed.getUrlSite().concat(news.getLink());
+	public News getNewsWithRSS(Feed feed, SyndEntry news, boolean accessLink) {
+		String link = news.getLink();
+		try {
+			URL url = new URL(news.getLink());
+		} catch (MalformedURLException ex) {
+			URL url = null;
+			try {
+				url = new URL(feed.getUrlNews());
+				link = url.getProtocol().concat(url.getAuthority().concat(news.getLink()));
+			} catch (MalformedURLException e) {
+				e.printStackTrace();
+			}
+		}
+		String url = link;
 		NewsBuilder temp = new NewsBuilder(feed);
 		temp.setTitle(news.getTitle());
 		temp.setUrl(url);
-		temp.setDescription(news.getDescription().getValue());
 		temp.setPubDate(news.getPublishedDate());
 		String content = "";
 		for (SyndContent part : news.getContents()) {
@@ -300,6 +476,7 @@ public class FeedScrapingImpl implements FeedScraping {
 		}
 		Document newsPage = null;
 		Integer count = 0;
+		if (accessLink) {
 		while (true) {
 			try {
 				if (feed.getCharSet().equals(CharsetEnum.UTF8)) {// Codificacion
@@ -320,18 +497,46 @@ public class FeedScrapingImpl implements FeedScraping {
 					return null;
 			}
 		}
-		if (feed.getSelectorContent() != null) {
-			if (!feed.getSelectorContent().isEmpty()) {
-				temp.setContent(feed.getSelectorContentMeta() ? newsPage
-						.select(feed.getSelectorContent()).attr("content")
-						: newsPage.select(feed.getSelectorContent()).text());
-			}
 		}
-		if (feed.getSelectorDescription() != null) {
-			if (!feed.getSelectorDescription().isEmpty()) {
-				temp.setDescription(feed.getSelectorDescriptionMeta() ? newsPage
-						.select(feed.getSelectorDescription()).attr("content")
-						: newsPage.select(feed.getSelectorDescription()).text());
+		if (feed.getExtractionType() == null
+				|| ExtractionType.CSS_EXTRACTOR
+						.equals(feed.getExtractionType())) {
+			if (feed.getSelectorContent() != null) {
+				if (!feed.getSelectorContent().isEmpty()) {
+					temp.setContent(feed.getSelectorContentMeta() ? newsPage
+							.select(feed.getSelectorContent()).attr("content")
+							: newsPage.select(feed.getSelectorContent()).text());
+				}
+			}
+		} else if (ExtractionType.RSS_DESCRIPTION
+				.equals(feed.getExtractionType()) || !accessLink) {
+			if (news.getDescription()!=null)
+				temp.setContent(news.getDescription().getValue());
+		} else if (ExtractionType.ALL_CONTENT
+				.equals(feed.getExtractionType())) {
+			temp.setContent(newsPage.text());
+		} else {
+			BoilerpipeExtractor extractor = CommonExtractors.ARTICLE_EXTRACTOR;
+			switch (feed.getExtractionType()) {
+			case ARTICLE_EXTRACTOR:
+				extractor = CommonExtractors.ARTICLE_EXTRACTOR;
+				break;
+			case DEFAULT_EXTRACTOR:
+				extractor = CommonExtractors.DEFAULT_EXTRACTOR;
+				break;
+			case CANOLA_EXTRACTOR:
+				extractor = CommonExtractors.CANOLA_EXTRACTOR;
+				break;
+			case LARGEST_CONTENT_EXTRACTOR:
+				extractor = CommonExtractors.LARGEST_CONTENT_EXTRACTOR;
+				break;
+			}
+			try {
+				temp.setContent(extractor.getText(newsPage.outerHtml()));
+			} catch (BoilerpipeProcessingException e) {
+				LOGGER.error("Error al extraer el contenido del texto de forma automatica");
+				;
+				temp.setContent("Error al extraer el contenido de forma automatica");
 			}
 		}
 		if (feed.getSelectorPubDate() != null) {
@@ -346,8 +551,8 @@ public class FeedScrapingImpl implements FeedScraping {
 				temp.setTitle(feed.getSelectorTitleMeta() ? newsPage.select(
 						feed.getSelectorTitle()).attr("content") : newsPage
 						.select(feed.getSelectorTitle()).text());
-			}
-		}
+			} 
+		} 
 		return temp.build();
 
 	}
@@ -378,18 +583,42 @@ public class FeedScrapingImpl implements FeedScraping {
 		NewsBuilder temp = new NewsBuilder(feed);
 		temp.setUrl(linkNews);
 		temp.setTitle(title);
-		if (feed.getSelectorContent() != null) {
-			if (!feed.getSelectorContent().isEmpty()) {
-				temp.setContent(feed.getSelectorContentMeta() ? newsPage
-						.select(feed.getSelectorContent()).attr("content")
-						: newsPage.select(feed.getSelectorContent()).text());
+		if (feed.getExtractionType() == null
+				|| ExtractionType.CSS_EXTRACTOR
+						.equals(feed.getExtractionType())) {
+			if (feed.getSelectorContent() != null) {
+				if (!feed.getSelectorContent().isEmpty()) {
+					temp.setContent(feed.getSelectorContentMeta() ? newsPage
+							.select(feed.getSelectorContent()).attr("content")
+							: newsPage.select(feed.getSelectorContent()).text());
+				}
 			}
-		}
-		if (feed.getSelectorDescription() != null) {
-			if (!feed.getSelectorDescription().isEmpty()) {
-				temp.setDescription(feed.getSelectorDescriptionMeta() ? newsPage
-						.select(feed.getSelectorDescription()).attr("content")
-						: newsPage.select(feed.getSelectorDescription()).text());
+		}  else if (ExtractionType.ALL_CONTENT
+				.equals(feed.getExtractionType()) || ExtractionType.RSS_DESCRIPTION
+				.equals(feed.getExtractionType())) {
+			temp.setContent(newsPage.text());
+		} else {
+			BoilerpipeExtractor extractor = CommonExtractors.ARTICLE_EXTRACTOR;
+			switch (feed.getExtractionType()) {
+			case ARTICLE_EXTRACTOR:
+				extractor = CommonExtractors.ARTICLE_EXTRACTOR;
+				break;
+			case DEFAULT_EXTRACTOR:
+				extractor = CommonExtractors.DEFAULT_EXTRACTOR;
+				break;
+			case CANOLA_EXTRACTOR:
+				extractor = CommonExtractors.CANOLA_EXTRACTOR;
+				break;
+			case LARGEST_CONTENT_EXTRACTOR:
+				extractor = CommonExtractors.LARGEST_CONTENT_EXTRACTOR;
+				break;
+			}
+			try {
+				temp.setContent(extractor.getText(newsPage.outerHtml()));
+			} catch (BoilerpipeProcessingException e) {
+				LOGGER.error("Error al extraer el contenido del texto de forma automatica");
+				;
+				temp.setContent("Error al extraer el contenido de forma automatica");
 			}
 		}
 		if (feed.getSelectorPubDate() != null) {
@@ -404,7 +633,11 @@ public class FeedScrapingImpl implements FeedScraping {
 				temp.setTitle(feed.getSelectorTitleMeta() ? newsPage.select(
 						feed.getSelectorTitle()).attr("content") : newsPage
 						.select(feed.getSelectorTitle()).text());
+			} else {
+				temp.setTitle(newsPage.title());
 			}
+		} else {
+			temp.setTitle(newsPage.title());
 		}
 		return temp.build();
 	}
@@ -413,5 +646,64 @@ public class FeedScrapingImpl implements FeedScraping {
 	public News getNewsFromSite(String link, Feed feed) {
 		return getNewsWithOutRSS(feed, link, link);
 	}
+	
+	@Override
+	public List<News> scrapingHistoric(Feed feed, InputStream xml) {
+		try {
+			List<News> listNews = new ArrayList<News>();
+			// open a connection to the rss feed
+			if (feed.getUrlNews() != null) {
+				SyndFeedInput input = new SyndFeedInput();
+				SyndFeed newsList = input.build(new XmlReader(xml));
+				boolean isFirst = true;
+				String lastNews = null;
+				for (SyndEntry news : newsList.getEntries()) {
+
+					News newsData = getNewsWithRSS(feed, news, false);
+					listNews.add(newsData);
+				}
+			}
+			feed = repositoryFeed.findOne(feed.getId());
+			feed.setUltimaRecuperacion(new Timestamp(System.currentTimeMillis()));
+			feed.setNumNewNews(listNews != null ? listNews.size() : 0);
+			repositoryFeed.save((Feed) feed);
+			if (listNews != null) {
+				Date today = new Date(System.currentTimeMillis());
+				ScrapStatistics statistics = statisticsRepository.findOne(today);
+				if (statistics != null) {
+					statistics.setTotal(statistics.getTotal() + listNews.size());
+				} else {
+					statistics = new ScrapStatistics(today, listNews.size());
+				}
+				statisticsRepository.save(statistics);
+			}
+			for (News news : listNews) {
+				try {
+					if (news!=null)
+						newsRepository.save(news);
+					else
+						LOGGER.warn("La noticia es null para el sitio: " + feed.getName());
+				}
+				catch (Exception ex) {
+					LOGGER.error("Error al guardar una noticia. Sitio: " + feed.getName() + ", Link: " + news.getUrl());
+				}
+			}
+			newsIndexService.markNewNews(feed);
+			LOGGER.info("Noticias historicas recuperadas del sitio " + feed.getName());
+			return listNews;
+		} catch (MalformedURLException e) {
+			LOGGER.error("Error al generar a la URL. Mas Info-> "
+					+ e.getMessage() + " -> " + feed.getNewsLink());
+			return null;
+		} catch (IOException e) {
+			LOGGER.error("No se ha podido acceder a la URL. Mas Info-> "
+					+ e.getMessage() + " -> " + feed.getNewsLink());
+			return null;
+		} catch (IllegalArgumentException | FeedException e) {
+			LOGGER.error("Error al obtener la informacion RSS. Mas Info-> "
+					+ e.getMessage() + " -> " + feed.getNewsLink());
+			return null;
+		}
+	} 
 
 }

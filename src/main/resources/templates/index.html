@@ -1,0 +1,196 @@
+<html>
+<head>
+<script type="text/javascript"
+	src="https://code.jquery.com/jquery-2.2.4.js"></script>
+<script src="http://code.jquery.com/jquery-migrate-1.4.1.js"></script>
+
+<script type="text/javascript"
+	src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js"></script>
+
+<script src="http://code.highcharts.com/stock/highstock.js"></script>
+<script src="https://code.highcharts.com/modules/exporting.js"></script>
+<link
+	href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css"
+	rel="stylesheet" />
+</head>
+<body>
+	<div id="container"
+		style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+	<script>
+		/*<![CDATA[*/
+		var seriesData = [];
+		$(function() {
+
+			$
+					.getJSON(
+							"http://localhost:8080/alerts/ajax/stats",
+							function(data) {
+								var count = 1;
+								var vis = true;
+								$.each(data, function(key, val) {
+									var values = [];
+									$.each(val, function(key2, val2) {
+										values.push([ Date.parse(val2[2]),
+												val2[3] ]);
+									});
+									seriesData.push({
+										name : key,
+										data : values.sort(function(a, b) {
+											return a[0] - b[0];
+										}),
+										visible : vis
+									});
+									count++;
+									if (count == 4) {
+										vis = false;
+									}
+								});
+								seriesData = seriesData.sort(function(a, b) {
+									return a.name - b.name;
+								});
+								window.chart = new Highcharts.StockChart(
+										{
+											rangeSelector : {
+												adaptToUpdatedData : false,
+												selected : 6,
+												inputDateFormat : '%d-%m-%Y',
+												inputEditDateFormat : '%d-%m-%Y'
+											},
+											chart : {
+												type : 'spline',
+												zoomType : 'x',
+												renderTo : 'container'
+											},
+											title : {
+												text : 'Alertas Sanitarias'
+											},
+											subtitle : {
+												text : 'Alertas detectadas'
+											},
+											xAxis : {
+												type : 'datetime',
+												dateTimeLabelFormats : {
+													day : '%d %m %Y',
+												},
+												title : {
+													text : 'Día'
+												},
+												events : {
+													afterSetExtremes : function(
+															e) {
+														var chartOb = this;
+														chartOb.setExtremes(
+																chartOb.min,
+																chartOb.max);
+													}
+												}
+											},
+											yAxis : {
+												title : {
+													text : 'Nº alertas'
+												},
+												min : 0
+											},
+											tooltip : {
+												pointFormat : '<span style="color:{series.color}">{series.name}</span>: <b>{point.y}</b><br/>',
+											},
+											legend : {
+												layout : 'vertical',
+												align : 'left',
+												verticalAlign : 'middle',
+												borderWidth : 1,
+												enabled : true
+											},
+
+											plotOptions : {
+												spline : {
+													events : {
+														show : function() {
+															window.chart
+																	.addSeries({
+																		name: this-name + "-a",
+																		data : this.data,
+																		isInternal : true,
+																		xAxis : 1,
+																		yAxis : 1,
+																		name : null,
+																		enableMouseTracking : false,
+																		showInLegend : false
+																	});
+														},
+														hide : function() {
+															var seriesLength = window.chart.series.length;
+											                for(var i = seriesLength - 1; i > -1; i--)
+											                {
+											                    if(window.chart.series[i].name == this.name + "-a") {
+											                    	window.chart.series[i].remove();
+											                    	break;
+											                    }
+											                }
+														}
+													},
+													marker : {
+														enabled : true
+													}
+												}
+											},
+
+											series : seriesData
+										},
+										function(chart) {
+
+											// apply the date pickers
+											setTimeout(
+													function() {
+														$(
+																'input.highcharts-range-selector',
+																$('#'
+																		+ chart.options.chart.renderTo))
+																.datepicker(
+																		{
+																			beforeShow : function(
+																					i,
+																					obj) {
+																				$widget = obj.dpDiv;
+																				window.$uiDatepickerDiv = $widget;
+																				if ($widget
+																						.data("top")) {
+																					setTimeout(
+																							function() {
+																								$uiDatepickerDiv
+																										.css(
+																												"top",
+																												$uiDatepickerDiv
+																														.data("top"));
+																							},
+																							50);
+																				}
+																			},
+																			onClose : function(
+																					i,
+																					obj) {
+																				$widget = obj.dpDiv;
+																				$widget
+																						.data(
+																								"top",
+																								$widget
+																										.position().top);
+																			}
+																		})
+													}, 0)
+										});
+
+							});
+			// Set the datepicker's date format
+			$.datepicker.setDefaults({
+				dateFormat : 'dd-mm-yy',
+				onSelect : function(dateText) {
+					this.onchange();
+					this.onblur();
+				}
+			});
+		});
+		/*]]>*/
+	</script>
+</body>
+</html>

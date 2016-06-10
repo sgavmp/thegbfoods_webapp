@@ -31,6 +31,18 @@ public abstract class BaseController {
 		return new Date();
 	}
 	
+	@ModelAttribute("semana")
+	public Date getSemana() {
+		Date ayer = new Date(new Date().getTime() - 7 * 24 * 3600 * 1000l  );
+		return ayer;
+	}
+	
+	@ModelAttribute("mes")
+	public Date getMes() {
+		Date ayer = new Date(new Date().getTime() - 31 * 24 * 3600 * 1000l  );
+		return ayer;
+	}
+	
 	@ModelAttribute("ayer")
 	public Date getAyer() {
 		Date ayer = new Date(new Date().getTime() - 24 * 3600 * 1000l );

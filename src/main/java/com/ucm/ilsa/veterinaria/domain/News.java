@@ -9,24 +9,53 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Lob;
+import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 import org.springframework.format.datetime.DateFormatter;
 
-public class News {
+@Entity
+public class News extends BaseEntity {
+	
+	public static String fieldTitle = "title";
+	public static String fieldTitleNoCase = "titleN";
+	public static String fieldBody = "body";
+	public static String fieldBodyNoCase = "bodyN";
+	public static String fieldDatePub = "datePub";
+	public static String fieldDateCreate = "dateCreate";
+	public static String fieldUrl = "id";
+	public static String fieldSite = "feed";
+	public static String fieldSiteLoc = "siteLoc";
+	public static String fieldSiteType = "siteType";
+	
+	@Id
+	@GeneratedValue(strategy=GenerationType.TABLE)
+	private Long id;
+	@Lob
 	private String title;
-	private String description;
+	@Lob
 	private String content;
 	private Long site;
+	@Lob
 	private String url;
 	private Date pubDate = new Date(System.currentTimeMillis());
-	private Map<String,String> others;
-	
-	public News() {
-		this.others = new HashMap<String, String>();
+
+	public Long getId() {
+		return id;
 	}
+
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
 
 	public String getTitle() {
 		return title;
@@ -34,14 +63,6 @@ public class News {
 
 	public void setTitle(String title) {
 		this.title = title;
-	}
-
-	public String getDescription() {
-		return description;
-	}
-
-	public void setDescription(String description) {
-		this.description = description;
 	}
 
 	public String getContent() {
@@ -66,14 +87,6 @@ public class News {
 
 	public void setUrl(String url) {
 		this.url = url;
-	}
-
-	public Map<String, String> getOthers() {
-		return others;
-	}
-
-	public void setOthers(Map<String, String> others) {
-		this.others = others;
 	}
 
 	public Date getPubDate() {

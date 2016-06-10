@@ -2,10 +2,19 @@ package com.ucm.ilsa.veterinaria;
 
 import java.util.concurrent.Executor;
 
+import javax.annotation.PostConstruct;
+import javax.sql.DataSource;
+
+import org.apache.commons.configuration.ConfigurationConverter;
+import org.apache.commons.configuration.DatabaseConfiguration;
+import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 import org.springframework.aop.interceptor.AsyncUncaughtExceptionHandler;
 import org.springframework.aop.interceptor.SimpleAsyncUncaughtExceptionHandler;
+import org.springframework.beans.factory.annotation.Autowire;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -22,6 +31,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 
 import com.ucm.ilsa.veterinaria.domain.Configuracion;
 import com.ucm.ilsa.veterinaria.repository.ConfiguracionRepository;
+import com.ucm.ilsa.veterinaria.service.ConfiguracionService;
 
 @SpringBootApplication
 @ComponentScan("com.ucm.ilsa.veterinaria")
@@ -35,19 +45,16 @@ public class Application extends SpringBootServletInitializer implements AsyncCo
 	Environment env;
 	
 	@Autowired
-	ConfiguracionRepository configuracionRepository;
+	Configuration configuration; 
 	
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args);
+        BasicConfigurator.configure();
     }
     
     @Override
     public void run(String... args) throws Exception {
     	LOGGER.info("Deploy on " + env.getProperty("name"));
-    	if (!configuracionRepository.exists("conf")) {
-    		LOGGER.info("No existe una configuración inicial, se inciará una en la base de datos.");
-    		configuracionRepository.save(new Configuracion());
-    	}
     }
 	
     @Bean

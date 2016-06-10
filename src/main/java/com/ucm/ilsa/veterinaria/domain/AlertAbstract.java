@@ -1,5 +1,6 @@
 package com.ucm.ilsa.veterinaria.domain;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -42,6 +43,7 @@ public abstract class AlertAbstract extends BaseEntity {
 	protected Set<NewsDetect> newsDetect;
 	@Enumerated(EnumType.ORDINAL)
 	private AlertLevel type;
+	private Timestamp ultimaRecuperacion;
 
 	public AlertAbstract() {
 		this.words = "";
@@ -114,6 +116,14 @@ public abstract class AlertAbstract extends BaseEntity {
 		this.updateDate = before.getUpdateDate();
 		this.version = before.getVersion();
 		return this;
+	}
+
+	public Timestamp getUltimaRecuperacion() {
+		return ultimaRecuperacion;
+	}
+
+	public void setUltimaRecuperacion(Timestamp ultimaRecuperacion) {
+		this.ultimaRecuperacion = ultimaRecuperacion;
 	}
 
 	public SortedMap<Date,List<NewsDetect>> getAllNewsDetectOrderByDate() {

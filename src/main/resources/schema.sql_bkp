@@ -1,0 +1,11 @@
+CREATE TABLE IF NOT EXISTS persistent_logins (
+    username character varying(64) NOT NULL,
+    series character varying(64) NOT NULL,
+    token character varying(64) NOT NULL,
+    last_used timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+CREATE VIEW ESTADISTICAS AS SELECT DATE(date_pub) FECHA, count(*) TOTAL, sum(case when alert_detect_id IN (SELECT id FROM alert) then 1 else 0 end) ALERTA, sum(case when alert_detect_id IN (SELECT id FROM risk) then 1 else 0 end) RIESGO FROM news_detect group by FECHA;
+create view alert_score as select alert_detect_id, alert.title, cast(date_pub as date) 'fecha', count(*) 'num', avg(score) 'score_avg' from news_detect right join alert on (alert.id = news_detect.alert_detect_id) where alert_detect_id != "" group by fecha,alert_detect_id order by fecha DESC, score_avg DESC;
+
+create view risk_score as select alert_detect_id, risk.title, cast(date_pub as date) 'fecha', count(*) 'num', avg(score) 'score_avg' from news_detect right join risk on (risk.id = news_detect.alert_detect_id) where alert_detect_id != "" group by fecha,alert_detect_id order by fecha DESC, score_avg DESC;

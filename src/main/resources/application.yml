@@ -1,3 +1,7 @@
+datetime:
+  extra:
+    masks: dd/MM/yyyy
+
 spring:
   application:
     name: veterinaria
@@ -5,47 +9,150 @@ spring:
     active: production
   datasource:
     testWhileIdle: true
-    timeBetweenEvictionRunsMillis: 1800000
+    test-on-borrow: true
+    time-between-eviction-runs-millis: 18000
+    init-sql: "SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci;"
     validationQuery: SELECT 1
-  
----
 logging:
   config: classpath:logback-production.xml
+  pattern:
+    level: DEBUG
+    console: '%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg %n'
+  
+---
+datetime:
+  extra:
+    masks: dd/MM/yyyy
+    
+gbfood:
+  resources: 
+    templates: /tomcatfolder/app/gbfood/resources/templates/
+    statics: file:/tomcatfolder/app/gbfood/resources/static/
+    crawler: /tomcatfolder/app/gbfood/crawler/
+logging:
+  config: classpath:logback-production.xml
+  pattern:
+    level: DEBUG
+    console: '%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg %n'
 spring:
   profiles: production
   datasource:
     jndi-name: java:comp/env/jdbc/veterinaria
     driverClassName: com.mysql.jdbc.Driver
+    testWhileIdle: true
+    init-sql: "SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci;"
+    test-on-borrow: true
+    time-between-eviction-runs-millis: 18000
+    validationQuery: SELECT 1
   jpa:
     hibernate:
       ddl-auto: update
     properties:
       hibernate:
-        dialect. org.hibernate.dialect.MySQL5Dialect
+        dialect: org.hibernate.dialect.MySQL5Dialect
+        connection:
+          characterEncoding: utf8mb4
+          useUnicode: true
     database-platform: org.hibernate.dialect.MySQLDialect
 
 name: production
 
 ---
+datetime:
+  extra:
+    masks: dd/MM/yyyy
+    
+gbfood:
+  resources: 
+    templates: /gb/resources/templates/
+    statics: file:/gb/resources/static/
+    crawler: /gb/crawler/
 logging:
   config: classpath:logback-local.xml
-
 spring:
   profiles: local
-  
   jpa:
+    properties:
+      hibernate:
+        connection:
+          characterEncoding: utf8mb4
+          useUnicode: true
     hibernate:
       ddl-auto: update
   thymeleaf:
     cache: false
   datasource:
-    url: jdbc:mysql://localhost:3306/veterinaria
+    url: jdbc:mysql://localhost:3306/gbfood
+    init-sql: "SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci;"
     username: root
     password: root
     driverClassName: com.mysql.jdbc.Driver
     continueOnError: true
+    testWhileIdle: true
+    timeBetweenEvictionRunsMillis: 18000
+    validationQuery: SELECT 1
 
 name: local
 
-server:
-  port: 9000
+---
+phantomjs:
+  binary:
+    path: classpath:phantomjs
+    
+logging:
+  config: classpath:logback-local.xml
+  
+gbfood:
+  resources: 
+    templates: /gb/resources/templates/
+    statics: file:/gb/resources/static/
+    crawler: /gb/crawler/
+spring:
+  profiles: test-db
+  jpa:
+    properties:
+      hibernate:
+        connection:
+          characterEncoding: utf8mb4
+          useUnicode: true
+    hibernate:
+      ddl-auto: update
+  thymeleaf:
+    cache: false
+  datasource:
+    url: jdbc:mysql://localhost:3306/gbfood
+    username: root
+    password: root
+    init-sql: "SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci;"
+    driverClassName: com.mysql.jdbc.Driver
+    continueOnError: true
+    initialize: false
+
+name: test-db
+
+---
+gbfood:
+  resources: 
+    templates: /gb/resources/templates/
+    statics: file:/gb/resources/static/
+    crawler: /gb/crawler/
+spring:
+  profiles: test
+  
+  jpa:
+    properties:
+      hibernate:
+        connection:
+          characterEncoding: utf8mb4
+          useUnicode: true
+    hibernate:
+      ddl-auto: update
+    database-platform: org.hibernate.dialect.H2Dialect
+  thymeleaf:
+    cache: false
+  datasource:
+    init-sql: "SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci;"
+    initialize: false
+    
+
+name: test
