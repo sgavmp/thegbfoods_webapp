@@ -8,6 +8,6 @@ public class SourceTypeDoesNotExistsException extends ParseException {
  }
  public String getType() {return type;};
  public String toString() {
-   return "El tipo de fuente "+type+" no existe (no est· definido)";
+   return "El tipo de fuente "+type+" no existe (no est√° definido)";
  }    
 }

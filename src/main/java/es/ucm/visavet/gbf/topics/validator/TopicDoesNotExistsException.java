@@ -8,6 +8,6 @@ public class TopicDoesNotExistsException extends ParseException {
  }
  public String getTopic() {return topic;};
  public String toString() {
-   return "El tÛpico "+topic+" no existe (no est· definido)";
+   return "El t√≥pico "+topic+" no existe (no est√° definido)";
  }    
 }

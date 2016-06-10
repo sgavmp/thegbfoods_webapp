@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="es" xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
+<head th:include="base :: head">
+</head>
+<body>
+	<div
+		class="demo-layout mdl-layout mdl-js-layout mdl-layout--fixed-drawer mdl-layout--fixed-header">
+		<header
+			class="demo-header mdl-layout__header mdl-color--white mdl-color--grey-100 mdl-color-text--grey-600"
+			th:replace="base :: menu-superior"> </header>
+		<div
+			class="demo-drawer mdl-layout__drawer mdl-color--blue-grey-800 mdl-color-text--primary"
+			th:include="base :: menu-izquierdo"></div>
+		<main
+			class="mdl-layout__content mdl-color--withe mdl-typography--text-center">
+		<div sec:authorize="isAuthenticated()" class="doc-page">
+				<a class="mdl-button mdl-js-button mdl-color--primary"
+					th:href="@{/{folder}/create(folder=${folder})}" href="#">Añadir nuevo sitio</a>
+		</div>
+		<div class="doc-page">
+			<div class="snippet-padding"></div>
+			<table
+				class="mdl-data-table mdl-js-data-table snippet">
+				<thead>
+					<tr>
+						<th class="mdl-data-table__cell--non-numeric">Titulo</th>
+						<th class="mdl-data-table__cell--non-numeric">Tipo</th>
+						<th class="mdl-data-table__cell--non-numeric">Fecha creación</th>
+						<th class="mdl-data-table__cell--non-numeric">Fecha edición</th>
+						<th>Editar</th>
+						<th>Borrar</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr th:each="word : ${allWords}">
+						<td class="mdl-data-table__cell--non-numeric" th:inline="text"><a
+							th:href="@{/{folder}/get/{id}(folder=${folder},id=${word.id})}">[[${word.title}]] / [[${word.titleEn!=null?word.titleEn:'-'}]]</a></td>
+						<td class="mdl-data-table__cell--non-numeric"
+							th:text="${word.type}"></td>
+						<td class="mdl-data-table__cell--non-numeric"
+							th:text="${#dates.format(word.createDate, 'dd/M/yyyy')}"></td>
+						<td class="mdl-data-table__cell--non-numeric"
+							th:text="${#dates.format(word.updateDate, 'dd/M/yyyy H:m')}"></td>
+						<td><a href="#"
+							th:href="@{/{folder}/get/{id}/edit(folder=${folder},id=${word.id})}"><i
+								class="mdl-color-text--black material-icons" role="presentation">mode-edit</i></a></td>
+						<td><a class="confirm-del" href="#"
+							th:href="@{/{folder}/get/{id}/remove(folder=${folder},id=${word.id})}"><i
+								class="mdl-color-text--black material-icons confirm"
+								role="presentation">delete</i></a></td>
+					</tr>
+				</tbody>
+			</table>
+			<div class="snippet-padding"></div>
+		</div>
+		</main>
+		<footer th:include="base :: footer"> </footer>
+		<script type="text/javascript">
+			// <![CDATA[
+			$(".confirm-del")
+					.click(
+							function(e) {
+								var notification = document
+										.querySelector('.mdl-js-snackbar');
+								var url = e
+										&& (('string' === typeof e && e) || (e.currentTarget && e.currentTarget.attributes['href'].value));
+								notification.MaterialSnackbar
+										.showSnackbar({
+											message : "¿Estas seguro de borrar el website seleccionado?",
+											cssColor : 'mdl-color--green',
+											timeout : 300000,
+											actionHandler : function(event) {
+												window.location = url;
+												notification.MaterialSnackbar
+														.cleanup_();
+											},
+											actionText : 'Si',
+											actionHandler2 : function(event) {
+												notification.MaterialSnackbar
+														.cleanup_();
+											},
+											actionText2 : 'No'
+										});
+								return false;
+							});
+			// ]]>
+		</script>
+	</div>
+</body>
+</html>

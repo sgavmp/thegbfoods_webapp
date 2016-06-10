@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="es" xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
+<head th:include="base :: head">
+</head>
+<body>
+	<div
+		class="demo-layout mdl-layout mdl-js-layout mdl-layout--fixed-drawer mdl-layout--fixed-header">
+		<header
+			class="demo-header mdl-layout__header mdl-color--white mdl-color--grey-100 mdl-color-text--grey-600"
+			th:replace="base :: menu-superior"> </header>
+		<div
+			class="demo-drawer mdl-layout__drawer mdl-color--blue-grey-800 mdl-color-text--primary"
+			th:include="base :: menu-izquierdo"></div>
+		<main
+			class="mdl-layout__content mdl-color--withe mdl-typography--text-center mdl-grid"
+			th:fragment="alerts">
+		<div id="alertas"
+			class="mdl-card mdl-cell mdl-cell--10-col mdl-cell--1-offset ">
+			<div class="mdl-card__title">
+				<h2
+					class="mdl-card__title-text mdl-color-text--primary text-underline">Alertas
+					Sanitarias</h2>
+			</div>
+			<div class="mdl-grid mdl-card__supporting-text">
+				<table
+					class="mdl-cell mdl-cell--5-col mdl-data-table mdl-js-data-table mdl-data-table mdl-shadow--2dp">
+					<thead class="mdl-color--primary">
+						<tr>
+							<th
+								class="mdl-data-table__cell--non-numeric mdl-color-text--white"
+								colspan="2" th:inline="text">Hoy ([[${#dates.format(hoy,
+								'dd/MMM/yyyy')}]])</th>
+						</tr>
+						<tr>
+							<th
+								class="mdl-data-table__cell--non-numeric mdl-color-text--white">Nombre
+								Alerta</th>
+							<th
+								class="mdl-data-table__cell--non-numeric mdl-color-text--white">Score</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr th:unless="${#lists.isEmpty(alertsScoreToday)}"
+							th:each="alert,stat : ${alertsScoreToday}"
+							th:class="${stat.count}%2==0?'table-par':'table-impar'"
+							class="table-impar">
+							<td class="mdl-data-table__cell--non-numeric"><a
+								th:text="${alert[1]}"
+								th:href="@{/alerts/get/{id}(id=${alert[0]})}">Acrylic</a></td>
+							<td th:text="${#numbers.formatDecimal(alert[4],1,2)}">250</td>
+						</tr>
+						<tr th:if="${#lists.isEmpty(alertsScoreToday)}"
+							class="table-impar">
+							<td class="mdl-data-table__cell--non-numeric" colspan="2">Hoy
+								no hay alertas</td>
+						</tr>
+					</tbody>
+				</table>
+				<table
+					class="mdl-cell mdl-cell--5-col mdl-data-table mdl-js-data-table mdl-data-table mdl-shadow--2dp">
+					<thead class="mdl-color--primary">
+						<tr>
+							<th
+								class="mdl-data-table__cell--non-numeric mdl-color-text--white"
+								colspan="2" th:inline="text">Esta semana
+								([[${#dates.format(hoy, 'dd/MMM/yyyy')}]] -
+								[[${#dates.format(semana, 'dd/MMM/yyyy')}]])</th>
+						</tr>
+						<tr>
+							<th
+								class="mdl-data-table__cell--non-numeric mdl-color-text--white">Nombre
+								Alerta</th>
+							<th
+								class="mdl-data-table__cell--non-numeric mdl-color-text--white">Score</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr th:each="alert,stat : ${alertsScoreWeek}"
+							th:class="${stat.count}%2==0?'table-par':'table-impar'"
+							class="table-impar">
+							<td class="mdl-data-table__cell--non-numeric"><a
+								th:text="${alert[1]}"
+								th:href="@{/alerts/get/{id}(id=${alert[0]})}">Acrylic</a></td>
+							<td th:text="${#numbers.formatDecimal(alert[4],1,2)}">250</td>
+						</tr>
+						<tr th:if="${#lists.isEmpty(alertsScoreWeek)}"
+							class="table-impar">
+							<td class="mdl-data-table__cell--non-numeric" colspan="2">Esta semana no hay alertas</td>
+						</tr>
+					</tbody>
+				</table>
+				<div class="mdl-cell mdl-cell--2-col">
+					<a th:href="@{/alerts/detect}"
+						class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored alerta-boton">View</a>
+					<a th:href="@{/alerts/list}"
+						class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored alerta-boton">List</a>
+				</div>
+			</div>
+		</div>
+		<div id="riesgos"
+			class="mdl-card mdl-cell mdl-cell--10-col mdl-cell--1-offset ">
+			<div class="mdl-card__title">
+				<h2
+					class="mdl-card__title-text mdl-color-text--primary text-underline">Riesgos</h2>
+			</div>
+			<div class="mdl-grid mdl-card__supporting-text">
+				<table
+					class="mdl-cell mdl-cell--5-col mdl-data-table mdl-js-data-table mdl-data-table mdl-shadow--2dp">
+					<thead class="mdl-color--primary">
+						<tr>
+							<th
+								class="mdl-data-table__cell--non-numeric mdl-color-text--white"
+								colspan="3" th:inline="text">Hoy ([[${#dates.format(hoy,
+								'dd/MMM/yyyy')}]])</th>
+						</tr>
+						<tr>
+							<th
+								class="mdl-data-table__cell--non-numeric mdl-color-text--white">Nombre
+								Riesgo</th>
+							<th
+								class="mdl-data-table__cell--non-numeric mdl-color-text--white">Score</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr th:unless="${#lists.isEmpty(risksScoreToday)}"
+							th:each="alert,stat : ${risksScoreToday}"
+							th:class="${stat.count}%2==0?'table-par':'table-impar'"
+							class="table-impar">
+							<td class="mdl-data-table__cell--non-numeric"><a
+								th:text="${alert[1]}"
+								th:href="@{/risks/get/{id}(id=${alert[0]})}">Acrylic</a></td>
+							<td th:text="${#numbers.formatDecimal(alert[4],1,2)}">250</td>
+						</tr>
+						<tr th:if="${#lists.isEmpty(risksScoreToday)}" class="table-impar">
+							<td class="mdl-data-table__cell--non-numeric" colspan="3">Hoy
+								no hay riesgos</td>
+						</tr>
+					</tbody>
+				</table>
+				<table
+					class="mdl-cell mdl-cell--5-col mdl-data-table mdl-js-data-table mdl-data-table mdl-shadow--2dp">
+					<thead class="mdl-color--primary">
+						<tr>
+							<th
+								class="mdl-data-table__cell--non-numeric mdl-color-text--white"
+								colspan="3" th:inline="text">Esta semana
+								([[${#dates.format(hoy, 'dd/MMM/yyyy')}]] -
+								[[${#dates.format(semana, 'dd/MMM/yyyy')}]])</th>
+						</tr>
+						<tr>
+							<th
+								class="mdl-data-table__cell--non-numeric mdl-color-text--white">Nombre
+								Riesgo</th>
+							<th
+								class="mdl-data-table__cell--non-numeric mdl-color-text--white">Score</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr th:each="alert,stat : ${risksScoreWeek}"
+							th:class="${stat.count}%2==0?'table-par':'table-impar'"
+							class="table-impar">
+							<td class="mdl-data-table__cell--non-numeric"><a
+								th:text="${alert[1]}"
+								th:href="@{/risks/get/{id}(id=${alert[0]})}">Acrylic</a></td>
+							<td th:text="${#numbers.formatDecimal(alert[4],1,2)}">250</td>
+						</tr>
+						<tr th:if="${#lists.isEmpty(risksScoreWeek)}"
+							class="table-impar">
+							<td class="mdl-data-table__cell--non-numeric" colspan="2">Esta semana no hay riesgos</td>
+						</tr>
+					</tbody>
+				</table>
+				<div class="mdl-cell mdl-cell--2-col">
+					<a th:href="@{/risks/detect}"
+						class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored alerta-boton">View</a>
+					<a th:href="@{/risks/list}"
+						class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored alerta-boton">List</a>
+				</div>
+			</div>
+		</div>
+		<div id="web"
+			class="mdl-card mdl-cell mdl-cell--10-col mdl-cell--1-offset ">
+			<div class="mdl-card__title">
+				<h2
+					class="mdl-card__title-text mdl-color-text--primary text-underline">Estadisticas
+					web</h2>
+			</div>
+			<div class="mdl-card__supporting-text mdl-grid">
+				<table
+					class="mdl-cell mdl-cell--6-col mdl-data-table mdl-js-data-table mdl-data-table mdl-shadow--2dp">
+					<thead class="mdl-color--grey">
+						<tr>
+							<th
+								class="mdl-data-table__cell--non-numeric mdl-color-text--white">Fecha
+								y Hora</th>
+							<th class="mdl-color-text--white">#Noticias</th>
+							<th class="mdl-color-text--white">#Alertas</th>
+							<th class="mdl-color-text--white">#Riesgos</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr th:each="scrap,stat : ${scrapStat}"
+							th:class="${stat.count}%2==0?'table-par':'table-impar'"
+							class="table-impar">
+							<td class="mdl-data-table__cell--non-numeric"
+								th:text="${scrap.fecha}">Acrylic (Transparent)</td>
+							<td th:text="${scrap.noticias}">250</td>
+							<td th:text="${scrap.alertas}">250</td>
+							<td th:text="${scrap.riesgos}">60</td>
+						</tr>
+					</tbody>
+				</table>
+				<div class="mdl-cell mdl-cell--6-col" id="chart-semanal"></div>
+			</div>
+		</div>
+		<div id="lugares"
+			class="mdl-card mdl-cell mdl-cell--10-col mdl-cell--1-offset ">
+			<div class="mdl-card__title">
+				<h2
+					class="mdl-card__title-text mdl-color-text--primary text-underline">Nivel
+					de alerta de proveedores</h2>
+			</div>
+			<div class="mdl-card__supporting-text mdl-grid">
+				<table
+					class="mdl-cell mdl-cell--6-col mdl-data-table mdl-js-data-table mdl-data-table mdl-shadow--2dp">
+					<thead class="mdl-color--grey">
+						<tr>
+							<th
+								class="mdl-data-table__cell--non-numeric mdl-color-text--white">Proveedor</th>
+							<th
+								class="mdl-data-table__cell--non-numeric mdl-color-text--white">Nivel
+								de Alerta</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr th:each="loc,stat : ${locationsScoreWeek}"
+							th:class="${stat.count}%2==0?'table-par':'table-impar'"
+							class="table-impar">
+							<td class="mdl-data-table__cell--non-numeric" th:text="${loc[0]}">Acrylic
+								(Transparent)</td>
+							<td th:text="${#numbers.formatDecimal(loc[1],1,2)}">250</td>
+						</tr>
+						<tr th:if="${#lists.isEmpty(locationsScoreWeek)}"
+							class="table-impar">
+							<td class="mdl-data-table__cell--non-numeric" colspan="2">No hay datos de proveedores.</td>
+						</tr>
+					</tbody>
+				</table>
+				<div class="mdl-cell mdl-cell--6-col">
+					<div>Mapa</div>
+					<div id="container" style="width: 100%; height: 100%;"></div>
+				</div>
+			</div>
+		</div>
+		</main>
+		<footer th:include="base :: footer"> </footer>
+		<!-- Load d3.js and c3.js -->
+		<script
+			src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js"
+			charset="utf-8"></script>
+		<script
+			src="https://cdnjs.cloudflare.com/ajax/libs/c3/0.4.10/c3.min.js"></script>
+		<script
+			src="//cdnjs.cloudflare.com/ajax/libs/topojson/1.6.9/topojson.min.js"></script>
+		<script th:src="@{/static/js/datamaps.world.min.js}"
+			src="/datamaps.world.min.js"></script>
+		<script th:inline="javascript">
+		/*<![CDATA[*/
+		           $(document)
+				.ready( function(){
+				    var chart = c3.generate({
+						bindto : '#chart-semanal',
+						data : {
+							x: 'labels',
+							url: [[@{'/ajax/scrap/week'}]],
+							mimeType: 'json',							
+							types : {
+								noticias : 'area-spline',
+								alertas : 'area-spline'
+							}
+						},
+						axis : {
+							x : {
+								type : 'category'
+							}
+						}
+					});
+				    var countries = [[${allCountriesAfects}]];
+					var data = {}
+					for (var t in countries) {
+						var temp = {'fillKey' : t};
+						data[t] = temp;
+					}
+					var map = new Datamap({
+						element: document.getElementById('container'),
+						responsive: true,
+						fills: countries,
+				        data: data
+					});
+					//alternatively with d3
+				    d3.select(window).on('resize', function() {
+				        map.resize();
+				    });
+				});
+		           /*]]>*/
+		</script>
+	</div>
+</body>
+</html>

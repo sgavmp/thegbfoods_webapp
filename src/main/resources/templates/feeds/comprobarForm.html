@@ -1,0 +1,16 @@
+<dialog id="modal" class="mdl-dialog mdl-cell--1-offset mdl-cell mdl-cell--10-col">
+    <h4 th:text="${news.title}" class="mdl-dialog__title">Allow data collection?</h4>
+    <h5 th:text="${#dates.format(news.pubDate,'d/M/Y H:m')}" class="mdl-dialog__content">
+      Contenido
+    </h5>
+    <div th:text="${news.content}" class="mdl-dialog__content">
+		Contenido
+    </div>
+    <div th:text="${news.url}" class="mdl-dialog__content">
+      Contenido
+    </div>
+    <div class="mdl-dialog__actions">
+      	<button type="button" class="mdl-button close">Cerrar</button>
+      	<a th:href="${news.url}" target="_blank" class="mdl-button">Ir</a>
+    </div>
+  </dialog>

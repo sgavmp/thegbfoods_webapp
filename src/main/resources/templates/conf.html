@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="es" xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
+<head th:include="base :: head">
+</head>
+<body>
+	<div
+		class="demo-layout mdl-layout mdl-js-layout mdl-layout--fixed-drawer mdl-layout--fixed-header">
+		<header
+			class="demo-header mdl-layout__header mdl-color--white mdl-color--grey-100 mdl-color-text--grey-600"
+			th:replace="base :: menu-superior"> </header>
+		<div
+			class="demo-drawer mdl-layout__drawer mdl-color--blue-grey-800 mdl-color-text--primary"
+			th:include="base :: menu-izquierdo"></div>
+		<main
+			class="mdl-layout__content mdl-color--withe mdl-typography--text-center">
+		<div th:if="${lugares}" class="doc-page mdl-grid">
+			<div class="mdl-cell mdl-cell--2-col"></div>
+			<div 
+				class="mdl-cell mdl-cell--8-col mdl-color--white mdl-shadow--2dp">
+				<div
+					class="mdl-cell mdl-cell--12-col mdl-cell--12-col-desktop mdl-typography--display-1-color-contrast"
+					th:inline="text">Lugares encontrados en la noticia</div>
+					<ul>
+						<li th:each="lugar : ${lugares}" th:inline="text">[[${lugar.location.text + " / " + lugar.geoname.name + "(" + lugar.geoname.PrimaryCountryName + ")"}]]</li>
+					</ul>
+			</div>
+		</div>
+		<div class="doc-page mdl-grid">
+			<div class="mdl-cell mdl-cell--2-col"></div>
+			<div
+				class="mdl-cell mdl-cell--8-col mdl-color--white mdl-shadow--2dp">
+				<div
+					class="mdl-cell mdl-cell--12-col mdl-cell--12-col-desktop mdl-typography--display-1-color-contrast"
+					th:inline="text">Modificar Configuración</div>
+				<form action="#" th:action="@{/configuracion}"
+					val:validate="${conf}" th:object="${conf}" method="post">
+
+					<input type="hidden" th:name="${_csrf.parameterName}"
+						th:value="${_csrf.token}" /> <input type="hidden"
+						th:field="*{id}" />
+					<div class="mdl-cell mdl-cell--10-col mdl-cell--10-col-desktop">
+						<label class="mdl-switch mdl-js-switch mdl-js-ripple-effect"
+							for="runService"> <input type="checkbox"
+							class="mdl-switch__input" id="runService"
+							name="runService" th:checked="*{runService}"
+							th:field="*{runService}" /> <span
+							class="mdl-switch__label">Iniciar proceso</span>
+						</label>
+					</div>
+					<div class="mdl-cell mdl-cell--10-col mdl-cell--10-col-desktop">
+						<label class="mdl-switch mdl-js-switch mdl-js-ripple-effect"
+							for="runSearch"> <input type="checkbox"
+							class="mdl-switch__input" id="runSearch"
+							name="runSearch" th:checked="*{runSearch}"
+							th:field="*{runSearch}" /> <span
+							class="mdl-switch__label">Iniciar busqueda automatizada</span>
+						</label>
+					</div>
+					<div
+						class="mdl-cell mdl-cell--10-col mdl-cell--10-col-desktop mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+						<label class="mdl-textfield__label" for="pathIndexClavin">Localización del indice de Clavin</label>
+						<input type="text" class="mdl-textfield__input"
+							th:field="*{pathIndexClavin}"></input>
+					</div>
+					<div
+						class="mdl-cell mdl-cell--10-col mdl-cell--10-col-desktop mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+						<label class="mdl-textfield__label" for="pathIndexClavin">Localización del indice de Noticias</label>
+						<input type="text" class="mdl-textfield__input"
+							th:field="*{pathIndexNews}"></input>
+					</div>
+					<div
+						class="mdl-cell mdl-cell--10-col mdl-cell--10-col-desktop mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+						<label class="mdl-textfield__label" for="radiusNear">Radio
+							de cercania para las alertas zonales</label> <input
+							class="mdl-textfield__input" type="text" th:field="*{radiusNear}" />
+					</div>
+					<div
+						class="mdl-cell mdl-cell--10-col mdl-cell--10-col-desktop mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+						<label class="mdl-textfield__label" for="dayRisks">Número
+							de días para el calculo de la frecuencia de riesgos</label> <input
+							class="mdl-textfield__input" type="text" th:field="*{dayRisks}" />
+					</div>
+					<div class="mdl-grid">
+						<div class="mdl-cell mdl-cell--1-col"></div>
+						<div class="mdl-cell mdl-cell--10-col">
+							<button class="mdl-button mdl-js-button mdl-color--primary"
+								type="submit">Guardar</button>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+		</main>
+		<footer th:include="base :: footer"> </footer>
+	</div>
+</body>
+</html>

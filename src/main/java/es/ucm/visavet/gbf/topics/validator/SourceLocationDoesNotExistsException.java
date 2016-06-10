@@ -8,6 +8,6 @@ public class SourceLocationDoesNotExistsException extends ParseException {
  }
  public String getLoc() {return loc;};
  public String toString() {
-   return "La localizacÛn de fuente "+loc+" no existe (no est· definido)";
+   return "La localizac√≥n de fuente "+loc+" no existe (no est√° definido)";
  }    
 }

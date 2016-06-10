@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="es" xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
+<head th:include="base :: head">
+</head>
+<body>
+	<div
+		class="demo-layout mdl-layout mdl-js-layout mdl-layout--fixed-drawer mdl-layout--fixed-header">
+		<header
+			class="demo-header mdl-layout__header mdl-color--white mdl-color--grey-100 mdl-color-text--grey-600"
+			th:replace="base :: menu-superior"> </header>
+		<div
+			class="demo-drawer mdl-layout__drawer mdl-color--blue-grey-800 mdl-color-text--primary"
+			th:include="base :: menu-izquierdo"></div>
+		<main
+			class="mdl-layout__content mdl-color--withe mdl-typography--text-center">
+		<div class="doc-page mdl-grid">
+			<div class="mdl-cell mdl-cell--2-col"></div>
+			<div
+				class="mdl-cell mdl-cell--8-col mdl-color--white mdl-shadow--2dp">
+				<form method="POST" enctype="multipart/form-data" th:action="@{/load}" action="/load">
+					<table>
+						<div
+						class="mdl-cell mdl-cell--8-col mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+						<select class="mdl-textfield__input" name="feed">
+							<option value="" disabled="disabled" selected="selected">Seleccione un Website</option>
+							<option th:each="feed : ${feeds}" th:value="${feed.id}"
+								th:text="${feed.name}">BBC</option>
+						</select> <label class="mdl-textfield__label">Website donde cargar</label>
+					</div>
+						<tr>
+							<td>File to upload:</td>
+							<td><input type="file" name="file" /></td>
+						</tr>
+						<tr>
+							<td></td>
+							<td><input type="submit" value="Cargar" /></td>
+						</tr>
+					</table>
+				</form>
+			</div>
+		</div>
+		</main>
+		<footer th:include="base :: footer"> </footer>
+		<script type="text/javascript">
+			// <![CDATA[
+			$(".confirm")
+					.click(
+							function(e) {
+								var notification = document
+										.querySelector('.mdl-js-snackbar');
+								var url = e
+										&& (('string' === typeof e && e) || (e.currentTarget && e.currentTarget.attributes['href'].value));
+								notification.MaterialSnackbar
+										.showSnackbar({
+											message : "¿Estas seguro de borrar el topic seleccionado?",
+											cssColor : 'mdl-color--primary',
+											timeout : 300000,
+											actionHandler : function(event) {
+												window.location = url;
+												notification.MaterialSnackbar
+														.cleanup_();
+											},
+											actionText : 'Si',
+											actionHandler2 : function(event) {
+												notification.MaterialSnackbar
+														.cleanup_();
+											},
+											actionText2 : 'No'
+										});
+								return false;
+							});
+			// ]]>
+		</script>
+	</div>
+</body>
+</html>

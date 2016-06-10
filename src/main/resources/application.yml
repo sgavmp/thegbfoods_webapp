@@ -26,8 +26,6 @@ datetime:
     
 gbfood:
   resources: 
-    templates: /tomcatfolder/app/gbfood/resources/templates/
-    statics: file:/tomcatfolder/app/gbfood/resources/static/
     crawler: /tomcatfolder/app/gbfood/crawler/
 logging:
   config: classpath:logback-production.xml
@@ -64,8 +62,6 @@ datetime:
     
 gbfood:
   resources: 
-    templates: /gb/resources/templates/
-    statics: file:/gb/resources/static/
     crawler: /gb/crawler/
 logging:
   config: classpath:logback-local.xml
@@ -93,66 +89,3 @@ spring:
     validationQuery: SELECT 1
 
 name: local
-
----
-phantomjs:
-  binary:
-    path: classpath:phantomjs
-    
-logging:
-  config: classpath:logback-local.xml
-  
-gbfood:
-  resources: 
-    templates: /gb/resources/templates/
-    statics: file:/gb/resources/static/
-    crawler: /gb/crawler/
-spring:
-  profiles: test-db
-  jpa:
-    properties:
-      hibernate:
-        connection:
-          characterEncoding: utf8mb4
-          useUnicode: true
-    hibernate:
-      ddl-auto: update
-  thymeleaf:
-    cache: false
-  datasource:
-    url: jdbc:mysql://localhost:3306/gbfood
-    username: root
-    password: root
-    init-sql: "SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci;"
-    driverClassName: com.mysql.jdbc.Driver
-    continueOnError: true
-    initialize: false
-
-name: test-db
-
----
-gbfood:
-  resources: 
-    templates: /gb/resources/templates/
-    statics: file:/gb/resources/static/
-    crawler: /gb/crawler/
-spring:
-  profiles: test
-  
-  jpa:
-    properties:
-      hibernate:
-        connection:
-          characterEncoding: utf8mb4
-          useUnicode: true
-    hibernate:
-      ddl-auto: update
-    database-platform: org.hibernate.dialect.H2Dialect
-  thymeleaf:
-    cache: false
-  datasource:
-    init-sql: "SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci;"
-    initialize: false
-    
-
-name: test

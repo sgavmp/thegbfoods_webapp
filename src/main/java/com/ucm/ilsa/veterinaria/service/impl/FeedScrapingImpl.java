@@ -34,17 +34,14 @@ import com.ucm.ilsa.veterinaria.domain.Feed;
 import com.ucm.ilsa.veterinaria.domain.FeedForm;
 import com.ucm.ilsa.veterinaria.domain.News;
 import com.ucm.ilsa.veterinaria.domain.ScrapStatistics;
-import com.ucm.ilsa.veterinaria.domain.Statistics;
 import com.ucm.ilsa.veterinaria.domain.builder.NewsBuilder;
 import com.ucm.ilsa.veterinaria.repository.FeedRepository;
 import com.ucm.ilsa.veterinaria.repository.NewsDetectRepository;
 import com.ucm.ilsa.veterinaria.repository.NewsRepository;
 import com.ucm.ilsa.veterinaria.repository.ScrapStatisticsRepository;
-import com.ucm.ilsa.veterinaria.repository.StatisticsRepository;
 import com.ucm.ilsa.veterinaria.service.FeedScraping;
 import com.ucm.ilsa.veterinaria.service.NewsIndexService;
 import com.ucm.ilsa.veterinaria.util.GBFoodCrawler;
-import com.rometools.rome.io.impl.DateParser;
 
 import edu.uci.ics.crawler4j.crawler.CrawlConfig;
 import edu.uci.ics.crawler4j.crawler.CrawlController;
@@ -114,6 +111,7 @@ public class FeedScrapingImpl implements FeedScraping {
 		return newsList;
 	}
 
+	@SuppressWarnings("unchecked")
 	private List<News> scrapingAuto(Feed feed, Date after, boolean withOutLimit) {
 		try {
 			List<News> listNews = new ArrayList<News>();
@@ -190,6 +188,7 @@ public class FeedScrapingImpl implements FeedScraping {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	private News scrapingOneWithAuto(FeedForm feed) {
 		try {
 			List<News> listNews = new ArrayList<News>();
