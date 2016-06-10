@@ -164,8 +164,7 @@ public class MainController extends BaseController {
 	@ModelAttribute("allCountriesAfects")
 	public Map<String, String> getAllCountriesAfects() {
 		Map<String, String> listCountries = new HashMap<String, String>();
-		List<Location> listLocation = (List<Location>) locationRepository
-				.findAll();
+		List<Location> listLocation = (List<Location>) locationRepository.findAllAfect();
 		for (Location loc : listLocation) {
 			listCountries.put(CountryCode.getByCode(loc.getCountry().name())
 					.getAlpha3(), "rgba(255,87,34,1)");
