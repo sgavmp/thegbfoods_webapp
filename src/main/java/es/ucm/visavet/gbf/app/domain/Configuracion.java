@@ -8,15 +8,8 @@ import javax.persistence.Transient;
 public class Configuracion {
 	@Id
 	private String id = "conf";
-//	@Lob
-//	private String palabrasAlerta = "";
-//	@Lob
-//	private String paabrasLugar = "(^|\\s|\\,|\\.|\\-)(\\s*)(at|in|on|of|from|and|the|en|de)*(\\s)(?-i)([A-Z]\\w+)";
 	private String pathIndexClavin;
 	private String pathIndexNews;
-//	private boolean usarPalabrasAlerta = false;
-//	private boolean usarPalabrasLugar = false;
-	private Double radiusNear = (double) 10;
 	private Integer dayRisks = 10;
 	@Transient
 	private Feed feed;
@@ -36,12 +29,6 @@ public class Configuracion {
 	}
 	public void setId(String id) {
 		this.id = id;
-	}
-	public Double getRadiusNear() {
-		return radiusNear;
-	}
-	public void setRadiusNear(Double radiusNear) {
-		this.radiusNear = radiusNear;
 	}
 	public Integer getDayRisks() {
 		return dayRisks;

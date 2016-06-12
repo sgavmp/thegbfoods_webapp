@@ -33,10 +33,6 @@ war {
 sourceCompatibility = 1.7
 targetCompatibility = 1.7
 
-springBoot {
-  mainClass = "es.ucm.visavet.gbf.app.Application.java"
-}
-
 repositories {
 	flatDir {
 	       dirs 'libs'
