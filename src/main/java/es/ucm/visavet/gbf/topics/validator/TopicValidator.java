@@ -4,8 +4,7 @@ package es.ucm.visavet.gbf.topics.validator;
 import java.io.Reader;
 import java.util.List;
 
-import com.ucm.ilsa.veterinaria.domain.Topic;
-
+import es.ucm.visavet.gbf.app.domain.Topic;
 import es.ucm.visavet.gbf.topics.util.QueryUtil;
 public class TopicValidator implements TopicValidatorConstants {
     private TopicValidatorSemantics sem;

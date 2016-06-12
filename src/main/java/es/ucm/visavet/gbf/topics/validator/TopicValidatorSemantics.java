@@ -1,12 +1,12 @@
 package es.ucm.visavet.gbf.topics.validator;
 
-import es.ucm.visavet.gbf.topics.manager.ITopicsManager;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
 import com.google.common.collect.Lists;
-import com.ucm.ilsa.veterinaria.domain.Topic;
+
+import es.ucm.visavet.gbf.app.domain.Topic;
+import es.ucm.visavet.gbf.topics.manager.ITopicsManager;
 
 public class TopicValidatorSemantics {
 	private ITopicsManager topicsManager;

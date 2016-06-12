@@ -4,7 +4,7 @@ import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.util.Set;
 
-import com.ucm.ilsa.veterinaria.domain.Topic;
+import es.ucm.visavet.gbf.app.domain.Topic;
 
 public interface ITopicsManager {
    boolean existsTopic(String topic);

@@ -118,7 +118,7 @@
 						<select class="mdl-textfield__input" th:field="*{charSet}">
 							<option value="" disabled="disabled" selected="selected">Codificación</option>
 							<option
-								th:each="charSet : ${T(com.ucm.ilsa.veterinaria.domain.CharsetEnum).values()}"
+								th:each="charSet : ${T(es.ucm.visavet.gbf.app.domain.CharsetEnum).values()}"
 								th:value="${charSet}" th:text="${charSet}">Wireframe</option>
 						</select> <label class="mdl-textfield__label">Codificacion del
 							Sitio</label>

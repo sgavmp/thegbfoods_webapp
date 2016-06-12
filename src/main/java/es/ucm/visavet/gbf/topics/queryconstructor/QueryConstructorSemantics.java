@@ -1,21 +1,17 @@
 
 package es.ucm.visavet.gbf.topics.queryconstructor;
 
-import es.ucm.visavet.gbf.topics.manager.ITopicsManager;
-
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanQuery;
-import org.apache.lucene.search.DisjunctionMaxQuery;
 import org.apache.lucene.search.PhraseQuery;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
+
+import es.ucm.visavet.gbf.topics.manager.ITopicsManager;
 
 public class QueryConstructorSemantics {
    private ITopicsManager topicsManager;

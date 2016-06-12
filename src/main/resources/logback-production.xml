@@ -10,7 +10,7 @@
 		</filter>
 	</appender>
 
-	<logger name="com.ucm.ilsa.veterinaria" additivity="false">
+	<logger name="es.ucm.visavet.gbf.app" additivity="false">
 	    <level value="ALL" />
 		<appender-ref ref="consoleAppender" />
 	</logger>
