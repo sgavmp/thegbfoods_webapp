@@ -10,29 +10,150 @@
 			class="demo-header mdl-layout__header mdl-color--white mdl-color--grey-100 mdl-color-text--grey-600"
 			th:replace="base :: menu-superior"> </header>
 		<div
-			class="demo-drawer mdl-layout__drawer mdl-color--primary mdl-color-text--blue-grey-50"
+			class="demo-drawer mdl-layout__drawer mdl-color--blue-grey-800 mdl-color-text--primary"
 			th:include="base :: menu-izquierdo"></div>
 		<main
-			class="mdl-layout__content mdl-color--grey-100 mdl-typography--text-center"
-			th:fragment="alerts">
-		<!--  Cuando hay alertas -->
-		<div th:if="${!#lists.isEmpty(alertsUncheck)}" class="mdl-grid">
-			<div th:if="${#lists.isEmpty(alertsUncheck)}" class="watermark">
-				<h1>No hay alertas activas de los ultimos 30 días</h1>
+			class="mdl-layout__content mdl-color--withe mdl-typography--text-center"
+			th:fragment="alerts"> <!--  Cuando hay alertas -->
+		<div id="hoy"
+			class="mdl-card mdl-cell mdl-cell--10-col mdl-cell--1-offset ">
+			<div class="mdl-card__title">
+				<h2
+					class="mdl-card__title-text mdl-color-text--primary text-underline"
+					th:inline="text">Hoy ([[${#dates.format(hoy, 'dd/M/yyyy')}]])</h2>
 			</div>
-			<div th:include="resume :: card-alert" th:with="numAlert=${alert.getNewsDetect().size()}" th:each="alert : ${alertsUncheck}"
-				class="mdl-cell mdl-cell--3-col mdl-cell--4-col-tablet mdl-cell--4-col-phone mdl-card mdl-shadow--3dp">
-				<div class="mdl-card__title mdl-color--primary">
-					<h2 class="mdl-card__title-text  mdl-color-text--white" th:inline="text">[[${alert.title}]]</h2>
-					<span class="mdl-badge vet-alerta-num" th:attr="data-badge=${alert.getNewsDetect().size()}" data-badge="4"></span>
+			<div class="mdl-grid mdl-card__supporting-text">
+				<table
+					class="mdl-cell mdl-cell--6-col mdl-data-table mdl-js-data-table mdl-data-table mdl-shadow--2dp">
+					<thead class="mdl-color--primary">
+						<tr>
+							<th
+								class="mdl-data-table__cell--non-numeric mdl-color-text--white">Nombre
+								Riesgo</th>
+							<th th:if="${folder == 'risks'}"
+								class="mdl-data-table__cell--non-numeric mdl-color-text--white">Tipo</th>
+							<th
+								class="mdl-data-table__cell--non-numeric mdl-color-text--white">Score</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr th:unless="${#lists.isEmpty(alertsScoreToday)}"
+							th:each="alert,stat : ${alertsScoreToday}"
+							th:class="${stat.count}%2==0?'table-par':'table-impar'"
+							class="table-impar">
+							<td class="mdl-data-table__cell--non-numeric"><a
+								th:text="${alert[1]}"
+								th:href="@{/{folder}/get/{id}(folder=${folder},id=${alert[0]})}">Acrylic</a></td>
+							<td th:if="${folder == 'risks'}">Default</td>
+							<td th:text="${#numbers.formatDecimal(alert[4],1,2)}">250</td>
+						</tr>
+						<tr th:if="${#lists.isEmpty(alertsScoreToday)}"
+							class="table-impar">
+							<td class="mdl-data-table__cell--non-numeric" colspan="3">No
+								hay riesgos</td>
+						</tr>
+					</tbody>
+				</table>
+				<div class="mdl-cell mdl-cell--6-col" id="chart-semanal"></div>
+			</div>
+		</div>
+		<div id="semana"
+			class="mdl-card mdl-cell mdl-cell--10-col mdl-cell--1-offset ">
+			<div class="mdl-card__title">
+				<h2
+					class="mdl-card__title-text mdl-color-text--primary text-underline"
+					th:inline="text">Esta semana ([[${#dates.format(hoy,
+					'dd/M/yyyy')}]] - [[${#dates.format(semana, 'dd/M/yyyy')}]])</h2>
+			</div>
+			<div class="mdl-grid mdl-card__supporting-text">
+				<table
+					class="mdl-cell mdl-cell--6-col mdl-data-table mdl-js-data-table mdl-data-table mdl-shadow--2dp">
+					<thead class="mdl-color--primary">
+						<tr>
+							<th
+								class="mdl-data-table__cell--non-numeric mdl-color-text--white">Nombre
+								Riesgo</th>
+							<th
+								class="mdl-data-table__cell--non-numeric mdl-color-text--white">Score</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr th:unless="${#lists.isEmpty(alertsScoreWeek)}"
+							th:each="alert,stat : ${alertsScoreWeek}"
+							th:class="${stat.count}%2==0?'table-par':'table-impar'"
+							class="table-impar">
+							<td class="mdl-data-table__cell--non-numeric"><a
+								th:text="${alert[1]}"
+								th:href="@{/{folder}/get/{id}(folder=${folder},id=${alert[0]})}">Acrylic</a></td>
+							<td th:text="${#numbers.formatDecimal(alert[4],1,2)}">250</td>
+						</tr>
+						<tr th:if="${#lists.isEmpty(alertsScoreWeek)}" class="table-impar">
+							<td class="mdl-data-table__cell--non-numeric" colspan="3">No
+								hay riesgos</td>
+						</tr>
+					</tbody>
+				</table>
+				<div class="mdl-cell mdl-cell--6-col" id="chart-mensual"></div>
+			</div>
+		</div>
+		<div id="semana"
+			class="mdl-card mdl-cell mdl-cell--10-col mdl-cell--1-offset ">
+			<div class="mdl-card__title">
+				<h2
+					class="mdl-card__title-text mdl-color-text--primary text-underline"
+					th:inline="text">Este mes ([[${#dates.format(hoy,
+					'dd/M/yyyy')}]] - [[${#dates.format(mes, 'dd/M/yyyy')}]])</h2>
+			</div>
+			<div class="mdl-grid mdl-card__supporting-text">
+				<table
+					class="mdl-cell mdl-cell--6-col mdl-data-table mdl-js-data-table mdl-data-table mdl-shadow--2dp">
+					<thead class="mdl-color--primary">
+						<tr>
+							<th
+								class="mdl-data-table__cell--non-numeric mdl-color-text--white">Nombre
+								Riesgo</th>
+							<th th:if="${folder == 'risks'}"
+								class="mdl-data-table__cell--non-numeric mdl-color-text--white">Tipo</th>
+							<th
+								class="mdl-data-table__cell--non-numeric mdl-color-text--white">Score</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr th:unless="${#lists.isEmpty(alertsScoreMonth)}"
+							th:each="alert,stat : ${alertsScoreMonth}"
+							th:class="${stat.count}%2==0?'table-par':'table-impar'"
+							class="table-impar">
+							<td class="mdl-data-table__cell--non-numeric"><a
+								th:text="${alert[1]}"
+								th:href="@{/{folder}/get/{id}(folder=${folder},id=${alert[0]})}">Acrylic</a></td>
+							<td th:if="${folder == 'risks'}">Default</td>
+							<td th:text="${#numbers.formatDecimal(alert[4],1,2)}">250</td>
+						</tr>
+						<tr th:if="${#lists.isEmpty(alertsScoreMonth)}"
+							class="table-impar">
+							<td class="mdl-data-table__cell--non-numeric" colspan="3">No
+								hay riesgos</td>
+						</tr>
+					</tbody>
+				</table>
+				<div class="mdl-cell mdl-cell--6-col">
+					<div>Mapa</div>
+					<div id="container" style="width: 100%; height: 100%;"></div>
 				</div>
-				<div class="mdl-card__supporting-text mdl-color--primary">En
-					el ultimo mes se han detectado 20 posibles alertas de las cuales 10
-					fueron verificadas.</div>
-				<div class="mdl-card__actions mdl-card--border">
-					<a th:href="@{/alerts/get/{id}(id=${alert.id})}"
-						class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">Ver
-						mas detalles</a>
+			</div>
+		</div>
+		<div id="semana"
+			class="mdl-card mdl-cell mdl-cell--10-col mdl-cell--1-offset ">
+			<div class="mdl-card__title">
+				<h2
+					class="mdl-card__title-text mdl-color-text--primary text-underline"
+					th:inline="text">Estadísticas</h2>
+			</div>
+			<div class="mdl-grid mdl-card__supporting-text">
+
+				<div class="mdl-cell mdl-cell--12-col">
+					<div id="container-stats"
+						style="min-width: 310px; height: 400px; margin: 0 auto"></div>
 				</div>
 			</div>
 		</div>
@@ -44,13 +165,55 @@
 			charset="utf-8"></script>
 		<script
 			src="https://cdnjs.cloudflare.com/ajax/libs/c3/0.4.10/c3.min.js"></script>
-		<script src="//cdnjs.cloudflare.com/ajax/libs/topojson/1.6.9/topojson.min.js"></script>
-		<script th:src="@{/static/js/datamaps.world.min.js}" src="/datamaps.world.min.js"></script>
+		<script
+			src="//cdnjs.cloudflare.com/ajax/libs/topojson/1.6.9/topojson.min.js"></script>
+		<script th:src="@{/static/js/datamaps.world.min.js}"
+			src="/datamaps.world.min.js"></script>
 		<script th:inline="javascript">
 		/*<![CDATA[*/
-		           $(document)
+				  $(document)
 				.ready( function(){
-					var countries = [[${allCountriesAfects}]];
+				    var chart = c3.generate({
+				    	size: {
+				    		height: 300,
+				    	},
+						bindto : '#chart-semanal',
+						data : {
+							x: 'labels',
+							url: [[@{${folder} == 'risks' ? '/ajax/scrap/risk/week' : '/ajax/scrap/alert/week'}]],
+							mimeType: 'json',							
+							types : {
+								noticias : 'area-spline',
+								alertas : 'area-spline'
+							}
+						},
+						axis : {
+							x : {
+								type : 'category'
+							}
+						}
+					});
+				    var chart = c3.generate({
+				    	size: {
+				    		height: 300,
+				    	},
+						bindto : '#chart-mensual',
+						data : {
+							x: 'labels',
+							url: [[@{${folder} == 'risks' ? '/ajax/scrap/risk/by/week' : '/ajax/scrap/alert/by/week'}]],
+							mimeType: 'json',							
+							types : {
+								noticias : 'area-spline',
+								alertas : 'area-spline'
+							}
+						},
+						axis : {
+							x : {
+								type : 'category'
+							}
+						}
+					});
+				    var countries = [[${allCountriesAfects}]];
 					var data = {}
 					for (var t in countries) {
 						var temp = {'fillKey' : t};
@@ -66,42 +229,183 @@
 				    d3.select(window).on('resize', function() {
 				        map.resize();
 				    });
-					var daysN = ["Domingo","Lunes","Martes","Miercoles","Jueves","Viernes","Sabado"];
-						var stats = [[${graph}]];
-						var news = [];
-						var alerts = [];
-						var days = [];
-						var i = 0;
-						for (i = 0; i < (stats.length - 1) ; i++) {
-							var date = new Date(stats[i].date);
-					        news[i] = stats[i].numNews;
-					        alerts[i] = stats[i].numAlerts;
-					        days[i] = daysN[date.getDay()] + " " + date.getDate();
-					    }
-						var date = new Date(stats[i].date);
-				        news[i] = stats[i].numNews;
-				        alerts[i] = stats[i].numAlerts;
-				        days[i] = "Hoy, " + daysN[date.getDay()] + " " + date.getDate();
-			var chart = c3.generate({
-				bindto : '#chart',
-				data : {
-					columns : [
-							[ 'Noticias'].concat(news),
-							[ 'Alertas'].concat(alerts) ],
-					types : {
-						Noticias : 'area-spline',
-						Alertas : 'area-spline'
-					}
-				},
-				axis : {
-					x : {
-						type : 'category',
-						categories : days
-					}
-				}
-			});});
+				});
 		           /*]]>*/
 		</script>
+		<script th:inline="javascript">
+		/*<![CDATA[*/
+		var seriesData = [];
+		$(function() {
+
+			$
+					.getJSON(
+							[[@{/{folder}/ajax/stats(folder=${folder})}]],
+							function(data) {
+								var count = 1;
+								var vis = true;
+								$.each(data, function(key, val) {
+									var values = [];
+									$.each(val, function(key2, val2) {
+										values.push([ Date.parse(val2[2]),
+												val2[3] ]);
+									});
+									seriesData.push({
+										name : key,
+										data : values.sort(function(a, b) {
+											return a[0] - b[0];
+										}),
+										visible : vis
+									});
+									count++;
+									if (count == 4) {
+										vis = false;
+									}
+								});
+								console.log(seriesData);
+								window.chart = new Highcharts.StockChart(
+										{
+											rangeSelector : {
+												adaptToUpdatedData : false,
+												selected : 6,
+												inputDateFormat : '%d-%m-%Y',
+												inputEditDateFormat : '%d-%m-%Y'
+											},
+											chart : {
+												type : 'spline',
+												zoomType : 'x',
+												renderTo : 'container-stats'
+											},
+											title : {
+												text : 'Alertas Sanitarias'
+											},
+											subtitle : {
+												text : 'Alertas detectadas'
+											},
+											xAxis : {
+												type : 'datetime',
+												dateTimeLabelFormats : {
+													day : '%d %m %Y',
+												},
+												title : {
+													text : 'Día'
+												},
+												events : {
+													afterSetExtremes : function(
+															e) {
+														var chartOb = this;
+														chartOb.setExtremes(
+																chartOb.min,
+																chartOb.max);
+													}
+												}
+											},
+											yAxis : {
+												title : {
+													text : 'Nº alertas'
+												},
+												min : 0
+											},
+											tooltip : {
+												pointFormat : '<span style="color:{series.color}">{series.name}</span>: <b>{point.y}</b><br/>',
+											},
+											legend : {
+												layout : 'vertical',
+												align : 'left',
+												verticalAlign : 'middle',
+												borderWidth : 1,
+												enabled : true
+											},
+
+											plotOptions : {
+												spline : {
+													events : {
+														show : function() {
+															window.chart
+																	.addSeries({
+																		name: this-name + "-a",
+																		data : this.data,
+																		isInternal : true,
+																		xAxis : 1,
+																		yAxis : 1,
+																		name : null,
+																		enableMouseTracking : false,
+																		showInLegend : false
+																	});
+														},
+														hide : function() {
+															var seriesLength = window.chart.series.length;
+											                for(var i = seriesLength - 1; i > -1; i--)
+											                {
+											                    if(window.chart.series[i].name == this.name + "-a") {
+											                    	window.chart.series[i].remove();
+											                    	break;
+											                    }
+											                }
+														}
+													},
+													marker : {
+														enabled : true
+													}
+												}
+											},
+
+											series : seriesData
+										},
+										function(chart) {
+
+											// apply the date pickers
+											setTimeout(
+													function() {
+														$(
+																'input.highcharts-range-selector',
+																$('#'
+																		+ chart.options.chart.renderTo))
+																.datepicker(
+																		{
+																			beforeShow : function(
+																					i,
+																					obj) {
+																				$widget = obj.dpDiv;
+																				window.$uiDatepickerDiv = $widget;
+																				if ($widget
+																						.data("top")) {
+																					setTimeout(
+																							function() {
+																								$uiDatepickerDiv
+																										.css(
+																												"top",
+																												$uiDatepickerDiv
+																														.data("top"));
+																							},
+																							50);
+																				}
+																			},
+																			onClose : function(
+																					i,
+																					obj) {
+																				$widget = obj.dpDiv;
+																				$widget
+																						.data(
+																								"top",
+																								$widget
+																										.position().top);
+																			}
+																		})
+													}, 0)
+										});
+
+							});
+			// Set the datepicker's date format
+			$.datepicker.setDefaults({
+				dateFormat : 'dd-mm-yy',
+				onSelect : function(dateText) {
+					this.onchange();
+					this.onblur();
+				}
+			});
+		});
+		/*]]>*/
+	</script>
 	</div>
 </body>
 </html>

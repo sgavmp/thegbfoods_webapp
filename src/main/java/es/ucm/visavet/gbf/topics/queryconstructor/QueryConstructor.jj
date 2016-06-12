@@ -1,0 +1,47 @@
+options  {
+  STATIC=false;
+  UNICODE_INPUT=true;
+}
+PARSER_BEGIN(QueryConstructor)
+package es.ucm.visavet.gbf.topics.queryconstructor;
+import es.ucm.visavet.gbf.topics.util.QueryUtil;
+import org.apache.lucene.search.Query;
+import java.io.Reader;
+public class QueryConstructor {
+    private QueryConstructorSemantics sem;
+    public QueryConstructor(QueryConstructorSemantics sem, Reader input) {
+	  this(input);
+	  this.sem = sem;
+	}
+  }
+PARSER_END(QueryConstructor)
+  TOKEN:{<TERM: <WORD>|"'"<QWORD>"'">}
+  TOKEN:{<LITERAL_TERM: "\""<LWORD>"\"">}
+  TOKEN:{<TOPIC_NAME: "#"<WORD>>}
+  TOKEN:{<AND: "&">}
+  TOKEN:{<OR:  "|">}
+  TOKEN:{<DIF: "-">}
+  TOKEN:{<ATTYPE: "@T"<WORD>>}
+  TOKEN:{<ATLOC: "@L"<WORD>>}
+  SKIP:{<["\t"," ","\r","\b","\n"]>}
+  TOKEN:{<#ESCSEQ: "\\'"|"\\\""|"\\\\"|"\\&"|"\\|"|"\\-"|"\\@"|"\\("|"\\)"|"\\#">}
+  TOKEN:{<#WCHAR: ~["'","\"","\\","&","|","(",")","-","@","\t"," ","\r","\b","\n","#"]>}
+  TOKEN:{<#WORD:(<ESCSEQ>|<WCHAR>)+>}
+  TOKEN:{<#QESCSEQ: "\\'">}
+  TOKEN:{<#QWCHAR: ~["'"]>}
+  TOKEN:{<#QWORD:(<QESCSEQ>|<QWCHAR>)+>}
+  TOKEN:{<#LESCSEQ: "\\\"">}
+  TOKEN:{<#LWCHAR: ~["\""]>}
+  TOKEN:{<#LWORD:(<LESCSEQ>|<LWCHAR>)+>}
+
+  Query topic():  {Query q;} {q=topic0() <EOF> {return q;}}
+  Query topic0(): {Query q1,q2;} {q1=topic1() ((<OR>)? q2=topic1() {q1=sem.buildOrQuery(q1,q2);})* {return q1;}}
+  Query topic1(): {Query q1,q2;} {q1=topic2() (<AND> q2=topic2() {q1=sem.buildAndQuery(q1,q2);})* {return q1;}}
+  Query topic2(): {Query q1,q2;} {q1=topic3() (<DIF> q2=topic3() {q1=sem.buildDifQuery(q1,q2);})* {return q1;}}
+  Query topic3(): {Token tk; Query q;}
+                    {tk=<TERM>   {return sem.buildTermQuery(QueryUtil.internize(tk.image));}               |
+                     tk=<LITERAL_TERM>  {return sem.buildLiteralTermQuery(QueryUtil.internize(tk.image));} |
+                     tk= <TOPIC_NAME> {return sem.buildTopicRefQuery(QueryUtil.internize(tk.image));}      |
+                     tk= <ATTYPE>     {return sem.buildSourceTypeQuery(QueryUtil.internize(tk.image));}    |
+                     tk= <ATLOC>     {return sem.buildSourceLocQuery(QueryUtil.internize(tk.image));}      |
+		     "(" q=topic0() ")"  {return q;} }
